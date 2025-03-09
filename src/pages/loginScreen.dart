@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -32,19 +31,34 @@ class LoginScreen extends StatelessWidget {
                   child: TextField(
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      filled: true, // Adiciona cor de fundo
-                      fillColor: Colors.white.withOpacity(0.8), // Cor de fundo com transparência
+                      prefixIcon: Icon(
+                        Icons.email,
+                        color: Color(0xFF2BB462),
+                      ), 
+                      filled: true, 
+                      fillColor: Colors.white.withOpacity(
+                        0.8,
+                      ), 
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderSide: BorderSide(
+                          color: Color(0xFF2BB462),
+                          width: 2.0,
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder( // Borda quando o campo não está em foco
+                      enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderSide: BorderSide(
+                          color: Color(0xFF2BB462),
+                          width: 2.0,
+                        ),
                       ),
-                      focusedBorder: OutlineInputBorder( // Borda quando o campo está em foco
+                      focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderSide: BorderSide(
+                          color: Color(0xFF2BB462),
+                          width: 2.0,
+                        ),
                       ),
                     ),
                   ),
@@ -56,19 +70,34 @@ class LoginScreen extends StatelessWidget {
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Senha',
-                      filled: true, // Adiciona cor de fundo
-                      fillColor: Colors.white.withOpacity(0.8), // Cor de fundo com transparência
+                      prefixIcon: Icon(
+                        Icons.lock,
+                        color: Color(0xFF2BB462),
+                      ), 
+                      filled: true, 
+                      fillColor: Colors.white.withOpacity(
+                        0.8,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderSide: BorderSide(
+                          color: Color(0xFF2BB462),
+                          width: 2.0,
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder( // Borda quando o campo não está em foco
+                      enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderSide: BorderSide(
+                          color: Color(0xFF2BB462),
+                          width: 2.0,
+                        ),
                       ),
-                      focusedBorder: OutlineInputBorder( // Borda quando o campo está em foco
+                      focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 5.0),
+                        borderSide: BorderSide(
+                          color: Color(0xFF2BB462),
+                          width: 5.0,
+                        ),
                       ),
                     ),
                   ),
@@ -81,17 +110,23 @@ class LoginScreen extends StatelessWidget {
                       // Lógica de login
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF2BB462), // Cor de fundo do botão (#2BB462)
-                      padding: EdgeInsets.symmetric(vertical: 16), // Espaçamento interno
+                      backgroundColor: Color(
+                        0xFF2BB462,
+                      ), 
+                      padding: EdgeInsets.symmetric(
+                        vertical: 16,
+                      ), 
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0), // Borda arredondada
+                        borderRadius: BorderRadius.circular(
+                          20.0,
+                        ), 
                       ),
                     ),
                     child: Text(
                       'Login',
                       style: TextStyle(
-                        color: Colors.white, // Cor do texto (branco)
-                        fontSize: 18, // Tamanho da fonte
+                        color: Colors.white,
+                        fontSize: 18, 
                       ),
                     ),
                   ),
@@ -99,7 +134,6 @@ class LoginScreen extends StatelessWidget {
                 SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
-                    // Lógica para "Esqueci a senha"
                   },
                   child: Text('Esqueci a senha'),
                 ),

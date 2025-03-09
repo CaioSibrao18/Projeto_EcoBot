@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ForgotPasswordScreen extends StatelessWidget {
+class ForgetPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -8,7 +8,7 @@ class ForgotPasswordScreen extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/telaFundo.png'),
+            image: AssetImage('assets/images/FundoForgetPassword.png'),
             fit: BoxFit.cover,
           ),
         ),
@@ -19,7 +19,6 @@ class ForgotPasswordScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-    
                 SizedBox(height: 20),
                 Text(
                   'Redefinir Senha',
@@ -29,7 +28,18 @@ class ForgotPasswordScreen extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 60),
+                SizedBox(
+                  child: Text(
+                    'Digite seu e-mail no campo abaixo e lhe enviaremos um link para redefini-la.',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 100),        
                 SizedBox(
                   width: 300,
                   child: TextField(
@@ -39,15 +49,24 @@ class ForgotPasswordScreen extends StatelessWidget {
                       fillColor: Colors.white.withOpacity(0.8),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderSide: BorderSide(
+                          color: Color(0xFF2BB462),
+                          width: 2.0,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderSide: BorderSide(
+                          color: Color(0xFF2BB462),
+                          width: 2.0,
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderSide: BorderSide(
+                          color: Color(0xFF2BB462),
+                          width: 2.0,
+                        ),
                       ),
                     ),
                   ),
@@ -57,7 +76,6 @@ class ForgotPasswordScreen extends StatelessWidget {
                   width: 300,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Lógica para enviar solicitação de redefinição de senha
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF2BB462),
@@ -68,24 +86,18 @@ class ForgotPasswordScreen extends StatelessWidget {
                     ),
                     child: Text(
                       'Enviar',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                   ),
                 ),
                 SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
-                    // Volta para a tela de login
                     Navigator.pop(context);
                   },
                   child: Text(
                     'Voltar ao Login',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ],
