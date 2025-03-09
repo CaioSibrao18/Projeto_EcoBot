@@ -23,7 +23,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                 Text(
                   'Redefinir Senha',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),

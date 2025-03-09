@@ -62,6 +62,7 @@ flutter:
     - assets/images/telaFundo.png
     - assets/images/logoEcoQuest.png
     - assets/images/FundoForgetPassword.png
+    - assets/images/FundoResetPassword.png
 
 
   #   - images/a_dot_burr.jpeg
