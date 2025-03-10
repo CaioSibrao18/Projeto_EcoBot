@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
-
-import 'pages/forgetPasswordScreen.dart';
-import 'pages/loginScreen.dart';
-
-import 'pages/resetPassword.dart';
+import 'pages/chooseGame.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(JogoSilabasApp());
 }
 
-class MyApp extends StatelessWidget {
+class JogoSilabasApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'App de Login',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: ResetPasswordScreen(),
+      debugShowCheckedModeBanner: false,
+      home: TelaInicial(),
     );
   }
 }
