@@ -2,35 +2,72 @@
 
 import 'package:flutter/material.dart';
 
-class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
+class QuizScreenEasy extends StatefulWidget {
+  const QuizScreenEasy({super.key});
 
   @override
   _QuizScreenState createState() => _QuizScreenState();
 }
 
-class _QuizScreenState extends State<QuizScreen> {
+class _QuizScreenState extends State<QuizScreenEasy> {
   final List<Map<String, dynamic>> questions = [
     {
-      'question': 'A lata amarela é destinada a qual tipo de lixo?',
-      'options': ['Papel', 'Vidro', 'Organico', 'Metal'],
-      'correctIndex': 3,
+      "question": "Qual cor de lixeira é usada para plástico?",
+      "options": ["Azul", "Vermelha", "Verde"],
+      "correctIndex": 1,
     },
     {
-      'question': 'Quanto tempo leva para o papel sumir no meio ambiente?',
-      'options': [
-        'Cerca de 400 anos',
-        'Cerca de 100 anos',
-        'Cerca de 60 anos',
-        'Cerca de 1000 anos',
+      "question": "O vidro pode ser reciclado?",
+      "options": ["Sim", "Não", "Somente garrafas"],
+      "correctIndex": 0,
+    },
+    {
+      "question": "Onde devemos jogar uma lata de refrigerante?",
+      "options": ["Lixeira amarela", "Lixeira azul", "Lixeira verde"],
+      "correctIndex": 0,
+    },
+    {
+      "question": "Qual destes materiais é reciclável?",
+      "options": ["Casca de banana", "Garrafa PET", "Guardanapo sujo"],
+      "correctIndex": 1,
+    },
+    {
+      "question": "O que fazer com pilhas usadas?",
+      "options": [
+        "Jogar no lixo comum",
+        "Levar a um ponto de coleta",
+        "Enterrar no quintal",
       ],
-      'correctIndex': 0,
+      "correctIndex": 1,
     },
     {
-      'question':
-          'Qual o tipo de lixo mais prejudicial se jogado ao meio ambiente?',
-      'options': ['Restos de comida', 'Pilhas e baterias', 'Plástico', 'Papel'],
-      'correctIndex': 1,
+      "question": "Qual é o destino correto para papelão?",
+      "options": ["Lixeira azul", "Lixeira vermelha", "Lixeira verde"],
+      "correctIndex": 0,
+    },
+    {
+      "question": "Qual destes itens NÃO pode ser reciclado?",
+      "options": ["Pote de vidro", "Papel higiênico usado", "Garrafa plástica"],
+      "correctIndex": 1,
+    },
+    {
+      "question": "Qual o principal benefício da reciclagem?",
+      "options": ["Reduzir a poluição", "Aumentar o lixo", "Poluir rios"],
+      "correctIndex": 0,
+    },
+    {
+      "question": "Podemos jogar óleo de cozinha usado na pia?",
+      "options": ["Sim", "Não", "Somente óleo novo"],
+      "correctIndex": 1,
+    },
+    {
+      "question": "Reciclar ajuda a:",
+      "options": [
+        "Preservar o meio ambiente",
+        "Aumentar a poluição",
+        "Desperdiçar recursos",
+      ],
+      "correctIndex": 0,
     },
   ];
 
@@ -119,7 +156,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 }
               }
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
+                padding: const EdgeInsets.symmetric(vertical: 4),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

@@ -1,6 +1,6 @@
-import 'package:ecoquest/src/pages/games/quiz.dart';
+import 'package:ecoquest/src/pages/games/quizhard.dart';
 import 'package:ecoquest/src/pages/resetPassword.dart';
-import 'package:ecoquest/src/pages/games/quiz.dart';
+import 'package:ecoquest/src/pages/games/quizeasy.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,6 +12,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: QuizScreen());
+    return MaterialApp(home: QuizScreenHard());
   }
 }
