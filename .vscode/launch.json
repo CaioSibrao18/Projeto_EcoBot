@@ -8,7 +8,7 @@
             "name": "Projeto_EcoBot",
             "request": "launch",
             "type": "dart",
-            "program": "lib/src/main.dart"
+            "program": "lib/main.dart"
         },
         {
             "name": "Projeto_EcoBot (profile mode)",
