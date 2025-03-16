@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from app.views.auth_view import AuthView
+from .views.auth_view import AuthView  # Importação relativa
 
 def init_routes(app):
     @app.route('/')

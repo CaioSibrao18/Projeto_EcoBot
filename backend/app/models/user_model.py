@@ -19,5 +19,5 @@ class UserModel:
     def add_user(cls, username, senha):
         if username in cls.users:
             return False  # Usuário já existe
-        cls.users[username] = {"senha": senha},
+        cls.users[username] = {"senha": senha}
         return True

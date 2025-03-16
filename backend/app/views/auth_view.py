@@ -1,4 +1,4 @@
-from app.models.user_model import UserModel
+from ..models.user_model import UserModel  # Importação relativa
 
 class AuthView:
     @staticmethod
@@ -13,4 +13,4 @@ class AuthView:
         if UserModel.add_user(username, senha):
             return {"status": "sucesso", "mensagem": "Usuário registrado com sucesso!"}
         else:
-            return {"status": "erro", "mensagem": "Usuário já existe"},
+            return {"status": "erro", "mensagem": "Usuário já existe"}
