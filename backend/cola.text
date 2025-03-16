@@ -1,0 +1,13 @@
+app/controllers/: Gerencia as rotas e a comunicação entre o Model e a View.
+
+app/models/: Gerencia os dados e a lógica de negócio.
+
+app/views/: Implementa a lógica de apresentação e interação com o usuário.
+
+app/utils/: Contém funções utilitárias para uso em toda a aplicação.
+
+tests/: Contém testes automatizados para garantir o funcionamento correto da aplicação.
+
+run.py: Arquivo principal para rodar a aplicação.
+
+requirements.txt: Lista de dependências do projeto.
