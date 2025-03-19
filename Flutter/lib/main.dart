@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/app_telalogin',
       routes: {
-        '/': (context) => menuGames(), // Página inicial
+        '/': (context) => QuizScreenHard(), // Página inicial
       },
     );
   }

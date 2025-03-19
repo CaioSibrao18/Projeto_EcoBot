@@ -13,36 +13,69 @@ class menuGames extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: [
-            Image.asset('assets/images/logoEcoQuest.png', width: 200),
-            SizedBox(height: 20),
+            // Logo
+            Positioned(
+              top: 85,
+              left: MediaQuery.of(context).size.width / 2 - 100, // Centralizado
+              child: Image.asset('assets/images/logoEcoQuest.png', width: 200),
+            ),
 
-            Text(
-              "Selecione o jogo que desejar jogar",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+            // Texto de instrução
+            Positioned(
+              top: 280,
+              left: MediaQuery.of(context).size.width / 2 - 147, // Centralizado
+              child: SizedBox(
+                width: 300,
+                child: Text(
+                  "Selecione o jogo que desejar jogar",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'OpenSansPro',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
               ),
             ),
-            SizedBox(height: 30),
 
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 50,
-              runSpacing: 20,
-              children: [
-                _botaoJogo(context, 'assets/images/Trash.png', '/pixel_trash'),
-                _botaoJogo(context, 'assets/images/Click.png', '/garrafa_pet'),
-                _botaoJogo(
-                  context,
-                  'assets/images/Puzzle.png',
-                  '/puzzle_palavra',
-                ),
-              ],
+            // Linha com os dois primeiros ícones
+            Positioned(
+              top: 355, // Ajuste a altura da linha
+              left:
+                  MediaQuery.of(context).size.width / 2 -
+                  105, // Centraliza a linha
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _botaoJogo(
+                    context,
+                    'assets/images/Trash.png',
+                    '/pixel_trash',
+                  ),
+                  SizedBox(width: 35), // Espaço entre os ícones
+                  _botaoJogo(
+                    context,
+                    'assets/images/Click.png',
+                    '/garrafa_pet',
+                  ),
+                ],
+              ),
+            ),
+
+            // Ícone Puzzle Palavra (abaixo da linha)
+            Positioned(
+              width: 110,
+              height: 110,
+              top: 453, // Ajuste a posição vertical
+              left: MediaQuery.of(context).size.width / 2 - 45, // Centralizado
+              child: _botaoJogo(
+                context,
+                'assets/images/Puzzle.png',
+                '/puzzle_palavra',
+              ),
             ),
           ],
         ),
@@ -55,7 +88,7 @@ class menuGames extends StatelessWidget {
       onTap: () {
         Navigator.pushNamed(context, route);
       },
-      child: Image.asset(imagePath, width: 80),
+      child: Image.asset(imagePath, width: 90),
     );
   }
 }

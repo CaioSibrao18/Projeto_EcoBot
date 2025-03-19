@@ -147,23 +147,23 @@ class _QuizScreenState extends State<QuizScreenEasy> {
             ),
             const SizedBox(height: 20),
             ...List.generate(questionData['options'].length, (index) {
-              Color buttonColor = Colors.blue;
+              Color buttonColor = const Color(0xFF4CAF50);
               if (selectedOption != null) {
                 if (index == questionData['correctIndex']) {
-                  buttonColor = Colors.green;
+                  buttonColor = const Color.fromARGB(255, 17, 116, 20);
                 } else if (index == selectedOption) {
                   buttonColor = Colors.red;
                 }
               }
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
+                padding: const EdgeInsets.symmetric(vertical: 5),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(buttonColor),
                       padding: WidgetStateProperty.all(
-                        const EdgeInsets.symmetric(vertical: 16),
+                        const EdgeInsets.symmetric(vertical: 1),
                       ),
                     ),
                     onPressed:

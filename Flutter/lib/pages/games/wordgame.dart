@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: SpellingGameLetters(),
-  ));
+  runApp(MaterialApp(home: SpellingGameLetters()));
 }
 
 class SpellingGameLetters extends StatefulWidget {
+  const SpellingGameLetters({super.key});
+
   @override
   _SpellingGameLettersState createState() => _SpellingGameLettersState();
 }
 
 class _SpellingGameLettersState extends State<SpellingGameLetters> {
   final List<Map<String, dynamic>> words = [
-    {'word': 'reciclar', 'letters': ['r', 'e', 'c', 'i', 'c', 'l', 'a', 'r']},
-    {'word': 'energia', 'letters': ['e', 'n', 'e', 'r', 'g', 'i', 'a']},
-    {'word': 'planeta', 'letters': ['p', 'l', 'a', 'n', 'e', 't', 'a']},
+    {
+      'word': 'reciclar',
+      'letters': ['r', 'e', 'c', 'i', 'c', 'l', 'a', 'r'],
+    },
+    {
+      'word': 'energia',
+      'letters': ['e', 'n', 'e', 'r', 'g', 'i', 'a'],
+    },
+    {
+      'word': 'planeta',
+      'letters': ['p', 'l', 'a', 'n', 'e', 't', 'a'],
+    },
   ];
 
   int currentWordIndex = 0;
@@ -77,23 +86,26 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
     double percentage = (correctAnswers / words.length) * 100;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Resultado'),
-        content: Text('Você acertou ${percentage.toStringAsFixed(1)}% das palavras!'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                currentWordIndex = 0;
-                correctAnswers = 0;
-                resetGame();
-              });
-              Navigator.pop(context);
-            },
-            child: Text('Tentar Novamente'),
-          )
-        ],
-      ),
+      builder:
+          (context) => AlertDialog(
+            title: Text('Resultado'),
+            content: Text(
+              'Você acertou ${percentage.toStringAsFixed(1)}% das palavras!',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    currentWordIndex = 0;
+                    correctAnswers = 0;
+                    resetGame();
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text('Tentar Novamente'),
+              ),
+            ],
+          ),
     );
   }
 
@@ -112,16 +124,31 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
             SizedBox(height: 20),
             Wrap(
               spacing: 10,
-              children: availableLetters
-                  .map<Widget>((letter) => Material(
-                        child: Draggable<String>(
-                          data: letter,
-                          child: Chip(label: Text(letter, style: TextStyle(fontSize: 18))),
-                          feedback: Material(child: Chip(label: Text(letter, style: TextStyle(fontSize: 18)))),
-                          childWhenDragging: SizedBox.shrink(),
+              children:
+                  availableLetters
+                      .map<Widget>(
+                        (letter) => Material(
+                          child: Draggable<String>(
+                            data: letter,
+                            feedback: Material(
+                              child: Chip(
+                                label: Text(
+                                  letter,
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ),
+                            ),
+                            childWhenDragging: SizedBox.shrink(),
+                            child: Chip(
+                              label: Text(
+                                letter,
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          ),
                         ),
-                      ))
-                  .toList(),
+                      )
+                      .toList(),
             ),
             SizedBox(height: 20),
             DragTarget<String>(
@@ -142,18 +169,15 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
                   ),
                 );
               },
-              onAccept: (data) {
+              onAcceptWithDetails: (data) {
                 setState(() {
-                  selectedLetters.add(data);
+                  selectedLetters.add(data as String);
                   availableLetters.remove(data);
                 });
               },
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: checkAnswer,
-              child: Text('Confirmar'),
-            ),
+            ElevatedButton(onPressed: checkAnswer, child: Text('Confirmar')),
           ],
         ),
       ),

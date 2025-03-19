@@ -13,7 +13,7 @@ class _QuizScreenState extends State<QuizScreenHard> {
   final List<Map<String, dynamic>> questions = [
     {
       'question': 'A lata amarela é destinada a qual tipo de lixo?',
-      'options': ['Papel', 'Vidro', 'Organico'],
+      'options': ['Papel', 'Vidro', 'Organico', 'Metal'],
       'correctIndex': 3,
     },
     {
@@ -42,7 +42,7 @@ class _QuizScreenState extends State<QuizScreenHard> {
       'question': 'Qual das opções abaixo NÃO é uma prática sustentável?',
       'options': [
         'Usar sacolas reutilizáveis',
-        'Consumir produtos locais e sazonais',
+        'Consumir produtos locais e sazo-nais',
         'Desperdiçar água potável',
         'Reciclar materiais corretamente',
       ],
@@ -153,10 +153,10 @@ class _QuizScreenState extends State<QuizScreenHard> {
             ),
             const SizedBox(height: 20),
             ...List.generate(questionData['options'].length, (index) {
-              Color buttonColor = Colors.blue;
+              Color buttonColor = Color(0xFF4CAF50);
               if (selectedOption != null) {
                 if (index == questionData['correctIndex']) {
-                  buttonColor = Colors.green;
+                  buttonColor = const Color(0xFF117414);
                 } else if (index == selectedOption) {
                   buttonColor = Colors.red;
                 }
@@ -169,7 +169,7 @@ class _QuizScreenState extends State<QuizScreenHard> {
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(buttonColor),
                       padding: WidgetStateProperty.all(
-                        const EdgeInsets.symmetric(vertical: 16),
+                        const EdgeInsets.symmetric(vertical: 1),
                       ),
                     ),
                     onPressed:

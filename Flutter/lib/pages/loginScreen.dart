@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,14 +33,9 @@ class LoginScreen extends StatelessWidget {
                   child: TextField(
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      prefixIcon: Icon(
-                        Icons.email,
-                        color: Color(0xFF2BB462),
-                      ), 
-                      filled: true, 
-                      fillColor: Colors.white.withOpacity(
-                        0.8,
-                      ), 
+                      prefixIcon: Icon(Icons.email, color: Color(0xFF2BB462)),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.8),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                         borderSide: BorderSide(
@@ -70,14 +67,9 @@ class LoginScreen extends StatelessWidget {
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Senha',
-                      prefixIcon: Icon(
-                        Icons.lock,
-                        color: Color(0xFF2BB462),
-                      ), 
-                      filled: true, 
-                      fillColor: Colors.white.withOpacity(
-                        0.8,
-                      ),
+                      prefixIcon: Icon(Icons.lock, color: Color(0xFF2BB462)),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.8),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                         borderSide: BorderSide(
@@ -110,33 +102,20 @@ class LoginScreen extends StatelessWidget {
                       // Lógica de login
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(
-                        0xFF2BB462,
-                      ), 
-                      padding: EdgeInsets.symmetric(
-                        vertical: 16,
-                      ), 
+                      backgroundColor: Color(0xFF2BB462),
+                      padding: EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          20.0,
-                        ), 
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
                     child: Text(
                       'Login',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18, 
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                   ),
                 ),
                 SizedBox(height: 20),
-                TextButton(
-                  onPressed: () {
-                  },
-                  child: Text('Esqueci a senha'),
-                ),
+                TextButton(onPressed: () {}, child: Text('Esqueci a senha')),
               ],
             ),
           ),

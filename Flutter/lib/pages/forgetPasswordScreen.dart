@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
+  const ForgetPasswordScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +41,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 100),        
+                SizedBox(height: 100),
                 SizedBox(
                   width: 300,
                   child: TextField(
@@ -75,8 +77,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                 SizedBox(
                   width: 300,
                   child: ElevatedButton(
-                    onPressed: () {
-                    },
+                    onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF2BB462),
                       padding: EdgeInsets.symmetric(vertical: 16),

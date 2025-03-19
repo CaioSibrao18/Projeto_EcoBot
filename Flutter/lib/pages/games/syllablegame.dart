@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: SpellingGameSyllables(),
-  ));
+  runApp(MaterialApp(home: SpellingGameSyllables()));
 }
 
 class SpellingGameSyllables extends StatefulWidget {
+  const SpellingGameSyllables({super.key});
+
   @override
   _SpellingGameSyllablesState createState() => _SpellingGameSyllablesState();
 }
 
 class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   final List<Map<String, dynamic>> words = [
-    {'word': 're-ci-clar', 'syllables': ['re', 'ci', 'clar']},
-    {'word': 'e-ne-rgia', 'syllables': ['e', 'ne', 'rgia']},
-    {'word': 'sus-ten-tá-vel', 'syllables': ['sus', 'ten', 'tá', 'vel']},
+    {
+      'word': 're-ci-clar',
+      'syllables': ['re', 'ci', 'clar'],
+    },
+    {
+      'word': 'e-ne-rgia',
+      'syllables': ['e', 'ne', 'rgia'],
+    },
+    {
+      'word': 'sus-ten-tá-vel',
+      'syllables': ['sus', 'ten', 'tá', 'vel'],
+    },
   ];
 
   int currentWordIndex = 0;
@@ -77,23 +86,26 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
     double percentage = (correctAnswers / words.length) * 100;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Resultado'),
-        content: Text('Você acertou ${percentage.toStringAsFixed(1)}% das palavras!'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                currentWordIndex = 0;
-                correctAnswers = 0;
-                resetGame();
-              });
-              Navigator.pop(context);
-            },
-            child: Text('Tentar Novamente'),
-          )
-        ],
-      ),
+      builder:
+          (context) => AlertDialog(
+            title: Text('Resultado'),
+            content: Text(
+              'Você acertou ${percentage.toStringAsFixed(1)}% das palavras!',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    currentWordIndex = 0;
+                    correctAnswers = 0;
+                    resetGame();
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text('Tentar Novamente'),
+              ),
+            ],
+          ),
     );
   }
 
@@ -112,16 +124,21 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
             SizedBox(height: 20),
             Wrap(
               spacing: 10,
-              children: availableSyllables
-                  .map<Widget>((syllable) => Material(
-                        child: Draggable<String>(
-                          data: syllable,
-                          child: Chip(label: Text(syllable)),
-                          feedback: Material(child: Chip(label: Text(syllable))),
-                          childWhenDragging: SizedBox.shrink(),
+              children:
+                  availableSyllables
+                      .map<Widget>(
+                        (syllable) => Material(
+                          child: Draggable<String>(
+                            data: syllable,
+                            feedback: Material(
+                              child: Chip(label: Text(syllable)),
+                            ),
+                            childWhenDragging: SizedBox.shrink(),
+                            child: Chip(label: Text(syllable)),
+                          ),
                         ),
-                      ))
-                  .toList(),
+                      )
+                      .toList(),
             ),
             SizedBox(height: 20),
             DragTarget<String>(
@@ -142,18 +159,15 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
                   ),
                 );
               },
-              onAccept: (data) {
+              onAcceptWithDetails: (data) {
                 setState(() {
-                  selectedSyllables.add(data);
+                  selectedSyllables.add(data as String);
                   availableSyllables.remove(data);
                 });
               },
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: checkAnswer,
-              child: Text('Confirmar'),
-            ),
+            ElevatedButton(onPressed: checkAnswer, child: Text('Confirmar')),
           ],
         ),
       ),
