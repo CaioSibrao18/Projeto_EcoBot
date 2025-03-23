@@ -1,16 +1,16 @@
-from ..models.user_model import UserModel  # Importação relativa
+from ..models.user_model import UserModel  
 
 class AuthView:
     @staticmethod
-    def login(username, senha):
-        if UserModel.verify_password(username, senha):
+    def login(email, senha):
+        if UserModel.verify_password(email, senha):
             return {"status": "sucesso", "mensagem": "Login bem-sucedido!"}
         else:
             return {"status": "erro", "mensagem": "Usuário ou senha incorretos"}
 
     @staticmethod
-    def register(username, senha):
-        if UserModel.add_user(username, senha):
+    def register(nome, senha):
+        if UserModel.add_user(nome, senha):
             return {"status": "sucesso", "mensagem": "Usuário registrado com sucesso!"}
         else:
             return {"status": "erro", "mensagem": "Usuário já existe"}
