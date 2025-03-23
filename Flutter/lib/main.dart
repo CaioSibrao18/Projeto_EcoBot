@@ -11,6 +11,7 @@ import 'package:ecoquest/pages/games/syllablegame.dart';
 import 'package:ecoquest/pages/games/hardtrash.dart';
 import 'package:ecoquest/pages/games/quizeasy.dart';
 import 'package:ecoquest/pages/games/quizhard.dart';
+import 'package:ecoquest/pages/games/easytrash.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/app_telalogin',
       routes: {
-        '/': (context) => QuizScreenHard(), // Página inicial
+        '/': (context) => EasyTrashSortingGame(), // Página inicial
       },
     );
   }
