@@ -38,29 +38,12 @@ class LoginScreen extends StatelessWidget {
                       fillColor: Colors.white.withOpacity(0.8),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(
-                          color: Color(0xFF2BB462),
-                          width: 2.0,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(
-                          color: Color(0xFF2BB462),
-                          width: 2.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(
-                          color: Color(0xFF2BB462),
-                          width: 2.0,
-                        ),
+                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 20),
                 SizedBox(
                   width: 300,
                   child: TextField(
@@ -72,24 +55,7 @@ class LoginScreen extends StatelessWidget {
                       fillColor: Colors.white.withOpacity(0.8),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(
-                          color: Color(0xFF2BB462),
-                          width: 2.0,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(
-                          color: Color(0xFF2BB462),
-                          width: 2.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(
-                          color: Color(0xFF2BB462),
-                          width: 5.0,
-                        ),
+                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
                       ),
                     ),
                   ),
@@ -99,7 +65,7 @@ class LoginScreen extends StatelessWidget {
                   width: 300,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Lógica de login
+                      Navigator.pushReplacementNamed(context, '/menu_games');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF2BB462),
@@ -108,14 +74,16 @@ class LoginScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
-                    child: Text(
-                      'Login',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
+                    child: Text('Login', style: TextStyle(color: Colors.white, fontSize: 18)),
                   ),
                 ),
                 SizedBox(height: 20),
-                TextButton(onPressed: () {}, child: Text('Esqueci a senha')),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/forget_password');
+                  },
+                  child: Text('Esqueci a senha'),
+                ),
               ],
             ),
           ),

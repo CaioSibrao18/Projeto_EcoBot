@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class menuGames extends StatelessWidget {
+class MenuGames extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,82 +13,48 @@ class menuGames extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        child: Stack(
+        child: Column(
           children: [
-            // Logo
-            Positioned(
-              top: 85,
-              left: MediaQuery.of(context).size.width / 2 - 100, // Centralizado
-              child: Image.asset('assets/images/logoEcoQuest.png', width: 200),
-            ),
-
-            // Texto de instrução
-            Positioned(
-              top: 280,
-              left: MediaQuery.of(context).size.width / 2 - 147, // Centralizado
-              child: SizedBox(
-                width: 300,
-                child: Text(
-                  "Selecione o jogo que desejar jogar",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'OpenSansPro',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
+            SizedBox(height: 100),
+            Image.asset('assets/images/logoEcoQuest.png', width: 200),
+            SizedBox(height: 20),
+            Text(
+              "Selecione o jogo que deseja jogar",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'OpenSansPro',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
-
-            // Linha com os dois primeiros ícones
-            Positioned(
-              top: 355, // Ajuste a altura da linha
-              left:
-                  MediaQuery.of(context).size.width / 2 -
-                  105, // Centraliza a linha
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _botaoJogo(
-                    context,
-                    'assets/images/Trash.png',
-                    '/pixel_trash',
-                  ),
-                  SizedBox(width: 35), // Espaço entre os ícones
-                  _botaoJogo(
-                    context,
-                    'assets/images/Click.png',
-                    '/garrafa_pet',
-                  ),
-                ],
-              ),
-            ),
-
-            // Ícone Puzzle Palavra (abaixo da linha)
-            Positioned(
-              width: 110,
-              height: 110,
-              top: 453, // Ajuste a posição vertical
-              left: MediaQuery.of(context).size.width / 2 - 45, // Centralizado
-              child: _botaoJogo(
-                context,
-                'assets/images/Puzzle.png',
-                '/puzzle_palavra',
-              ),
-            ),
+            SizedBox(height: 20),
+            _botaoJogo(context, 'Spelling Game (Letras)', '/spelling_letters'),
+            _botaoJogo(context, 'Spelling Game (Sílabas)', '/spelling_syllables'),
+            _botaoJogo(context, 'Lixeira Correta', '/trash_sorting'),
+            _botaoJogo(context, 'Quiz Fácil', '/quiz_easy'),
+            _botaoJogo(context, 'Quiz Difícil', '/quiz_hard'),
+            _botaoJogo(context, 'Lixeira Fácil', '/easy_trash_sorting'),
           ],
         ),
       ),
     );
   }
 
-  Widget _botaoJogo(BuildContext context, String imagePath, String route) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, route);
-      },
-      child: Image.asset(imagePath, width: 90),
+  Widget _botaoJogo(BuildContext context, String nome, String route) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.pushNamed(context, route);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Color(0xFF2BB462),
+          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        ),
+        child: Text(nome, style: TextStyle(color: Colors.white, fontSize: 18)),
+      ),
     );
   }
 }
