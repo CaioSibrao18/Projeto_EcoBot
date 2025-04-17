@@ -1,3 +1,4 @@
+from venv import logger
 from flask import jsonify
 from models.user_model import UserModel
 import smtplib
@@ -5,32 +6,47 @@ from email.mime.text import MIMEText
 import os
 
 class AuthController:
+
     @staticmethod
     def login(email, senha):
-        if not email or not senha:
-            return jsonify({"status": "erro", "mensagem": "Email e senha são obrigatórios"}), 400
-
-        usuario = UserModel.find_by_email(email)
-        if not usuario:
-            return jsonify({"status": "erro", "mensagem": "Credenciais inválidas"}), 401
+        try:
+            logger.info(f"Tentativa de login: {email}")
             
-        if not UserModel.verify_password(usuario['senha'], senha):
-            return jsonify({"status": "erro", "mensagem": "Credenciais inválidas"}), 401
-            
-        return jsonify({
-            "status": "sucesso",
-            "mensagem": "Login bem-sucedido!",
-            "usuario": {
-                "id": usuario['id'],
-                "nome": usuario['nome'],
-                "email": usuario['email']
-            }
-        }), 200
+            if not email or not senha:
+                logger.warning("Email ou senha vazios")
+                return {"status": "erro", "mensagem": "Credenciais inválidas"}, 401
 
+            usuario = UserModel.find_by_email(email)
+            if not usuario:
+                logger.warning(f"Usuário não encontrado: {email}")
+                return {"status": "erro", "mensagem": "Credenciais inválidas"}, 401
+            
+            logger.debug(f"Usuário encontrado: {usuario['email']}")
+            logger.debug(f"Hash no banco: {usuario['senha']}")
+            
+            if not UserModel.verify_password(usuario['senha'], senha):
+                logger.warning("Senha não confere")
+                return {"status": "erro", "mensagem": "Credenciais inválidas"}, 401
+                
+            logger.info("Login bem-sucedido")
+            return {
+                "status": "sucesso",
+                "mensagem": "Login bem-sucedido!",
+                "usuario": {
+                    "id": usuario['id'],
+                    "nome": usuario['nome'],
+                    "email": usuario['email']
+                }
+            }, 200
+            
+        except Exception as e:
+            logger.error(f"Erro no login: {e}")
+            return {"status": "erro", "mensagem": "Erro interno"}, 500
+        
     @staticmethod
     def register(nome, data_nascimento, genero, email, senha):
         try:
-            # Validações básicas
+          
             if not all([nome, data_nascimento, genero, email, senha]):
                 return jsonify({
                     "status": "erro",
@@ -81,7 +97,7 @@ class AuthController:
 
     @staticmethod
     def _send_reset_email(email, token):
-        """Envia email com link de reset"""
+      
         try:
             reset_link = f"{os.getenv('FRONTEND_URL', 'http://localhost:3000')}/reset-password?token={token}"
             
@@ -109,7 +125,7 @@ class AuthController:
 
     @staticmethod
     def forget_password(email):
-        """Inicia o processo de reset de senha"""
+     
         try:
             if not email:
                 return jsonify({
@@ -117,7 +133,7 @@ class AuthController:
                     "mensagem": "Email é obrigatório"
                 }), 400
 
-            # Verifica se o email existe sem revelar ao usuário
+  
             if not UserModel.find_by_email(email):
                 return jsonify({
                     "status": "sucesso",
@@ -151,7 +167,7 @@ class AuthController:
 
     @staticmethod
     def validate_reset_token(token):
-        """Valida se um token de reset é válido"""
+
         try:
             if not token:
                 return jsonify({
@@ -178,7 +194,7 @@ class AuthController:
 
     @staticmethod
     def reset_password(token, nova_senha):
-        """Processa a redefinição de senha"""
+    
         try:
             if not token or not nova_senha:
                 return jsonify({

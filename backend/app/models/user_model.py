@@ -7,7 +7,7 @@ import pymysql
 class UserModel:
     @staticmethod
     def find_by_email(email):
-        """Retorna um dicionário com os dados do usuário ou None"""
+    
         connection = get_db_connection()
         if connection:
             try:
@@ -26,18 +26,18 @@ class UserModel:
 
     @staticmethod
     def create_user(nome, data_nascimento, genero, email, senha):
-        """Retorna o ID do novo usuário ou None em caso de erro"""
+  
         try:
             print(f"Tentando criar usuário: {email}")
             
-            # Conversão de data
+        
             try:
                 data_nascimento = datetime.strptime(data_nascimento, '%d/%m/%Y').strftime('%Y-%m-%d')
             except ValueError as e:
                 print(f"Erro na conversão de data: {e}")
                 return None
 
-            # Hash da senha
+     
             senha_hash = hashpw(senha.encode('utf-8'), gensalt()).decode('utf-8')
             
             connection = get_db_connection()
@@ -47,13 +47,13 @@ class UserModel:
 
             try:
                 with connection.cursor() as cursor:
-                    # Verifica se email existe primeiro
+                   
                     cursor.execute("SELECT id FROM usuarios WHERE email = %s", (email,))
                     if cursor.fetchone():
                         print("Email já existe no banco")
                         return None
                     
-                    # Cria o usuário
+                   
                     sql = """
                     INSERT INTO usuarios 
                     (nome, data_nascimento, genero, email, senha)
@@ -79,7 +79,7 @@ class UserModel:
 
     @staticmethod
     def initiate_password_reset(email):
-        """Retorna o token gerado ou None em caso de erro"""
+        
         token = secrets.token_urlsafe(32)
         expiracao = datetime.now() + timedelta(hours=1)
         
@@ -103,7 +103,7 @@ class UserModel:
 
     @staticmethod
     def validate_reset_token(token):
-        """Valida se o token existe e não expirou"""
+        
         connection = get_db_connection()
         if connection:
             try:
@@ -124,7 +124,7 @@ class UserModel:
 
     @staticmethod
     def reset_password(token, nova_senha):
-        """Retorna True se bem-sucedido, False caso contrário"""
+     
         senha_hash = hashpw(nova_senha.encode('utf-8'), gensalt()).decode('utf-8')
         connection = get_db_connection()
         if connection:
@@ -148,13 +148,18 @@ class UserModel:
         return False
 
     @staticmethod
+
     def verify_password(senha_hash, senha):
-        """Verifica se a senha corresponde ao hash"""
-        return checkpw(senha.encode('utf-8'), senha_hash.encode('utf-8'))
+      
+        try:
+            return checkpw(senha.encode('utf-8'), senha_hash.encode('utf-8'))
+        except Exception as e:
+            print(f"Erro na verificação de senha: {e}")
+            return False
     
     @staticmethod
     def email_exists(email):
-        """Verifica se o email já está cadastrado"""
+
         connection = get_db_connection()
         if connection:
             try:

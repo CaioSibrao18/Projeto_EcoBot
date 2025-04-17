@@ -1,3 +1,4 @@
+# backend/app/routes/result_routes.py
 from flask import request
 from controllers.result_controller import ResultController
 
@@ -10,11 +11,5 @@ def init_result_routes(app):
     @app.route("/getResults", methods=['GET'])
     def get_results():
         usuario_id = request.args.get('usuario_id', type=int)
-        jogo = request.args.get('jogo')
-        dificuldade = request.args.get('dificuldade')
-        
-        return ResultController.get_results(
-            usuario_id=usuario_id,
-            jogo=jogo,
-            dificuldade=dificuldade
-        )
+        # Remova jogo e dificuldade se não estiver usando
+        return ResultController.get_results(usuario_id=usuario_id)
