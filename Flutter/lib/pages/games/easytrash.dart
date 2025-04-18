@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class EasyTrashSortingGame extends StatefulWidget {
+  const EasyTrashSortingGame({super.key});
+
   @override
   _EasyTrashSortingGameState createState() => _EasyTrashSortingGameState();
 }
@@ -43,25 +45,28 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
   void showError(String correctBin) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Resposta Errada'),
-        content: Text('A lixeira correta era a ${correctBin.toUpperCase()}!'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                if (currentItemIndex < trashItems.length - 1) {
-                  currentItemIndex++;
-                } else {
-                  showResult();
-                }
-              });
-              Navigator.pop(context);
-            },
-            child: Text('Continuar'),
+      builder:
+          (context) => AlertDialog(
+            title: Text('Resposta Errada'),
+            content: Text(
+              'A lixeira correta era a ${correctBin.toUpperCase()}!',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    if (currentItemIndex < trashItems.length - 1) {
+                      currentItemIndex++;
+                    } else {
+                      showResult();
+                    }
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text('Continuar'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -69,22 +74,25 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
     double percentage = (correctAnswers / trashItems.length) * 100;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Fim do Jogo'),
-        content: Text('Você acertou ${percentage.toStringAsFixed(1)}% dos objetos!'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                currentItemIndex = 0;
-                correctAnswers = 0;
-              });
-              Navigator.pop(context);
-            },
-            child: Text('Jogar Novamente'),
+      builder:
+          (context) => AlertDialog(
+            title: Text('Fim do Jogo'),
+            content: Text(
+              'Você acertou ${percentage.toStringAsFixed(1)}% dos objetos!',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    currentItemIndex = 0;
+                    correctAnswers = 0;
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text('Jogar Novamente'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -105,31 +113,42 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
             SizedBox(height: 20),
             Draggable<String>(
               data: currentObject,
-              child: Chip(label: Text(currentObject, style: TextStyle(fontSize: 18))),
               feedback: Material(
-                child: Chip(label: Text(currentObject, style: TextStyle(fontSize: 18))),
+                child: Chip(
+                  label: Text(currentObject, style: TextStyle(fontSize: 18)),
+                ),
+              ),
+              child: Chip(
+                label: Text(currentObject, style: TextStyle(fontSize: 18)),
               ),
             ),
             SizedBox(height: 40),
             Wrap(
               spacing: 10,
-              children: binColors.keys.map((bin) {
-                return DragTarget<String>(
-                  builder: (context, candidateData, rejectedData) {
-                    return Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: binColors[bin],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(bin.toUpperCase(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              children:
+                  binColors.keys.map((bin) {
+                    return DragTarget<String>(
+                      builder: (context, candidateData, rejectedData) {
+                        return Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: binColors[bin],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            bin.toUpperCase(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      },
+                      onAcceptWithDetails: (data) => checkAnswer(bin),
                     );
-                  },
-                  onAccept: (data) => checkAnswer(bin),
-                );
-              }).toList(),
+                  }).toList(),
             ),
           ],
         ),

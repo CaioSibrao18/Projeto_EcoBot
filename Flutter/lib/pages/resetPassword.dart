@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
+  const ResetPasswordScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +22,11 @@ class ResetPasswordScreen extends StatelessWidget {
             children: [
               Text(
                 'Redefinir Senha',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               SizedBox(height: 20),
               SizedBox(
@@ -31,7 +37,9 @@ class ResetPasswordScreen extends StatelessWidget {
                     labelText: 'Nova senha',
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
                 ),
               ),
@@ -44,7 +52,9 @@ class ResetPasswordScreen extends StatelessWidget {
                     labelText: 'Confirmar nova senha',
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
                 ),
               ),
@@ -58,9 +68,14 @@ class ResetPasswordScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF2BB462),
                     padding: EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
-                  child: Text('Redefinir Senha', style: TextStyle(color: Colors.white, fontSize: 18)),
+                  child: Text(
+                    'Redefinir Senha',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -68,7 +83,10 @@ class ResetPasswordScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushNamed(context, '/');
                 },
-                child: Text('Voltar ao Login', style: TextStyle(color: Colors.white)),
+                child: Text(
+                  'Voltar ao Login',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),

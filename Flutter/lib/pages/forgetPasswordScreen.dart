@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
+  const ForgetPasswordScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +22,11 @@ class ForgetPasswordScreen extends StatelessWidget {
             children: [
               Text(
                 'Recuperação de Senha',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               SizedBox(height: 20),
               SizedBox(
@@ -30,7 +36,9 @@ class ForgetPasswordScreen extends StatelessWidget {
                     labelText: 'Digite seu e-mail',
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
                 ),
               ),
@@ -44,9 +52,14 @@ class ForgetPasswordScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF2BB462),
                     padding: EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
-                  child: Text('Enviar', style: TextStyle(color: Colors.white, fontSize: 18)),
+                  child: Text(
+                    'Enviar',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -54,7 +67,10 @@ class ForgetPasswordScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('Voltar ao Login', style: TextStyle(color: Colors.white)),
+                child: Text(
+                  'Voltar ao Login',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),

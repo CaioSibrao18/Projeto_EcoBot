@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'loginScreen.dart'; // Importa a tela de login para voltar após cadastro
+import 'package:intl/intl.dart';
+import 'loginScreen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -10,9 +11,13 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _birthController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  String? _selectedGender;
 
   @override
   Widget build(BuildContext context) {
@@ -37,29 +42,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 20),
               _inputField(_nameController, 'Nome', Icons.person),
+              const SizedBox(height: 20),
+              _datePickerField(),
+              const SizedBox(height: 15),
+              _dropdownGenderField(),
               const SizedBox(height: 15),
               _inputField(_emailController, 'Email', Icons.email),
               const SizedBox(height: 15),
-              _inputField(_passwordController, 'Senha', Icons.lock, obscure: true),
+              _inputField(
+                _passwordController,
+                'Senha',
+                Icons.lock,
+                obscure: true,
+              ),
               const SizedBox(height: 15),
-              _inputField(_confirmPasswordController, 'Confirmar Senha', Icons.lock, obscure: true),
+              _inputField(
+                _confirmPasswordController,
+                'Confirmar Senha',
+                Icons.lock,
+                obscure: true,
+              ),
               const SizedBox(height: 25),
               SizedBox(
                 width: 300,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_passwordController.text == _confirmPasswordController.text) {
-                      // Aqui vai a lógica de cadastro (backend ou local)
+                    if (_passwordController.text ==
+                        _confirmPasswordController.text) {
+                      // Aqui vai a lógica de cadastro
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Cadastro realizado com sucesso!')),
+                        const SnackBar(
+                          content: Text('Cadastro realizado com sucesso!'),
+                        ),
                       );
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('As senhas não coincidem.')),
+                        const SnackBar(
+                          content: Text('As senhas não coincidem.'),
+                        ),
                       );
                     }
                   },
@@ -70,7 +96,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
-                  child: const Text('Cadastrar', style: TextStyle(color: Colors.white, fontSize: 18)),
+                  child: const Text(
+                    'Cadastrar',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -78,7 +107,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
                   );
                 },
                 child: const Text('Já tem uma conta? Faça login'),
@@ -90,7 +121,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _inputField(TextEditingController controller, String label, IconData icon, {bool obscure = false}) {
+  Widget _inputField(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    bool obscure = false,
+  }) {
     return SizedBox(
       width: 300,
       child: TextField(
@@ -106,6 +142,74 @@ class _RegisterScreenState extends State<RegisterScreen> {
             borderSide: const BorderSide(color: Color(0xFF2BB462), width: 2.0),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _dropdownGenderField() {
+    return SizedBox(
+      width: 300,
+      child: DropdownButtonFormField<String>(
+        value: _selectedGender,
+        items: const [
+          DropdownMenuItem(value: 'Feminino', child: Text('Feminino')),
+          DropdownMenuItem(value: 'Masculino', child: Text('Masculino')),
+        ],
+        onChanged: (value) {
+          setState(() {
+            _selectedGender = value;
+          });
+        },
+        decoration: InputDecoration(
+          labelText: 'Gênero',
+          prefixIcon: const Icon(Icons.person, color: Color(0xFF2BB462)),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.8),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: const BorderSide(color: Color(0xFF2BB462), width: 2.0),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _datePickerField() {
+    return SizedBox(
+      width: 300,
+      child: TextField(
+        controller: _birthController,
+        readOnly: true,
+        keyboardType: TextInputType.none,
+        decoration: InputDecoration(
+          labelText: 'Data de Nascimento',
+          prefixIcon: const Icon(
+            Icons.calendar_today,
+            color: Color(0xFF2BB462),
+          ),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.8),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: const BorderSide(color: Color(0xFF2BB462), width: 2.0),
+          ),
+        ),
+        onTap: () async {
+          FocusScope.of(context).requestFocus(FocusNode()); // Esconde o teclado
+          DateTime? pickedDate = await showDatePicker(
+            context: context,
+            initialDate: DateTime(2005, 1),
+            firstDate: DateTime(1900),
+            lastDate: DateTime.now(),
+            locale: const Locale("pt", "BR"),
+          );
+          if (pickedDate != null) {
+            String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+            setState(() {
+              _birthController.text = formattedDate;
+            });
+          }
+        },
       ),
     );
   }
