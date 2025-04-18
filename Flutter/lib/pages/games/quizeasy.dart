@@ -134,52 +134,90 @@ class _QuizScreenState extends State<QuizScreenEasy> {
   Widget build(BuildContext context) {
     var questionData = questions[currentQuestionIndex];
     return Scaffold(
-      appBar: AppBar(title: const Text('QUIZ GAME')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              questionData['question'],
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            ...List.generate(questionData['options'].length, (index) {
-              Color buttonColor = const Color(0xFF4CAF50);
-              if (selectedOption != null) {
-                if (index == questionData['correctIndex']) {
-                  buttonColor = const Color.fromARGB(255, 17, 116, 20);
-                } else if (index == selectedOption) {
-                  buttonColor = Colors.red;
-                }
-              }
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(buttonColor),
-                      padding: WidgetStateProperty.all(
-                        const EdgeInsets.symmetric(vertical: 1),
-                      ),
-                    ),
-                    onPressed:
-                        selectedOption == null
-                            ? () => checkAnswer(index)
-                            : null,
-                    child: Text(
-                      questionData['options'][index],
-                      style: const TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ],
+      appBar: AppBar(
+        backgroundColor: Colors.green[700],
+        title: const Text(
+          'Game Quiz 🌱',
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
+      ),
+      body: Stack(
+        children: [
+          SizedBox.expand(
+            child: Image.asset(
+              'assets/images/FundoVerde.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.85),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    questionData['question'],
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  ...List.generate(questionData['options'].length, (index) {
+                    Color buttonColor = const Color(0xFF4CAF50);
+                    if (selectedOption != null) {
+                      if (index == questionData['correctIndex']) {
+                        buttonColor = const Color.fromARGB(255, 17, 116, 20);
+                      } else if (index == selectedOption) {
+                        buttonColor = Colors.red;
+                      }
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                              buttonColor,
+                            ),
+                            padding: WidgetStateProperty.all(
+                              const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                          ),
+                          onPressed:
+                              selectedOption == null
+                                  ? () => checkAnswer(index)
+                                  : null,
+                          child: Text(
+                            questionData['options'][index],
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// 👇 ADICIONE ESTE IMPORT
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:ecoquest/pages/loginScreen.dart';
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: const [Locale('pt', 'BR')],
 
-      initialRoute: '/app_telalogin', // Tela inicial
+      initialRoute: '/app_telalogin',
       routes: {
         '/': (context) => const LoginScreen(),
         '/menu_games': (context) => MenuGames(),
