@@ -1,8 +1,10 @@
-import 'package:ecoquest/pages/loginScreen.dart';
-import 'package:ecoquest/pages/resetPassword.dart';
 import 'package:flutter/material.dart';
 
+import 'package:ecoquest/pages/loginScreen.dart';
+import 'package:ecoquest/pages/resetPassword.dart';
 import 'package:ecoquest/pages/forgetPasswordScreen.dart';
+import 'package:ecoquest/pages/registerScreen.dart'; // <-- NOVO IMPORT
+
 import 'pages/app_telalogin.dart';
 import 'pages/menuGames.dart';
 
@@ -24,9 +26,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/app_telalogin', // Definindo a tela inicial
+      initialRoute: '/app_telalogin', // Tela inicial
       routes: {
-        '/': (context) => LoginScreen(),
+        '/': (context) => const LoginScreen(),
         '/menu_games': (context) => MenuGames(),
         '/forget_password': (context) => ForgetPasswordScreen(),
         '/reset_password': (context) => ResetPasswordScreen(),
@@ -36,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/quiz_easy': (context) => QuizScreenEasy(),
         '/quiz_hard': (context) => QuizScreenHard(),
         '/easy_trash_sorting': (context) => EasyTrashSortingGame(),
+        '/register': (context) => const RegisterScreen(), // <-- NOVA ROTA
       },
     );
   }

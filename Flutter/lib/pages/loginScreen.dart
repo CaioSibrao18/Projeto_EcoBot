@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'registerScreen.dart'; // Importa a tela de cadastro
+import 'forgetPasswordScreen.dart'; // Se você já tiver essa tela
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -19,15 +21,13 @@ class LoginScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
                   'assets/images/logoEcoQuest.png',
                   width: 300,
                   height: 300,
-                  fit: BoxFit.contain,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: 300,
                   child: TextField(
@@ -37,13 +37,13 @@ class LoginScreen extends StatelessWidget {
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.8),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: 300,
                   child: TextField(
@@ -54,13 +54,13 @@ class LoginScreen extends StatelessWidget {
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.8),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: 300,
                   child: ElevatedButton(
@@ -68,21 +68,36 @@ class LoginScreen extends StatelessWidget {
                       Navigator.pushReplacementNamed(context, '/menu_games');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF2BB462),
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: const Color(0xFF2BB462),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    child: Text('Login', style: TextStyle(color: Colors.white, fontSize: 18)),
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/forget_password');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ForgetPasswordScreen()),
+                    );
                   },
-                  child: Text('Esqueci a senha'),
+                  child: const Text('Esqueci a senha'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RegisterScreen()),
+                    );
+                  },
+                  child: const Text('Criar conta'),
                 ),
               ],
             ),
