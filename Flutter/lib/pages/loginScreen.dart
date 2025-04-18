@@ -10,7 +10,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/telaFundo.png'),
             fit: BoxFit.cover,
@@ -28,55 +28,91 @@ class LoginScreen extends StatelessWidget {
                   height: 300,
                 ),
                 const SizedBox(height: 20),
-                SizedBox(
+
+                // Campo de Email com novo estilo
+                Container(
                   width: 300,
-                  child: TextField(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 4),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  child: const TextField(
                     decoration: InputDecoration(
-                      labelText: 'Email',
+                      hintText: 'Email',
                       prefixIcon: Icon(Icons.email, color: Color(0xFF2BB462)),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.8),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2),
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 16,
                       ),
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 20),
-                SizedBox(
+
+                // Campo de Senha com novo estilo
+                Container(
                   width: 300,
-                  child: TextField(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 4),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  child: const TextField(
                     obscureText: true,
                     decoration: InputDecoration(
-                      labelText: 'Senha',
+                      hintText: 'Senha',
                       prefixIcon: Icon(Icons.lock, color: Color(0xFF2BB462)),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.8),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2),
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 16,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 40),
                 SizedBox(
-                  width: 300,
+                  height: 40,
+                  width: 170,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pushReplacementNamed(context, '/menu_games');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2BB462),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: const Text(
                       'Login',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -85,7 +121,9 @@ class LoginScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ForgetPasswordScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const ForgetPasswordScreen(),
+                      ),
                     );
                   },
                   child: const Text('Esqueci a senha'),
@@ -94,7 +132,9 @@ class LoginScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => RegisterScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const RegisterScreen(),
+                      ),
                     );
                   },
                   child: const Text('Criar conta'),
