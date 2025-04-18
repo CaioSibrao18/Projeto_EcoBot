@@ -69,7 +69,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onPressed: () {
                     if (_passwordController.text ==
                         _confirmPasswordController.text) {
-                      // Aqui vai a lógica de cadastro
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Cadastro realizado com sucesso!'),
@@ -195,7 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
         onTap: () async {
-          FocusScope.of(context).requestFocus(FocusNode()); // Esconde o teclado
+          FocusScope.of(context).requestFocus(FocusNode());
           DateTime? pickedDate = await showDatePicker(
             context: context,
             initialDate: DateTime(2005, 1),
