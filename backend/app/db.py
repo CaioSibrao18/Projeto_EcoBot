@@ -18,3 +18,5 @@ def get_db_connection():
     except pymysql.Error as e:
         print(f"Erro ao conectar ao banco de dados: {e}")
         return None
+
+        
