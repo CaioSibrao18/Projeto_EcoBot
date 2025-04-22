@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'registerScreen.dart'; // Importa a tela de cadastro
+import 'forgetPasswordScreen.dart'; // Se você já tiver essa tela
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -8,7 +10,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/telaFundo.png'),
             fit: BoxFit.cover,
@@ -19,70 +21,123 @@ class LoginScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
                   'assets/images/logoEcoQuest.png',
                   width: 300,
                   height: 300,
-                  fit: BoxFit.contain,
                 ),
-                SizedBox(height: 20),
-                SizedBox(
+                const SizedBox(height: 20),
+
+                // Campo de Email com novo estilo
+                Container(
                   width: 300,
-                  child: TextField(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 4),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  child: const TextField(
                     decoration: InputDecoration(
-                      labelText: 'Email',
+                      hintText: 'Email',
                       prefixIcon: Icon(Icons.email, color: Color(0xFF2BB462)),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.8),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 16,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                SizedBox(
+
+                const SizedBox(height: 20),
+
+                // Campo de Senha com novo estilo
+                Container(
                   width: 300,
-                  child: TextField(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 4),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  child: const TextField(
                     obscureText: true,
                     decoration: InputDecoration(
-                      labelText: 'Senha',
+                      hintText: 'Senha',
                       prefixIcon: Icon(Icons.lock, color: Color(0xFF2BB462)),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.8),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Color(0xFF2BB462), width: 2.0),
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 16,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+
+                const SizedBox(height: 40),
                 SizedBox(
-                  width: 300,
+                  height: 40,
+                  width: 170,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pushReplacementNamed(context, '/menu_games');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF2BB462),
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: const Color(0xFF2BB462),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text('Login', style: TextStyle(color: Colors.white, fontSize: 18)),
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/forget_password');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgetPasswordScreen(),
+                      ),
+                    );
                   },
-                  child: Text('Esqueci a senha'),
+                  child: const Text('Esqueci a senha'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RegisterScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text('Criar conta'),
                 ),
               ],
             ),

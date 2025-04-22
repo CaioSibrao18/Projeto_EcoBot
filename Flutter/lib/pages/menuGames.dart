@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MenuGames extends StatelessWidget {
+  const MenuGames({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +19,7 @@ class MenuGames extends StatelessWidget {
           children: [
             SizedBox(height: 100),
             Image.asset('assets/images/logoEcoQuest.png', width: 200),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             Text(
               "Selecione o jogo que deseja jogar",
               textAlign: TextAlign.center,
@@ -28,9 +30,13 @@ class MenuGames extends StatelessWidget {
                 color: Colors.black,
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 90),
             _botaoJogo(context, 'Spelling Game (Letras)', '/spelling_letters'),
-            _botaoJogo(context, 'Spelling Game (Sílabas)', '/spelling_syllables'),
+            _botaoJogo(
+              context,
+              'Spelling Game (Sílabas)',
+              '/spelling_syllables',
+            ),
             _botaoJogo(context, 'Lixeira Correta', '/trash_sorting'),
             _botaoJogo(context, 'Quiz Fácil', '/quiz_easy'),
             _botaoJogo(context, 'Quiz Difícil', '/quiz_hard'),
@@ -51,7 +57,9 @@ class MenuGames extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Color(0xFF2BB462),
           padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
         child: Text(nome, style: TextStyle(color: Colors.white, fontSize: 18)),
       ),
