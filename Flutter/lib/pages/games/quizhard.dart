@@ -1,6 +1,8 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class QuizScreenHard extends StatefulWidget {
   const QuizScreenHard({super.key});
@@ -63,7 +65,7 @@ class _QuizScreenState extends State<QuizScreenHard> {
         "Oficina de Diretrizes Sustentáveis",
         "Operação de Defesa Socioambiental",
       ],
-      "correctIndex": 0,
+      'correctIndex': 0,
     },
     {
       "question": "O que é a pegada de carbono?",
@@ -73,7 +75,7 @@ class _QuizScreenState extends State<QuizScreenHard> {
         "Quantidade de árvores necessárias para compensar poluição",
         "Índice de poluição das indústrias",
       ],
-      "correctIndex": 1,
+      'correctIndex': 1,
     },
   ];
 
@@ -103,37 +105,58 @@ class _QuizScreenState extends State<QuizScreenHard> {
   void _showResult() {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Resultado'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('$correctAnswers/${questions.length} perguntas corretas'),
-                const SizedBox(height: 10),
-                Text(
-                  correctAnswers > questions.length / 3
-                      ? 'Parabéns, você domina o assunto!'
-                      : 'Você ainda pode melhorar, continue estudando!',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
+      builder: (context) => AlertDialog(
+        title: const Text('Resultado'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('$correctAnswers/${questions.length} perguntas corretas'),
+            const SizedBox(height: 10),
+            Text(
+              correctAnswers > questions.length / 3
+                  ? 'Parabéns, você domina o assunto!'
+                  : 'Você ainda pode melhorar, continue estudando!',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    currentQuestionIndex = 0;
-                    correctAnswers = 0;
-                  });
-                },
-                child: const Text('Reiniciar'),
-              ),
-            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              setState(() {
+                currentQuestionIndex = 0;
+                correctAnswers = 0;
+              });
+              _sendResultToBackend(correctAnswers);
+            },
+            child: const Text('Reiniciar'),
           ),
+        ],
+      ),
     );
+  }
+
+  Future<void> _sendResultToBackend(int correctAnswers) async {
+    final url = Uri.parse('http://localhost:5000/saveResult');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'correctAnswers': correctAnswers,
+        'totalQuestions': questions.length,
+        // Adicionar mais dados que forem necessários salvar, como ID do usuário ou nome do jogo
+      }),
+    );
+
+    if (response.statusCode == 200) {
+
+      print('Resultado enviado com sucesso!');
+    } else {
+
+      print('Falha ao enviar resultado: ${response.statusCode}');
+    }
   }
 
   @override
@@ -192,13 +215,13 @@ class _QuizScreenState extends State<QuizScreenHard> {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
+                            backgroundColor: MaterialStateProperty.all(
                               buttonColor,
                             ),
-                            padding: WidgetStateProperty.all(
+                            padding: MaterialStateProperty.all(
                               const EdgeInsets.symmetric(vertical: 12),
                             ),
-                            shape: WidgetStateProperty.all(
+                            shape: MaterialStateProperty.all(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
