@@ -11,3 +11,51 @@ tests/: Contém testes automatizados para garantir o funcionamento correto da ap
 run.py: Arquivo principal para rodar a aplicação.
 
 requirements.txt: Lista de dependências do projeto.
+
+
+
+Registrar usuário
+
+POST {{base_url}}/auth/register 
+
+
+Login
+
+POST {{base_url}}/auth/login
+
+
+Esqueci a senha
+
+POST {{base_url}}/auth/forget-password
+
+
+
+Validar token de redefinição
+
+POST {{base_url}}/auth/validate-reset-token
+
+
+
+Redefinir senha
+
+POST {{base_url}}/auth/reset-password
+
+
+
+Salvar resultado
+
+POST {{base_url}}/api/saveResult
+
+
+
+Obter resultados
+
+GET {{base_url}}/api/getResults?user_id=1
+
+
+
+get users
+
+Buscar todos	GET /users	Retorna lista completa
+Buscar com paginação	GET /users?page=2&per_page=5	Retorna 5 usuários (página 2)
+Buscar por ID	GET /users?id=123	Retorna apenas o usuário com ID 123
