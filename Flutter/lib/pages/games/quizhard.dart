@@ -82,6 +82,7 @@ class _QuizScreenState extends State<QuizScreenHard> {
   int currentQuestionIndex = 0;
   int? selectedOption;
   int correctAnswers = 0;
+  int startTime = DateTime.now().millisecondsSinceEpoch;
 
   void checkAnswer(int index) {
     setState(() {
@@ -103,6 +104,9 @@ class _QuizScreenState extends State<QuizScreenHard> {
   }
 
   void _showResult() {
+    int endTime = DateTime.now().millisecondsSinceEpoch;
+    int tempoSegundos = ((endTime - startTime) / 1000).toInt();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -128,8 +132,9 @@ class _QuizScreenState extends State<QuizScreenHard> {
               setState(() {
                 currentQuestionIndex = 0;
                 correctAnswers = 0;
+                startTime = DateTime.now().millisecondsSinceEpoch; // Reset timer
               });
-              _sendResultToBackend(correctAnswers);
+              _sendResultToBackend(correctAnswers, tempoSegundos);
             },
             child: const Text('Reiniciar'),
           ),
@@ -138,24 +143,23 @@ class _QuizScreenState extends State<QuizScreenHard> {
     );
   }
 
-  Future<void> _sendResultToBackend(int correctAnswers) async {
-    final url = Uri.parse('http://localhost:5000/saveResult');
+  // Enviar resultado para o backend
+  Future<void> _sendResultToBackend(int acertos, int tempoSegundos) async {
+    final url = Uri.parse('http://localhost:5000/api/saveResult');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'correctAnswers': correctAnswers,
-        'totalQuestions': questions.length,
-        // Adicionar mais dados que forem necessários salvar, como ID do usuário ou nome do jogo
+        'usuario_id': 4,
+        'acertos': acertos,
+        'tempo_segundos': tempoSegundos,
       }),
     );
 
-    if (response.statusCode == 200) {
-
+    if (response.statusCode == 200 || response.statusCode == 201) {
       print('Resultado enviado com sucesso!');
     } else {
-
-      print('Falha ao enviar resultado: ${response.statusCode}');
+      print('Erro ao enviar o resultado: ${response.body}');
     }
   }
 

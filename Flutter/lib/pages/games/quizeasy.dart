@@ -77,6 +77,14 @@ class _QuizScreenState extends State<QuizScreenEasy> {
   int? selectedOption;
   int correctAnswers = 0;
 
+  final Stopwatch _stopwatch = Stopwatch();
+
+  @override
+  void initState() {
+    super.initState();
+    _stopwatch.start();
+  }
+
   void checkAnswer(int index) {
     setState(() {
       selectedOption = index;
@@ -97,8 +105,10 @@ class _QuizScreenState extends State<QuizScreenEasy> {
   }
 
   void _showResult() {
-    // Envia a pontuação para o backend após o término do quiz
-    _enviarParaBackend(correctAnswers);
+    _stopwatch.stop();
+    int tempoSegundos = _stopwatch.elapsed.inSeconds;
+
+    _enviarParaBackend(correctAnswers, tempoSegundos);
 
     showDialog(
       context: context,
@@ -125,6 +135,8 @@ class _QuizScreenState extends State<QuizScreenEasy> {
               setState(() {
                 currentQuestionIndex = 0;
                 correctAnswers = 0;
+                _stopwatch.reset();
+                _stopwatch.start();
               });
             },
             child: const Text('Reiniciar'),
@@ -134,19 +146,20 @@ class _QuizScreenState extends State<QuizScreenEasy> {
     );
   }
 
-  // Função para enviar o resultado para o backend
-  Future<void> _enviarParaBackend(int score) async {
-    final url = Uri.parse('http://localhost:5000/saveResult');
+  // Enviar resultado para o backend
+  Future<void> _enviarParaBackend(int acertos, int tempoSegundos) async {
+    final url = Uri.parse('http://localhost:5000/api/saveResult');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'usuario_id': 123,
-        'pontuacao': score,
+        'usuario_id': 4,
+        'acertos': acertos,
+        'tempo_segundos': tempoSegundos,
       }),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       print('Resultado enviado com sucesso!');
     } else {
       print('Erro ao enviar o resultado: ${response.body}');

@@ -101,7 +101,7 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
   // Envio para o backend
   Future<void> _enviarParaBackend() async {
     final tempoSegundos = 60; // Substituir por outro calculo
-    final url = Uri.parse('http://localhost:5000/saveResult');
+    final url = Uri.parse('http://localhost:5000/api/saveResult');
 
     try {
       final response = await http.post(
