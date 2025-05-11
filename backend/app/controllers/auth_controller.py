@@ -8,6 +8,8 @@ import random
 import string
 from datetime import datetime, timedelta
 import secrets
+import numpy as np 
+from db import get_users
 
 
 class AuthController:
@@ -247,3 +249,27 @@ class AuthController:
             return {"success": False, "error": "Erro ao redefinir a senha."}
         
         return {"success": True, "message": "Senha redefinida com sucesso."}
+    
+
+    @staticmethod
+    def get_users(user_id=None, page=None, per_page=None):
+        try:
+            users = get_users(user_id, page, per_page)
+            
+            if user_id:  
+                if not users:
+                    return {"error": "Usuário não encontrado"}, 404
+                return {"success": True, "user": users}, 200
+            
+            else:
+                if not users:
+                    return {"message": "Nenhum usuário encontrado"}, 404
+                return {
+                    "success": True,
+                    "count": len(users),
+                    "users": users
+                }, 200
+                
+        except Exception as e:
+            error_msg = "Erro ao buscar usuário" if user_id else "Erro ao listar usuários"
+            return {"error": error_msg, "details": str(e)}, 500
