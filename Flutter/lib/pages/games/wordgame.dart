@@ -15,18 +15,16 @@ class SpellingGameLetters extends StatefulWidget {
 
 class _SpellingGameLettersState extends State<SpellingGameLetters> {
   final List<Map<String, dynamic>> words = [
-    {
-      'word': 'reciclar',
-      'letters': ['r', 'e', 'c', 'i', 'c', 'l', 'a', 'r'],
-    },
-    {
-      'word': 'energia',
-      'letters': ['e', 'n', 'e', 'r', 'g', 'i', 'a'],
-    },
-    {
-      'word': 'planeta',
-      'letters': ['p', 'l', 'a', 'n', 'e', 't', 'a'],
-    },
+    {'word': 'ecossistema', 'letters': ['e', 'c', 'o', 's', 's', 'i', 's', 't', 'e', 'm', 'a']},
+    {'word': 'fotossintese', 'letters': ['f', 'o', 't', 'o', 's', 's', 'i', 'n', 't', 'e', 's', 'e']},
+    {'word': 'sustentavel', 'letters': ['s', 'u', 's', 't', 'e', 'n', 't', 'a', 'v', 'e', 'l']},
+    {'word': 'biodiverso', 'letters': ['b', 'i', 'o', 'd', 'i', 'v', 'e', 'r', 's', 'o']},
+    {'word': 'renovavel', 'letters': ['r', 'e', 'n', 'o', 'v', 'a', 'v', 'e', 'l']},
+    {'word': 'carbono', 'letters': ['c', 'a', 'r', 'b', 'o', 'n', 'o']},
+    {'word': 'geotermica', 'letters': ['g', 'e', 'o', 't', 'e', 'r', 'm', 'i', 'c', 'a']},
+    {'word': 'compostagem', 'letters': ['c', 'o', 'm', 'p', 'o', 's', 't', 'a', 'g', 'e', 'm']},
+    {'word': 'ambiental', 'letters': ['a', 'm', 'b', 'i', 'e', 'n', 't', 'a', 'l']},
+    {'word': 'fotovoltaico', 'letters': ['f', 'o', 't', 'o', 'v', 'o', 'l', 't', 'a', 'i', 'c', 'o']},
   ];
 
   int currentWordIndex = 0;
@@ -52,7 +50,9 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
 
   void checkAnswer() {
     String formedWord = selectedLetters.join('');
-    if (formedWord == words[currentWordIndex]['word']) {
+    String correctWord = words[currentWordIndex]['word'];
+
+    if (formedWord == correctWord) {
       setState(() {
         boxColor = Colors.green;
         correctAnswers++;
@@ -72,14 +72,14 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
         boxColor = Colors.red;
       });
       Future.delayed(Duration(seconds: 1), () {
-        setState(() {
-          currentWordIndex++;
-          if (currentWordIndex < words.length) {
-            resetGame();
-          } else {
-            showResult();
-          }
-        });
+        if (currentWordIndex < words.length - 1) {
+          setState(() {
+            currentWordIndex++;
+          });
+          resetGame();
+        } else {
+          showResult();
+        }
       });
     }
   }
@@ -126,7 +126,6 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
     if (response.statusCode == 200) {
       print('Resultado enviado com sucesso!');
     } else {
-
       print('Falha ao enviar resultado: ${response.statusCode}');
     }
   }
@@ -136,30 +135,22 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
     return Scaffold(
       appBar: AppBar(title: Text('Soletrar por Letras')),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Monte a palavra:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Wrap(
-              spacing: 10,
-              children: availableLetters
-                  .map<Widget>(
-                    (letter) => Material(
-                      child: Draggable<String>(
-                        data: letter,
-                        feedback: Material(
-                          child: Chip(
-                            label: Text(
-                              letter,
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ),
-                        ),
-                        childWhenDragging: SizedBox.shrink(),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Monte a palavra:',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
+              Wrap(
+                spacing: 10,
+                children: availableLetters.map<Widget>((letter) {
+                  return Material(
+                    child: Draggable<String>(
+                      data: letter,
+                      feedback: Material(
                         child: Chip(
                           label: Text(
                             letter,
@@ -167,39 +158,59 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
                           ),
                         ),
                       ),
+                      childWhenDragging: SizedBox.shrink(),
+                      child: Chip(
+                        label: Text(
+                          letter,
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
                     ),
-                  )
-                  .toList(),
-            ),
-            SizedBox(height: 20),
-            DragTarget<String>(
-              builder: (context, candidateData, rejectedData) {
-                return Container(
-                  padding: EdgeInsets.all(10),
-                  width: 250,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: boxColor,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.black),
+                  );
+                }).toList(),
+              ),
+              SizedBox(height: 20),
+              DragTarget<String>(
+                builder: (context, candidateData, rejectedData) {
+                  return Container(
+                    padding: EdgeInsets.all(10),
+                    width: 250,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: boxColor,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      selectedLetters.join(''),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  );
+                },
+                onAcceptWithDetails: (data) {
+                  setState(() {
+                    selectedLetters.add(data.data);
+                    availableLetters.remove(data.data);
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(onPressed: checkAnswer, child: Text('Confirmar')),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      resetGame();
+                    },
+                    child: Text('Limpar'),
                   ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    selectedLetters.join(''),
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                );
-              },
-              onAcceptWithDetails: (data) {
-                setState(() {
-                  selectedLetters.add(data as String);
-                  availableLetters.remove(data);
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(onPressed: checkAnswer, child: Text('Confirmar')),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
