@@ -73,7 +73,7 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
 
   void showResult() {
     double percentage = (correctAnswers / trashItems.length) * 100;
-    _enviarParaBackend(percentage); // Envia a porcentagem para o backend
+    _enviarParaBackend(); // Envia os dados para o backend
 
     showDialog(
       context: context,
@@ -98,22 +98,29 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
     );
   }
 
-  // Função para enviar a porcentagem para o backend
-  Future<void> _enviarParaBackend(double porcentagem) async {
+  // Envio para o backend
+  Future<void> _enviarParaBackend() async {
+    final tempoSegundos = 60; // Substituir por outro calculo
     final url = Uri.parse('http://localhost:5000/saveResult');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'usuario_id': 123,
-        'porcentagem_acerto': porcentagem,
-      }),
-    );
 
-    if (response.statusCode == 200) {
-      print('Dados enviados com sucesso!');
-    } else {
-      print('Erro ao enviar: ${response.body}');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'usuario_id': 4,
+          'acertos': correctAnswers,
+          'tempo_segundos': tempoSegundos,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        print('Resultado enviado com sucesso');
+      } else {
+        print('Erro ao enviar: ${response.body}');
+      }
+    } catch (e) {
+      print('Erro de conexão: $e');
     }
   }
 
