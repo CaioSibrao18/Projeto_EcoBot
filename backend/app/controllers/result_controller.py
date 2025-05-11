@@ -35,23 +35,30 @@ class ResultController:
 
     @staticmethod
     def save_result(data):
-   
         required_fields = ['usuario_id', 'acertos', 'tempo_segundos']
+        
+        # Validação dos campos (já está correta)
         if not all(field in data for field in required_fields):
             return jsonify({'error': 'Campos obrigatórios: usuario_id, acertos, tempo_segundos'}), 400
 
         try:
+            # Modificação crucial: garantir que o Model retorne claramente True/False
             success = ResultModel.save_result(
                 usuario_id=int(data['usuario_id']),
                 acertos=float(data['acertos']),
                 tempo_segundos=int(data['tempo_segundos'])
             )
-            return jsonify({'message': 'Resultado salvo com sucesso'}), 201 if success else \
-                   jsonify({'error': 'Erro ao salvar resultado'}), 500
-        except ValueError:
-            return jsonify({'error': 'Dados inválidos'}), 400
+            
+            # Retorno padronizado corrigido
+            if success:
+                return jsonify({'message': 'Resultado salvo com sucesso'}), 201
+            else:
+                return jsonify({'error': 'Falha ao salvar no banco de dados'}), 500
+                
+        except ValueError as e:
+            return jsonify({'error': f'Dados inválidos: {str(e)}'}), 400
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            return jsonify({'error': f'Erro interno: {str(e)}'}), 500
 
     @staticmethod
     def get_results(usuario_id=None, limit=None):

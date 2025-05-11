@@ -5,31 +5,26 @@ import pymysql
 class ResultModel:
     @staticmethod
     def save_result(usuario_id, acertos, tempo_segundos):
-  
-        connection = get_db_connection()
-        if connection:
-            try:
-                with connection.cursor() as cursor:
-                    sql = """
-                    INSERT INTO desempenho 
-                    (usuario_id, acertos, tempo_segundos, jogado_em)
-                    VALUES (%s, %s, %s, %s)
-                    """
-                    cursor.execute(sql, (
-                        usuario_id, 
-                        acertos, 
-                        tempo_segundos,
-                        datetime.now()
-                    ))
-                    
-                    connection.commit()
-                    return True
-            except pymysql.Error as e:
-                print(f"Erro ao salvar resultado: {e}")
-                return False
-            finally:
+        try:
+            connection = get_db_connection()
+            with connection.cursor() as cursor:
+                sql = """INSERT INTO desempenho 
+                        (usuario_id, acertos, tempo_segundos, jogado_em)
+                        VALUES (%s, %s, %s, %s)"""
+                cursor.execute(sql, (
+                    usuario_id, 
+                    acertos, 
+                    tempo_segundos,
+                    datetime.now()
+                ))
+                connection.commit()
+                return True  # ← Garanta que retorna booleano
+        except Exception:
+            return False
+        finally:
+            if connection:
                 connection.close()
-        return False
+
     @staticmethod
     def get_results(usuario_id=None, limit=None):
         conn = None
