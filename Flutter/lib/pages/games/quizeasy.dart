@@ -1,6 +1,8 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class QuizScreenEasy extends StatefulWidget {
   const QuizScreenEasy({super.key});
@@ -95,39 +97,60 @@ class _QuizScreenState extends State<QuizScreenEasy> {
   }
 
   void _showResult() {
+    // Envia a pontuação para o backend após o término do quiz
+    _enviarParaBackend(correctAnswers);
+
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Resultado'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('$correctAnswers/${questions.length} perguntas corretas'),
-                const SizedBox(height: 10),
-                Text(
-                  correctAnswers > questions.length / 3
-                      ? 'Parabéns, você domina o assunto!'
-                      : 'Você ainda pode melhorar, continue estudando!',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
+      builder: (context) => AlertDialog(
+        title: const Text('Resultado'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('$correctAnswers/${questions.length} perguntas corretas'),
+            const SizedBox(height: 10),
+            Text(
+              correctAnswers > questions.length / 3
+                  ? 'Parabéns, você domina o assunto!'
+                  : 'Você ainda pode melhorar, continue estudando!',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    currentQuestionIndex = 0;
-                    correctAnswers = 0;
-                  });
-                },
-                child: const Text('Reiniciar'),
-              ),
-            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              setState(() {
+                currentQuestionIndex = 0;
+                correctAnswers = 0;
+              });
+            },
+            child: const Text('Reiniciar'),
           ),
+        ],
+      ),
     );
+  }
+
+  // Função para enviar o resultado para o backend
+  Future<void> _enviarParaBackend(int score) async {
+    final url = Uri.parse('http://localhost:5000/saveResult');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'usuario_id': 123,
+        'pontuacao': score,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Resultado enviado com sucesso!');
+    } else {
+      print('Erro ao enviar o resultado: ${response.body}');
+    }
   }
 
   @override
@@ -186,22 +209,17 @@ class _QuizScreenState extends State<QuizScreenEasy> {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              buttonColor,
-                            ),
-                            padding: WidgetStateProperty.all(
+                            backgroundColor: MaterialStateProperty.all(buttonColor),
+                            padding: MaterialStateProperty.all(
                               const EdgeInsets.symmetric(vertical: 12),
                             ),
-                            shape: WidgetStateProperty.all(
+                            shape: MaterialStateProperty.all(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
                           ),
-                          onPressed:
-                              selectedOption == null
-                                  ? () => checkAnswer(index)
-                                  : null,
+                          onPressed: selectedOption == null ? () => checkAnswer(index) : null,
                           child: Text(
                             questionData['options'][index],
                             style: const TextStyle(

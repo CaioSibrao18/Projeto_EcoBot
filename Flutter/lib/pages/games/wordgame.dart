@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(MaterialApp(home: SpellingGameLetters()));
@@ -86,27 +88,47 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
     double percentage = (correctAnswers / words.length) * 100;
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Resultado'),
-            content: Text(
-              'Você acertou ${percentage.toStringAsFixed(1)}% das palavras!',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    currentWordIndex = 0;
-                    correctAnswers = 0;
-                    resetGame();
-                  });
-                  Navigator.pop(context);
-                },
-                child: Text('Tentar Novamente'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text('Resultado'),
+        content: Text(
+          'Você acertou ${percentage.toStringAsFixed(1)}% das palavras!',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              setState(() {
+                currentWordIndex = 0;
+                correctAnswers = 0;
+                resetGame();
+              });
+              Navigator.pop(context);
+              _sendResultToBackend(percentage);
+            },
+            child: Text('Tentar Novamente'),
           ),
+        ],
+      ),
     );
+  }
+
+  Future<void> _sendResultToBackend(double percentage) async {
+    final url = Uri.parse('http://localhost:5000/saveResult');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'correctAnswers': correctAnswers,
+        'totalQuestions': words.length,
+        'percentage': percentage,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Resultado enviado com sucesso!');
+    } else {
+
+      print('Falha ao enviar resultado: ${response.statusCode}');
+    }
   }
 
   @override
@@ -124,31 +146,30 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
             SizedBox(height: 20),
             Wrap(
               spacing: 10,
-              children:
-                  availableLetters
-                      .map<Widget>(
-                        (letter) => Material(
-                          child: Draggable<String>(
-                            data: letter,
-                            feedback: Material(
-                              child: Chip(
-                                label: Text(
-                                  letter,
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ),
-                            ),
-                            childWhenDragging: SizedBox.shrink(),
-                            child: Chip(
-                              label: Text(
-                                letter,
-                                style: TextStyle(fontSize: 18),
-                              ),
+              children: availableLetters
+                  .map<Widget>(
+                    (letter) => Material(
+                      child: Draggable<String>(
+                        data: letter,
+                        feedback: Material(
+                          child: Chip(
+                            label: Text(
+                              letter,
+                              style: TextStyle(fontSize: 18),
                             ),
                           ),
                         ),
-                      )
-                      .toList(),
+                        childWhenDragging: SizedBox.shrink(),
+                        child: Chip(
+                          label: Text(
+                            letter,
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
             SizedBox(height: 20),
             DragTarget<String>(
