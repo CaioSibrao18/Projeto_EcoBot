@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -76,7 +74,6 @@ class _QuizScreenState extends State<QuizScreenEasy> {
   int currentQuestionIndex = 0;
   int? selectedOption;
   int correctAnswers = 0;
-
   final Stopwatch _stopwatch = Stopwatch();
 
   @override
@@ -107,46 +104,68 @@ class _QuizScreenState extends State<QuizScreenEasy> {
   void _showResult() {
     _stopwatch.stop();
     int tempoSegundos = _stopwatch.elapsed.inSeconds;
-
     _enviarParaBackend(correctAnswers, tempoSegundos);
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Resultado'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('$correctAnswers/${questions.length} perguntas corretas'),
-            const SizedBox(height: 10),
-            Text(
-              correctAnswers > questions.length / 3
-                  ? 'Parabéns, você domina o assunto!'
-                  : 'Você ainda pode melhorar, continue estudando!',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Resultado',
+              style: TextStyle(
+                color: Colors.teal[800],
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              setState(() {
-                currentQuestionIndex = 0;
-                correctAnswers = 0;
-                _stopwatch.reset();
-                _stopwatch.start();
-              });
-            },
-            child: const Text('Reiniciar'),
+            content: Container(
+              decoration: BoxDecoration(
+                color: Colors.teal[50],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$correctAnswers/${questions.length} perguntas corretas',
+                    style: TextStyle(fontSize: 18, color: Colors.teal[900]),
+                  ),
+                  const SizedBox(height: 15),
+                  Text(
+                    correctAnswers > questions.length / 3
+                        ? 'Parabéns, você domina o assunto!'
+                        : 'Você ainda pode melhorar, continue estudando!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal[800],
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    currentQuestionIndex = 0;
+                    correctAnswers = 0;
+                    _stopwatch.reset();
+                    _stopwatch.start();
+                  });
+                },
+                child: Text(
+                  'Reiniciar',
+                  style: TextStyle(color: Colors.teal[700]),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
-  // Enviar resultado para o backend
   Future<void> _enviarParaBackend(int acertos, int tempoSegundos) async {
     final url = Uri.parse('http://localhost:5000/api/saveResult');
     final response = await http.post(
@@ -171,84 +190,128 @@ class _QuizScreenState extends State<QuizScreenEasy> {
     var questionData = questions[currentQuestionIndex];
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green[700],
-        title: const Text(
-          'Game Quiz 🌱',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        backgroundColor: Colors.teal[700],
+        title: Text(
+          'Game Quiz',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 20,
+          ),
         ),
         centerTitle: true,
+        elevation: 5,
       ),
-      body: Stack(
-        children: [
-          SizedBox.expand(
-            child: Image.asset(
-              'assets/images/FundoVerde.png',
-              fit: BoxFit.cover,
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.teal[50]!, Colors.white],
           ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.85),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 2,
+                  blurRadius: 8,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.teal[100],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
                     questionData['question'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Colors.teal[900],
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 20),
-                  ...List.generate(questionData['options'].length, (index) {
-                    Color buttonColor = const Color(0xFF4CAF50);
-                    if (selectedOption != null) {
-                      if (index == questionData['correctIndex']) {
-                        buttonColor = const Color.fromARGB(255, 17, 116, 20);
-                      } else if (index == selectedOption) {
-                        buttonColor = Colors.red;
-                      }
+                ),
+                const SizedBox(height: 25),
+                ...List.generate(questionData['options'].length, (index) {
+                  // Mantendo as cores originais para feedback
+                  Color buttonColor = Colors.teal[400]!;
+                  if (selectedOption != null) {
+                    if (index == questionData['correctIndex']) {
+                      buttonColor =
+                          Colors.green; // Mantido verde para resposta correta
+                    } else if (index == selectedOption) {
+                      buttonColor =
+                          Colors.red; // Mantido vermelho para resposta errada
                     }
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Material(
+                      elevation: 3,
+                      borderRadius: BorderRadius.circular(30),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(buttonColor),
+                            backgroundColor: MaterialStateProperty.all(
+                              buttonColor,
+                            ),
                             padding: MaterialStateProperty.all(
-                              const EdgeInsets.symmetric(vertical: 12),
+                              EdgeInsets.symmetric(vertical: 16),
                             ),
                             shape: MaterialStateProperty.all(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
+                            elevation: MaterialStateProperty.all(3),
+                            shadowColor: MaterialStateProperty.all(
+                              Colors.grey.withOpacity(0.5),
+                            ),
                           ),
-                          onPressed: selectedOption == null ? () => checkAnswer(index) : null,
+                          onPressed:
+                              selectedOption == null
+                                  ? () => checkAnswer(index)
+                                  : null,
                           child: Text(
                             questionData['options'][index],
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ),
-                    );
-                  }),
-                ],
-              ),
+                    ),
+                  );
+                }),
+                SizedBox(height: 20),
+                Text(
+                  'Pergunta ${currentQuestionIndex + 1} de ${questions.length}',
+                  style: TextStyle(
+                    color: Colors.teal[700],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

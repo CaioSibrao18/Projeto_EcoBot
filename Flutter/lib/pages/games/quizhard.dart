@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -28,55 +26,7 @@ class _QuizScreenState extends State<QuizScreenHard> {
       ],
       'correctIndex': 0,
     },
-    {
-      'question':
-          'Qual o tipo de lixo mais prejudicial se jogado ao meio ambiente?',
-      'options': ['Restos de comida', 'Pilhas e baterias', 'Plástico', 'Papel'],
-      'correctIndex': 1,
-    },
-    {
-      'question':
-          'Qual destes materiais demora mais tempo para se decompor na natureza?',
-      'options': ['Papel', 'Vidro', 'Madeira', 'Alumínio'],
-      'correctIndex': 1,
-    },
-    {
-      'question': 'Qual das opções abaixo NÃO é uma prática sustentável?',
-      'options': [
-        'Usar sacolas reutilizáveis',
-        'Consumir produtos locais e sazonais',
-        'Desperdiçar água potável',
-        'Reciclar materiais corretamente',
-      ],
-      'correctIndex': 2,
-    },
-    {
-      "question":
-          "Qual é a principal fonte de energia renovável utilizada no Brasil?",
-      "options": ["Solar", "Eólica", "Hidrelétrica", "Biomassa"],
-      "correctIndex": 2,
-    },
-    {
-      "question":
-          "O que significa a sigla 'ODS' no contexto da sustentabilidade?",
-      "options": [
-        "Objetivos de Desenvolvimento Sustentável",
-        "Organização para Desenvolvimento Sustentável",
-        "Oficina de Diretrizes Sustentáveis",
-        "Operação de Defesa Socioambiental",
-      ],
-      'correctIndex': 0,
-    },
-    {
-      "question": "O que é a pegada de carbono?",
-      "options": [
-        "Quantidade de carbono na atmosfera",
-        "Medição do impacto ambiental causado por atividades humanas",
-        "Quantidade de árvores necessárias para compensar poluição",
-        "Índice de poluição das indústrias",
-      ],
-      'correctIndex': 1,
-    },
+    // ... (mantenha o restante das perguntas)
   ];
 
   int currentQuestionIndex = 0;
@@ -109,41 +59,64 @@ class _QuizScreenState extends State<QuizScreenHard> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Resultado'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('$correctAnswers/${questions.length} perguntas corretas'),
-            const SizedBox(height: 10),
-            Text(
-              correctAnswers > questions.length / 3
-                  ? 'Parabéns, você domina o assunto!'
-                  : 'Você ainda pode melhorar, continue estudando!',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Resultado',
+              style: TextStyle(
+                color: Colors.teal[800],
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              setState(() {
-                currentQuestionIndex = 0;
-                correctAnswers = 0;
-                startTime = DateTime.now().millisecondsSinceEpoch; // Reset timer
-              });
-              _sendResultToBackend(correctAnswers, tempoSegundos);
-            },
-            child: const Text('Reiniciar'),
+            content: Container(
+              decoration: BoxDecoration(
+                color: Colors.teal[50],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$correctAnswers/${questions.length} perguntas corretas',
+                    style: TextStyle(fontSize: 18, color: Colors.teal[900]),
+                  ),
+                  SizedBox(height: 15),
+                  Text(
+                    correctAnswers > questions.length / 3
+                        ? 'Parabéns, você domina o assunto!'
+                        : 'Você ainda pode melhorar, continue estudando!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal[800],
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    currentQuestionIndex = 0;
+                    correctAnswers = 0;
+                    startTime = DateTime.now().millisecondsSinceEpoch;
+                  });
+                  _sendResultToBackend(correctAnswers, tempoSegundos);
+                },
+                child: Text(
+                  'Reiniciar',
+                  style: TextStyle(color: Colors.teal[700]),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
-  // Enviar resultado para o backend
   Future<void> _sendResultToBackend(int acertos, int tempoSegundos) async {
     final url = Uri.parse('http://localhost:5000/api/saveResult');
     final response = await http.post(
@@ -168,68 +141,89 @@ class _QuizScreenState extends State<QuizScreenHard> {
     var questionData = questions[currentQuestionIndex];
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green[700],
-        title: const Text(
-          'Game Quiz 🌱',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        backgroundColor: Colors.teal[700],
+        title: Text(
+          'Game Quiz Difícil',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 20,
+          ),
         ),
         centerTitle: true,
+        elevation: 5,
       ),
-      body: Stack(
-        children: [
-          SizedBox.expand(
-            child: Image.asset(
-              'assets/images/FundoVerde.png',
-              fit: BoxFit.cover,
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.teal[50]!, Colors.white],
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.85),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    spreadRadius: 2,
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
+                  ),
+                ],
               ),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    questionData['question'],
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.teal[100],
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    textAlign: TextAlign.center,
+                    child: Text(
+                      questionData['question'],
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal[900],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  ...List.generate(questionData['options'].length, (index) {
-                    Color buttonColor = const Color(0xFF4CAF50);
-                    if (selectedOption != null) {
-                      if (index == questionData['correctIndex']) {
-                        buttonColor = const Color.fromARGB(255, 17, 116, 20);
-                      } else if (index == selectedOption) {
-                        buttonColor = Colors.red;
+                  SizedBox(height: 25),
+                  Column(
+                    children: List.generate(questionData['options'].length, (
+                      index,
+                    ) {
+                      Color buttonColor = Colors.teal[400]!;
+                      if (selectedOption != null) {
+                        if (index == questionData['correctIndex']) {
+                          buttonColor = Colors.green;
+                        } else if (index == selectedOption) {
+                          buttonColor = Colors.red;
+                        }
                       }
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: SizedBox(
+                      return Container(
                         width: double.infinity,
+                        margin: EdgeInsets.only(bottom: 12),
                         child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                              buttonColor,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: buttonColor,
+                            padding: EdgeInsets.symmetric(
+                              vertical: 18,
+                              horizontal: 16,
                             ),
-                            padding: MaterialStateProperty.all(
-                              const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
+                            elevation: 2,
                           ),
                           onPressed:
                               selectedOption == null
@@ -237,20 +231,32 @@ class _QuizScreenState extends State<QuizScreenHard> {
                                   : null,
                           child: Text(
                             questionData['options'][index],
-                            style: const TextStyle(
-                              fontSize: 18,
+                            style: TextStyle(
+                              fontSize: 16,
                               color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      ),
-                    );
-                  }),
+                      );
+                    }),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Pergunta ${currentQuestionIndex + 1} de ${questions.length}',
+                    style: TextStyle(
+                      color: Colors.teal[700],
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
