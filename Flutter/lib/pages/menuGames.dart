@@ -17,9 +17,9 @@ class MenuGames extends StatelessWidget {
         ),
         child: Column(
           children: [
-            SizedBox(height: 100),
-            Image.asset('assets/images/logoEcoQuest.png', width: 200),
-            SizedBox(height: 10),
+            SizedBox(height: 50),
+            Image.asset('assets/images/logoEcoQuest.png', width: 150),
+            SizedBox(height: 50),
             Text(
               "Selecione o jogo que deseja jogar",
               textAlign: TextAlign.center,
@@ -30,17 +30,30 @@ class MenuGames extends StatelessWidget {
                 color: Colors.black,
               ),
             ),
-            SizedBox(height: 90),
-            _botaoJogo(context, 'Spelling Game (Letras)', '/spelling_letters'),
-            _botaoJogo(
-              context,
-              'Spelling Game (Sílabas)',
-              '/spelling_syllables',
+            SizedBox(height: 20),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.symmetric(horizontal: 20), // Margem lateral
+                shrinkWrap: true,
+                physics: BouncingScrollPhysics(),
+                children: [
+                  _botaoJogo(
+                    context,
+                    'Spelling Game (Letras)',
+                    '/spelling_letters',
+                  ),
+                  _botaoJogo(
+                    context,
+                    'Spelling Game (Sílabas)',
+                    '/spelling_syllables',
+                  ),
+                  _botaoJogo(context, 'Lixeira Correta', '/trash_sorting'),
+                  _botaoJogo(context, 'Quiz Fácil', '/quiz_easy'),
+                  _botaoJogo(context, 'Quiz Difícil', '/quiz_hard'),
+                  _botaoJogo(context, 'Lixeira Fácil', '/easy_trash_sorting'),
+                ],
+              ),
             ),
-            _botaoJogo(context, 'Lixeira Correta', '/trash_sorting'),
-            _botaoJogo(context, 'Quiz Fácil', '/quiz_easy'),
-            _botaoJogo(context, 'Quiz Difícil', '/quiz_hard'),
-            _botaoJogo(context, 'Lixeira Fácil', '/easy_trash_sorting'),
           ],
         ),
       ),
@@ -49,19 +62,17 @@ class MenuGames extends StatelessWidget {
 
   Widget _botaoJogo(BuildContext context, String nome, String route) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: ElevatedButton(
-        onPressed: () {
-          Navigator.pushNamed(context, route);
-        },
+        onPressed: () => Navigator.pushNamed(context, route),
         style: ElevatedButton.styleFrom(
           backgroundColor: Color(0xFF2BB462),
-          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(18),
           ),
         ),
-        child: Text(nome, style: TextStyle(color: Colors.white, fontSize: 18)),
+        child: Text(nome, style: TextStyle(color: Colors.white, fontSize: 16)),
       ),
     );
   }

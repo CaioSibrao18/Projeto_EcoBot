@@ -307,11 +307,10 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
                                 height: 100,
                                 decoration: BoxDecoration(
                                   color:
-                                      binColors[bin], // Mantém as cores originais
+                                      binColors[bin], 
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
-                                      // ignore: deprecated_member_use
                                       color: Colors.grey.withOpacity(0.3),
                                       spreadRadius: 1,
                                       blurRadius: 5,

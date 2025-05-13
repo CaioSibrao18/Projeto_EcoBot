@@ -330,8 +330,8 @@ class _TrashSortingGameState extends State<TrashSortingGame> {
                               ),
                             );
                           },
-                          onWillAccept: (data) => true,
-                          onAccept: (data) => checkAnswer(bin),
+                          onWillAcceptWithDetails: (data) => true,
+                          onAcceptWithDetails: (data) => checkAnswer(bin),
                         );
                       }).toList(),
                 ),

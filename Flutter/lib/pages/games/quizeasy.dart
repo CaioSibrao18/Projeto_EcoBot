@@ -247,15 +247,14 @@ class _QuizScreenState extends State<QuizScreenEasy> {
                 ),
                 const SizedBox(height: 25),
                 ...List.generate(questionData['options'].length, (index) {
-                  // Mantendo as cores originais para feedback
                   Color buttonColor = Colors.teal[400]!;
                   if (selectedOption != null) {
                     if (index == questionData['correctIndex']) {
                       buttonColor =
-                          Colors.green; // Mantido verde para resposta correta
+                          Colors.green; 
                     } else if (index == selectedOption) {
                       buttonColor =
-                          Colors.red; // Mantido vermelho para resposta errada
+                          Colors.red; 
                     }
                   }
                   return Padding(
@@ -267,19 +266,19 @@ class _QuizScreenState extends State<QuizScreenEasy> {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
+                            backgroundColor: WidgetStateProperty.all(
                               buttonColor,
                             ),
-                            padding: MaterialStateProperty.all(
+                            padding: WidgetStateProperty.all(
                               EdgeInsets.symmetric(vertical: 16),
                             ),
-                            shape: MaterialStateProperty.all(
+                            shape: WidgetStateProperty.all(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-                            elevation: MaterialStateProperty.all(3),
-                            shadowColor: MaterialStateProperty.all(
+                            elevation: WidgetStateProperty.all(3),
+                            shadowColor: WidgetStateProperty.all(
                               Colors.grey.withOpacity(0.5),
                             ),
                           ),
