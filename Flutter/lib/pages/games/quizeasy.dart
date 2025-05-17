@@ -184,6 +184,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
       print('Erro ao enviar o resultado: ${response.body}');
     }
   }
+  
 
   @override
   Widget build(BuildContext context) {

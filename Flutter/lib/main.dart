@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-   
+
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const LoginScreen(),
         '/menu_games': (context) => MenuGames(),
         '/forget_password': (context) => ForgetPasswordScreen(),
-        '/reset_password': (context) => ResetPasswordScreen(),
+        '/reset_password': (context) => ResetPasswordScreen(email: ''),
         '/spelling_letters': (context) => SpellingGameLetters(),
         '/spelling_syllables': (context) => SpellingGameSyllables(),
         '/trash_sorting': (context) => TrashSortingGame(),
