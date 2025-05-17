@@ -16,15 +16,23 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.text = widget.email;
+  }
 
   @override
   void dispose() {
     _tokenController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
@@ -134,19 +142,51 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             const Text(
                               'Redefinir Senha',
                               style: TextStyle(
-                                fontFamily: 'ReemFufiFun[wght]',
+                                fontFamily: 'ReemKufiFun',
                                 fontSize: 24,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.black,
                               ),
                             ),
                             const SizedBox(height: 10),
-                            Text(
-                              'Para: ${widget.email}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
+                            // Novo campo de e-mail
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color.fromARGB(66, 0, 51, 0),
+                                    offset: Offset(0, 4),
+                                    blurRadius: 6,
+                                  ),
+                                ],
+                              ),
+                              child: TextFormField(
+                                controller: _emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: const InputDecoration(
+                                  hintText: 'E-mail',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(1.0),
+                                    ),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 14,
+                                    horizontal: 16,
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Por favor, insira o e-mail';
+                                  }
+                                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                                    return 'E-mail inválido';
+                                  }
+                                  return null;
+                                },
                               ),
                             ),
                             const SizedBox(height: 30),
