@@ -81,11 +81,9 @@ class AuthController:
             )
             
             if user_id:
-               
                 if os.getenv('SMTP_USER'):
                     AuthController._send_welcome_email(email, nome)
                 
-             
                 return {
                     "status": "sucesso",
                     "mensagem": "Usuário registrado com sucesso!",
@@ -93,14 +91,13 @@ class AuthController:
                         "id": user_id,
                         "email": email
                     }
-                }
-
-       
+                }, 201  
+            
             return {"status": "erro", "mensagem": "Falha ao criar usuário"}, 400
                 
         except Exception as e:
             logger.error(f"ERRO NO REGISTRO: {str(e)}")
-            return {"status": "erro", "mensagem": "Erro interno no servidor"}, 500
+            return {"status": "erro", "mensagem": "Erro interno no servidor", "details": str(e)}, 500
 
 
     @staticmethod
