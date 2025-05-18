@@ -3,10 +3,9 @@ import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
-from db import get_db_connection  # sua função para conexão com pymysql
+from db import get_db_connection  
 
-TOTAL_QUESTOES = 10  # valor fixo para total de questões
-
+TOTAL_QUESTOES = 10  
 def load_training_data():
     conn = get_db_connection()
 
@@ -25,18 +24,17 @@ def load_training_data():
 
     try:
         with conn.cursor() as cursor:
-            # Passa TOTAL_QUESTOES para substituir no query
             cursor.execute(query, (TOTAL_QUESTOES, TOTAL_QUESTOES, TOTAL_QUESTOES))
             results = cursor.fetchall()
 
-        data = pd.DataFrame(results)
+        data = pd.DataFrame(results, columns=['porcentagem', 'tempo_segundos', 'label'])
 
-        # Conversões garantidas
         data['porcentagem'] = pd.to_numeric(data['porcentagem'], errors='coerce')
         data['tempo_segundos'] = pd.to_numeric(data['tempo_segundos'], errors='coerce')
-        data = data.dropna()  # Remove registros inválidos
+        data.dropna(inplace=True)
 
-        print(data.head())  # Ajuda a verificar os dados carregados
+        print("🔍 Amostra dos dados de treinamento:")
+        print(data.head())
 
         return data
 
