@@ -38,9 +38,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (context) =>
-                    ResetPasswordScreen(email: _emailController.text.trim()),
+            builder: (context) => ResetPasswordScreen(email: _emailController.text.trim()),
           ),
         );
       } else {
@@ -72,145 +70,119 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: IntrinsicHeight(
+      backgroundColor: const Color(0xFFEFF3F6),
+      body: Stack(
+        children: [
+          ClipPath(
+            clipper: ForgetCurveClipper(),
+            child: Container(
+              height: 250,
+              color: const Color(0xFF2BB462),
+            ),
+          ),
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: _formKey,
                 child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/TelaFundo.png'),
-                      fit: BoxFit.cover,
-                    ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(height: 50),
-                            Text(
-                              'Esqueci minha senha',
-                              style: const TextStyle(
-                                fontFamily: 'ReemFufiFun[wght]',
-                                fontSize: 24,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 35),
-                            const Text(
-                              'Digite seu e-mail no campo abaixo\npara receber um token de redefinição.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 16,
-                                height: 1.4,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 85),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    offset: Offset(0, 4),
-                                    blurRadius: 6,
-                                  ),
-                                ],
-                              ),
-                              child: TextFormField(
-                                controller: _emailController,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor, insira seu email';
-                                  }
-                                  if (!value.contains('@')) {
-                                    return 'Email inválido';
-                                  }
-                                  return null;
-                                },
-                                decoration: const InputDecoration(
-                                  hintText: 'E-mail',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(1.0),
-                                    ),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 14,
-                                    horizontal: 16,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 60),
-                            SizedBox(
-                              height: 40,
-                              width: 170,
-                              child: ElevatedButton(
-                                onPressed: _isLoading ? null : _sendResetEmail,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF2BB462),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child:
-                                    _isLoading
-                                        ? const CircularProgressIndicator(
-                                          color: Colors.white,
-                                        )
-                                        : const Text(
-                                          'Enviar E-mail',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                              ),
-                            ),
-                            const Spacer(),
-                            TextButton(
-                              onPressed:
-                                  _isLoading
-                                      ? null
-                                      : () {
-                                        Navigator.pop(context);
-                                      },
-                              child: const Text(
-                                'Voltar a tela de login',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 0, 0, 0),
-                                  fontSize: 16,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                          ],
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Esqueci minha senha',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Digite seu e-mail para receber um link de redefinição.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16, height: 1.4, color: Colors.black87),
+                      ),
+                      const SizedBox(height: 40),
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Insira seu e-mail';
+                          if (!value.contains('@')) return 'E-mail inválido';
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'E-mail',
+                          prefixIcon: const Icon(Icons.email, color: Color(0xFF2BB462)),
+                          filled: true,
+                          fillColor: const Color(0xFFF7F7F7),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: _isLoading ? null : _sendResetEmail,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2BB462),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: _isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text(
+                                  'Enviar E-mail',
+                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      TextButton(
+                        onPressed: _isLoading ? null : () => Navigator.pop(context),
+                        child: const Text('Voltar à tela de login'),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
+}
+
+class ForgetCurveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height - 60);
+    path.quadraticBezierTo(size.width * 0.3, size.height, size.width * 0.6, size.height - 60);
+    path.quadraticBezierTo(size.width * 0.9, size.height - 120, size.width, size.height - 80);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

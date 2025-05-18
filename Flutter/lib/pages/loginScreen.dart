@@ -67,186 +67,160 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        alignment: Alignment.center,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/telaFundo.png'),
-            fit: BoxFit.cover,
+      backgroundColor: const Color(0xFFEFF3F6),
+      body: Stack(
+        children: [
+          ClipPath(
+            clipper: LoginCurveClipper(),
+            child: Container(
+              height: 250,
+              color: const Color(0xFF2BB462),
+            ),
           ),
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/logoEcoQuest.png',
-                    width: 300,
-                    height: 300,
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: _formKey,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-
-                  // Campo de Email
-                  Container(
-                    width: 300,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          offset: Offset(0, 4),
-                          blurRadius: 6,
-                        ),
-                      ],
-                    ),
-                    child: TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor, insira seu email';
-                        }
-                        if (!value.contains('@')) {
-                          return 'Por favor, insira um email válido';
-                        }
-                        return null;
-                      },
-                      decoration: const InputDecoration(
-                        hintText: 'Email',
-                        prefixIcon: Icon(Icons.email, color: Color(0xFF2BB462)),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 16,
-                        ),
-                        errorStyle: TextStyle(height: 0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        'assets/images/logoEcoQuest.png',
+                        width: 220,
+                        height: 220,
                       ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-                  Container(
-                    width: 300,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          offset: Offset(0, 4),
-                          blurRadius: 6,
-                        ),
-                      ],
-                    ),
-                    child: TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor, insira sua senha';
-                        }
-                        if (value.length < 6) {
-                          return 'A senha deve ter pelo menos 6 caracteres';
-                        }
-                        return null;
-                      },
-                      decoration: const InputDecoration(
-                        hintText: 'Senha',
-                        prefixIcon: Icon(Icons.lock, color: Color(0xFF2BB462)),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 16,
-                        ),
-                        errorStyle: TextStyle(height: 0),
-                      ),
-                    ),
-                  ),
-
-                  if (_errorMessage != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Text(
-                        _errorMessage!,
-                        style: const TextStyle(color: Colors.red, fontSize: 14),
-                      ),
-                    ),
-
-                  const SizedBox(height: 40),
-                  SizedBox(
-                    height: 40,
-                    width: 170,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _login,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2BB462),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Insira seu email';
+                          if (!value.contains('@')) return 'Email inválido';
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'E-mail',
+                          prefixIcon: const Icon(Icons.email, color: Color(0xFF2BB462)),
+                          filled: true,
+                          fillColor: const Color(0xFFF7F7F7),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
-                      child:
-                          _isLoading
-                              ? const CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              )
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Insira sua senha';
+                          if (value.length < 6) return 'Mínimo 6 caracteres';
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Senha',
+                          prefixIcon: const Icon(Icons.lock, color: Color(0xFF2BB462)),
+                          filled: true,
+                          fillColor: const Color(0xFFF7F7F7),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            _errorMessage!,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      const SizedBox(height: 30),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: _isLoading ? null : _login,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2BB462),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: _isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
                               : const Text(
-                                'Login',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
+                                  'Entrar',
+                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                 ),
-                              ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextButton(
-                    onPressed:
-                        _isLoading
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: _isLoading
                             ? null
                             : () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => const ForgetPasswordScreen(),
-                                ),
-                              );
-                            },
-                    child: const Text('Esqueci a senha'),
-                  ),
-                  TextButton(
-                    onPressed:
-                        _isLoading
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ForgetPasswordScreen(),
+                                  ),
+                                );
+                              },
+                        child: const Text('Esqueci a senha'),
+                      ),
+                      TextButton(
+                        onPressed: _isLoading
                             ? null
                             : () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const RegisterScreen(),
-                                ),
-                              );
-                            },
-                    child: const Text('Criar conta'),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const RegisterScreen(),
+                                  ),
+                                );
+                              },
+                        child: const Text('Criar conta'),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
+}
+
+class LoginCurveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height - 80);
+    path.quadraticBezierTo(size.width * 0.5, size.height + 40, size.width, size.height - 80);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
