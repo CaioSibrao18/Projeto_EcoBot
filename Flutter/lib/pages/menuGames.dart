@@ -9,42 +9,28 @@ class MenuGames extends StatelessWidget {
       backgroundColor: const Color(0xFFEFF3F6),
       body: Stack(
         children: [
-          ClipPath(
-            clipper: MenuWaveClipper(),
-            child: Container(
-              height: 220,
-              color: const Color(0xFF2BB462),
-            ),
-          ),
+          const WaveHeader(),
           SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 16),
-                Image.asset(
-                  'assets/images/logoEcoQuest.png',
-                  width: 140,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  "Escolha um jogo para começar",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
                 const SizedBox(height: 20),
+                const LogoImage(),
+                const SizedBox(height: 60),
+                const TitleText(),
+                const SizedBox(height: 24),
                 Expanded(
-                  child: ListView(
+                  child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    children: [
-                      _gameCard(context, 'Soletrar por Letras', '/spelling_letters'),
-                      _gameCard(context, 'Soletrar por Sílabas', '/spelling_syllables'),
-                      _gameCard(context, 'Coleta Seletiva (Fácil)', '/easy_trash_sorting'),
-                      _gameCard(context, 'Coleta Seletiva (Difícil)', '/trash_sorting'),
-                      _gameCard(context, 'Quiz sobre Sustentabilidade (Fácil)', '/quiz_easy'),
-                      _gameCard(context, 'Quiz sobre Sustentabilidade (Difícil)', '/quiz_hard'),
-                    ],
+                    child: ListView(
+                      children: [
+                        _gameButton(context, 'Soletrar por Letras', '/spelling_letters'),
+                        _gameButton(context, 'Soletrar por Sílabas', '/spelling_syllables'),
+                        _gameButton(context, 'Coleta Seletiva (Fácil)', '/easy_trash_sorting'),
+                        _gameButton(context, 'Coleta Seletiva (Difícil)', '/trash_sorting'),
+                        _gameButton(context, 'Quiz sobre Sustentabilidade (Fácil)', '/quiz_easy'),
+                        _gameButton(context, 'Quiz sobre Sustentabilidade (Difícil)', '/quiz_hard'),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -55,35 +41,100 @@ class MenuGames extends StatelessWidget {
     );
   }
 
-  Widget _gameCard(BuildContext context, String title, String route) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+  static Widget _gameButton(BuildContext context, String title, String route) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF2BB462),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+          elevation: 4,
         ),
-        trailing: const Icon(Icons.play_arrow, color: Color(0xFF2BB462)),
-        onTap: () => Navigator.pushNamed(context, route),
+        onPressed: () => Navigator.pushNamed(context, route),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const Icon(Icons.play_arrow, size: 26, color: Colors.white),
+          ],
+        ),
       ),
     );
   }
 }
 
-class MenuWaveClipper extends CustomClipper<Path> {
+class WaveHeader extends StatelessWidget {
+  const WaveHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipPath(
+      clipper: WaveClipper(),
+      child: Container(
+        height: 240,
+        color: const Color(0xFF2BB462),
+      ),
+    );
+  }
+}
+
+class TitleText extends StatelessWidget {
+  const TitleText({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      "Escolha um jogo para começar",
+      textAlign: TextAlign.center,
+      style: const TextStyle(
+        fontSize: 18,
+        color: Colors.black87,
+        fontFamily: 'PressStart2P', 
+        shadows: [
+          Shadow(
+            blurRadius: 4,
+            offset: Offset(1, 1),
+            color: Colors.black12,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LogoImage extends StatelessWidget {
+  const LogoImage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'assets/images/logoEcoQuest.png',
+      width: 180,
+    );
+  }
+}
+
+class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    path.lineTo(0, size.height - 50);
-    path.quadraticBezierTo(size.width / 2, size.height + 20, size.width, size.height - 50);
+    path.lineTo(0, size.height - 40);
+    path.quadraticBezierTo(
+        size.width * 0.25, size.height, size.width * 0.5, size.height - 40);
+    path.quadraticBezierTo(
+        size.width * 0.75, size.height - 80, size.width, size.height - 40);
     path.lineTo(size.width, 0);
     path.close();
     return path;
