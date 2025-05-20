@@ -33,24 +33,16 @@ class MenuGames extends StatelessWidget {
             SizedBox(height: 20),
             Expanded(
               child: ListView(
-                padding: EdgeInsets.symmetric(horizontal: 20), // Margem lateral
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 shrinkWrap: true,
                 physics: BouncingScrollPhysics(),
                 children: [
-                  _botaoJogo(
-                    context,
-                    'Spelling Game (Letras)',
-                    '/spelling_letters',
-                  ),
-                  _botaoJogo(
-                    context,
-                    'Spelling Game (Sílabas)',
-                    '/spelling_syllables',
-                  ),
-                  _botaoJogo(context, 'Lixeira Correta', '/trash_sorting'),
-                  _botaoJogo(context, 'Quiz Fácil', '/quiz_easy'),
-                  _botaoJogo(context, 'Quiz Difícil', '/quiz_hard'),
-                  _botaoJogo(context, 'Lixeira Fácil', '/easy_trash_sorting'),
+                  _botaoJogo(context, 'Spelling Game (Letras)', '/spelling_letters', 'btn_letras'),
+                  _botaoJogo(context, 'Spelling Game (Sílabas)', '/spelling_syllables', 'btn_silabas'),
+                  _botaoJogo(context, 'Lixeira Correta', '/trash_sorting', 'btn_lixeira_correta'),
+                  _botaoJogo(context, 'Quiz Fácil', '/quiz_easy', 'btn_quiz_facil'),
+                  _botaoJogo(context, 'Quiz Difícil', '/quiz_hard', 'btn_quiz_dificil'),
+                  _botaoJogo(context, 'Lixeira Fácil', '/easy_trash_sorting', 'btn_lixeira_facil'),
                 ],
               ),
             ),
@@ -60,10 +52,11 @@ class MenuGames extends StatelessWidget {
     );
   }
 
-  Widget _botaoJogo(BuildContext context, String nome, String route) {
+  Widget _botaoJogo(BuildContext context, String nome, String route, String keyName) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: ElevatedButton(
+        key: Key(keyName),
         onPressed: () => Navigator.pushNamed(context, route),
         style: ElevatedButton.styleFrom(
           backgroundColor: Color(0xFF2BB462),
