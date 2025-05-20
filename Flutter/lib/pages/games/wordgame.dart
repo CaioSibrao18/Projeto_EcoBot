@@ -70,22 +70,28 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
   }
 
   void showResult() {
-    double percentage = (correctAnswers / words.length) * 100;
+    final percentage = (correctAnswers / words.length) * 100;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Resultado', style: TextStyle(fontWeight: FontWeight.bold)),
+      builder: (_) => AlertDialog(
+        title: const Text(
+          'Resultado',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: Text('Você acertou ${percentage.toStringAsFixed(1)}% das palavras!'),
         actions: [
           TextButton(
             onPressed: () {
+              _sendResultToBackend(correctAnswers); // ✅ Envia antes de zerar
+
               setState(() {
                 currentWordIndex = 0;
                 correctAnswers = 0;
                 resetGame();
               });
+
               Navigator.pop(context);
-              _sendResultToBackend(percentage);
             },
             child: const Text('Tentar Novamente'),
           ),
@@ -94,21 +100,22 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
     );
   }
 
-  Future<void> _sendResultToBackend(double percentage) async {
-    final url = Uri.parse('http://localhost:5000/saveResult');
+  Future<void> _sendResultToBackend(int acertos) async {
+    final url = Uri.parse('http://localhost:5000/api/saveResult');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'correctAnswers': correctAnswers,
-        'totalQuestions': words.length,
-        'percentage': percentage,
+        'usuario_id': 4,
+        'acertos': acertos,
+        'tempo_segundos': 0, // valor fixo porque este jogo não usa tempo
       }),
     );
-    if (response.statusCode == 200) {
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
       print('Resultado enviado com sucesso!');
     } else {
-      print('Erro ao enviar resultado: ${response.statusCode}');
+      print('Erro ao enviar o resultado: ${response.body}');
     }
   }
 
