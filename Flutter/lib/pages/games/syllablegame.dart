@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SpellingGameSyllables extends StatefulWidget {
   const SpellingGameSyllables({super.key});
@@ -9,62 +11,28 @@ class SpellingGameSyllables extends StatefulWidget {
 
 class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   final List<Map<String, dynamic>> words = [
-    {'word': 'ga-to', 'syllables': ['ga', 'to', 'la']},
-    {'word': 'ca-sa', 'syllables': ['ca', 'sa', 'po']},
-    {'word': 'bo-la', 'syllables': ['bo', 'la', 'ra']},
+    {'word': 're-ci-clar', 'syllables': ['re', 'ci', 'clar']},
+    {'word': 'e-ne-rgia', 'syllables': ['e', 'ne', 'rgia']},
+    {'word': 'sus-ten-tá-vel', 'syllables': ['sus', 'ten', 'tá', 'vel']},
+    {'word': 'a-ma-zô-nia', 'syllables': ['a', 'ma', 'zô', 'nia']},
+    {'word': 'a-gua', 'syllables': ['a', 'gua']},
+    {'word': 'na-tu-re-za', 'syllables': ['na', 'tu', 're', 'za']},
+    {'word': 'po-lu-i-ção', 'syllables': ['po', 'lu', 'i', 'ção']},
+    {'word': 're-u-ti-li-zar', 'syllables': ['re', 'u', 'ti', 'li', 'zar']},
+    {'word': 'com-pos-ta-gem', 'syllables': ['com', 'pos', 'ta', 'gem']},
+    {'word': 'bio-de-gra-dá-vel', 'syllables': ['bio', 'de', 'gra', 'dá', 'vel']},
   ];
 
   int currentWordIndex = 0;
   int correctAnswers = 0;
-
-  List<String> selectedSyllables = [];
   late List<String> availableSyllables;
-  Color boxColor = Colors.grey.shade300;
+  List<String> selectedSyllables = [];
+  Color boxColor = Colors.grey.shade200;
 
   @override
   void initState() {
     super.initState();
-    availableSyllables = List.from(words[currentWordIndex]['syllables']);
-    availableSyllables.shuffle();
-  }
-
-  void checkAnswer() {
-    String formedWord =
-        selectedSyllables.join('-').replaceAll(RegExp(r'\s+'), '').toLowerCase();
-    String correctWord = words[currentWordIndex]['word']
-        .replaceAll(RegExp(r'\s+'), '')
-        .toLowerCase();
-
-    if (formedWord == correctWord) {
-      setState(() {
-        boxColor = Colors.green;
-        correctAnswers++;
-      });
-      Future.delayed(const Duration(seconds: 1), () {
-        if (currentWordIndex < words.length - 1) {
-          setState(() {
-            currentWordIndex++;
-          });
-          resetGame();
-        } else {
-          showResult();
-        }
-      });
-    } else {
-      setState(() {
-        boxColor = Colors.red;
-      });
-      Future.delayed(const Duration(seconds: 1), () {
-        if (currentWordIndex < words.length - 1) {
-          setState(() {
-            currentWordIndex++;
-          });
-          resetGame();
-        } else {
-          showResult();
-        }
-      });
-    }
+    resetGame();
   }
 
   void resetGame() {
@@ -72,29 +40,98 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
       selectedSyllables.clear();
       availableSyllables = List.from(words[currentWordIndex]['syllables']);
       availableSyllables.shuffle();
-      boxColor = Colors.grey.shade300;
+      boxColor = Colors.grey.shade200;
+    });
+  }
+
+  void checkAnswer() {
+    final formedWord = selectedSyllables.join('-');
+    final correctWord = words[currentWordIndex]['word'];
+
+    setState(() {
+      if (formedWord == correctWord) {
+        boxColor = Colors.greenAccent;
+        correctAnswers++;
+      } else {
+        boxColor = Colors.redAccent;
+      }
+    });
+
+    Future.delayed(const Duration(seconds: 1), () {
+      if (currentWordIndex < words.length - 1) {
+        setState(() {
+          currentWordIndex++;
+        });
+        resetGame();
+      } else {
+        showResult();
+      }
     });
   }
 
   void showResult() {
+    final percentage = (correctAnswers / words.length) * 100;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Fim de Jogo'),
-        content: Text('Você acertou $correctAnswers de ${words.length} palavras!'),
+        title: const Text(
+          'Resultado',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Text('Você acertou ${percentage.toStringAsFixed(1)}% das palavras!'),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
               setState(() {
                 currentWordIndex = 0;
                 correctAnswers = 0;
+                resetGame();
               });
-              resetGame();
+              Navigator.pop(context);
+              _sendResultToBackend(percentage);
             },
-            child: const Text('Jogar Novamente'),
+            child: const Text('Tentar Novamente'),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _sendResultToBackend(double percentage) async {
+    final url = Uri.parse('http://localhost:5000/saveResult');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'correctAnswers': correctAnswers,
+        'totalQuestions': words.length,
+        'percentage': percentage,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Resultado enviado com sucesso!');
+    } else {
+      print('Erro ao enviar resultado: ${response.statusCode}');
+    }
+  }
+
+  Widget _syllableTile(String syllable, {bool dragging = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: dragging ? const Color(0xFF2BB462) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF2BB462), width: 2),
+      ),
+      child: Text(
+        syllable,
+        style: TextStyle(
+          color: dragging ? Colors.white : const Color(0xFF2BB462),
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          fontFamily: 'PressStart2P',
+        ),
       ),
     );
   }
@@ -102,150 +139,112 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFEFF3F6),
       appBar: AppBar(
-        title: const Text(
-          'Jogo de Soletrar',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        backgroundColor: Colors.teal,
-        elevation: 4,
+        title: const Text('Soletrar por Sílabas'),
         centerTitle: true,
+        backgroundColor: const Color(0xFF2BB462),
+        elevation: 0,
       ),
-      backgroundColor: Colors.teal.shade50,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Arraste as sílabas para formar a palavra:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 20),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: availableSyllables.map((syllable) {
-                  return Draggable<String>(
-                    data: syllable,
-                    feedback: Material(
-                      color: Colors.transparent,
-                      child: _buildSyllableChip(syllable, feedback: true),
-                    ),
-                    childWhenDragging: Opacity(
-                      opacity: 0.5,
-                      child: _buildSyllableChip(syllable),
-                    ),
-                    child: _buildSyllableChip(syllable),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
-
-              // Sílabas selecionadas como chips clicáveis
-              Wrap(
-                spacing: 8,
-                children: selectedSyllables.map((syllable) {
-                  return InputChip(
-                    label: Text(syllable),
-                    onDeleted: () {
-                      setState(() {
-                        selectedSyllables.remove(syllable);
-                        availableSyllables.add(syllable);
-                        availableSyllables.shuffle();
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
-
-              DragTarget<String>(
-                builder: (context, candidateData, rejectedData) {
-                  return Container(
-                    padding: const EdgeInsets.all(15),
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: boxColor,
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.teal.shade800, width: 2),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                        ),
-                      ],
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      selectedSyllables.join('-'),
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.teal.shade900,
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              'Arraste as sílabas para formar a palavra correta',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: availableSyllables
+                  .map(
+                    (syllable) => Draggable<String>(
+                      data: syllable,
+                      feedback: _syllableTile(syllable, dragging: true),
+                      childWhenDragging: Opacity(
+                        opacity: 0.5,
+                        child: _syllableTile(syllable),
                       ),
+                      child: _syllableTile(syllable),
                     ),
-                  );
-                },
-                onAccept: (data) {
-                  if (!selectedSyllables.contains(data)) {
-                    setState(() {
-                      selectedSyllables.add(data);
-                      availableSyllables.remove(data);
-                    });
-                  }
-                },
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: 30),
+            DragTarget<String>(
+              builder: (context, candidateData, rejectedData) => Container(
+                padding: const EdgeInsets.all(16),
+                height: 100,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: boxColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFF2BB462), width: 2),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  selectedSyllables.join('-'),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PressStart2P',  
+                  ),
+                ),
               ),
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: checkAnswer,
-                    icon: const Icon(Icons.check),
-                    label: const Text('Confirmar'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              onAccept: (data) {
+                if (!selectedSyllables.contains(data)) {
+                  setState(() {
+                    selectedSyllables.add(data);
+                    availableSyllables.remove(data);
+                  });
+                }
+              },
+            ),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: checkAnswer,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2BB462),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  ElevatedButton.icon(
-                    onPressed: resetGame,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Limpar'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  child: const Text(
+                    'Confirmar',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton(
+                  onPressed: resetGame,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSyllableChip(String syllable, {bool feedback = false}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      decoration: BoxDecoration(
-        color: feedback ? Colors.teal.shade400 : Colors.teal.shade200,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.teal.shade400, width: 1.5),
-      ),
-      child: Text(
-        syllable,
-        style: TextStyle(
-          fontSize: 18,
-          color: Colors.teal.shade900,
-          fontWeight: FontWeight.bold,
+                  child: const Text(
+                    'Limpar',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Palavra ${currentWordIndex + 1} de ${words.length}',
+              style: const TextStyle(color: Colors.black54),
+            ),
+          ],
         ),
       ),
     );

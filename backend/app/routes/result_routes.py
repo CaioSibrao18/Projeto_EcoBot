@@ -11,7 +11,7 @@ def save_result():
         if not data:
             return jsonify({'error': 'Dados JSON necessários'}), 400
             
-        # Remove a verificação extra - agora o controller sempre retorna o formato correto
+    
         return ResultController.save_result(data)
         
     except Exception as e:

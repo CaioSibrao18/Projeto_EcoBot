@@ -1,7 +1,11 @@
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 from controllers.auth_controller import AuthController
 from controllers.result_controller import ResultController
 from datetime import datetime
+import numpy as np
+import pandas as pd
+
+
 
 def init_auth_routes(app):
 
@@ -101,26 +105,53 @@ def init_auth_routes(app):
                 }
             }), 500
         
+    from flask import request, jsonify, current_app
+
     @app.route('/results/feedback', methods=['GET'])
     def get_feedback():
         try:
             usuario_id = request.args.get('usuario_id')
             if not usuario_id:
                 return jsonify({"error": "Parâmetro usuario_id é obrigatório"}), 400
-            
-          
+
             try:
                 usuario_id = int(usuario_id)
             except ValueError:
-                return jsonify({"error": "user_id deve ser um número"}), 400
+                return jsonify({"error": "usuario_id deve ser um número"}), 400
+            
+            response, status_code = ResultController.generate_evolution_feedback(usuario_id)
+            
+            
+            if status_code == 200 and 'analysis' in response:
+                ai_model = current_app.model
+                le = current_app.le
                 
-            resultado = ResultController.generate_evolution_feedback(usuario_id)
-            return jsonify(resultado[0]), resultado[1]
+                if ai_model and le:
+                    try:
+                        accuracy = response['analysis']['current_period']['accuracy_avg']
+                        speed = response['analysis']['current_period']['speed_avg']
+
+                      
+                        features = pd.DataFrame([[accuracy, speed]], columns=['porcentagem', 'tempo_segundos'])
+                        pred_encoded = ai_model.predict(features)
+                        feedback_pred = le.inverse_transform(pred_encoded)[0]
+
+                        if 'feedback' in response['analysis']:
+                            response['analysis']['feedback'].append(f"IA: {feedback_pred}")
+                        else:
+                            response['analysis']['feedback'] = [f"IA: {feedback_pred}"]
+                    except Exception as e:
+                        print(f"Erro na predição IA: {e}")
+
+            
+            return jsonify(response), status_code
+        
         except Exception as e:
             return jsonify({
                 "error": "Erro na análise de desempenho",
                 "details": str(e)
             }), 500
+
         
 
     @app.route('/auth/register', methods=['POST']) 
@@ -261,7 +292,7 @@ def init_auth_routes(app):
             }), 500
         
     
-    # Rota unificada
+
     @app.route('/users', methods=['GET'])
     def handle_users():
         try:
