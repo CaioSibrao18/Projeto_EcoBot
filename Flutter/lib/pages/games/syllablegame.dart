@@ -12,7 +12,7 @@ class SpellingGameSyllables extends StatefulWidget {
 class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   final List<Map<String, dynamic>> words = [
     {'word': 're-ci-clar', 'syllables': ['re', 'ci', 'clar']},
-    {'word': 'e-ne-rgia', 'syllables': ['e', 'ne', 'rgia']},
+    {'word': 'e-ner-gi-a', 'syllables': ['e', 'ner', 'gi', 'a']},
     {'word': 'sus-ten-tá-vel', 'syllables': ['sus', 'ten', 'tá', 'vel']},
     {'word': 'a-ma-zô-nia', 'syllables': ['a', 'ma', 'zô', 'nia']},
     {'word': 'a-gua', 'syllables': ['a', 'gua']},
@@ -71,6 +71,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
 
   void showResult() {
     final percentage = (correctAnswers / words.length) * 100;
+
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -82,13 +83,15 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
         actions: [
           TextButton(
             onPressed: () {
+              _sendResultToBackend(correctAnswers); // ✅ Envia antes de zerar
+
               setState(() {
                 currentWordIndex = 0;
                 correctAnswers = 0;
                 resetGame();
               });
+
               Navigator.pop(context);
-              _sendResultToBackend(percentage);
             },
             child: const Text('Tentar Novamente'),
           ),
@@ -97,22 +100,22 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
     );
   }
 
-  Future<void> _sendResultToBackend(double percentage) async {
-    final url = Uri.parse('http://localhost:5000/saveResult');
+  Future<void> _sendResultToBackend(int acertos) async {
+    final url = Uri.parse('http://localhost:5000/api/saveResult');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'correctAnswers': correctAnswers,
-        'totalQuestions': words.length,
-        'percentage': percentage,
+        'usuario_id': 4,
+        'acertos': acertos,
+        'tempo_segundos': 0, // valor fixo porque este jogo não usa tempo
       }),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       print('Resultado enviado com sucesso!');
     } else {
-      print('Erro ao enviar resultado: ${response.statusCode}');
+      print('Erro ao enviar o resultado: ${response.body}');
     }
   }
 
