@@ -15,7 +15,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _birthController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   String? _selectedGender;
@@ -53,8 +54,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (response.statusCode == 201) {
         _showSnackBar('Cadastro realizado com sucesso!');
         _clearForm();
+        // Adição: Volta para a tela de login após 3 segundos
+        Future.delayed(const Duration(seconds: 3), () {
+          if (mounted) {
+            Navigator.pop(context);
+          }
+        });
       } else {
-        _showSnackBar(responseData['error'] ?? 'Erro no cadastro', isError: true);
+        _showSnackBar(
+          responseData['error'] ?? 'Erro no cadastro',
+          isError: true,
+        );
       }
     } catch (e) {
       _showSnackBar('Erro de conexão: ${e.toString()}', isError: true);
@@ -104,10 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         children: [
           ClipPath(
             clipper: RegisterCurveClipper(),
-            child: Container(
-              height: 250,
-              color: const Color(0xFF2BB462),
-            ),
+            child: Container(height: 250, color: const Color(0xFF2BB462)),
           ),
           Center(
             child: SingleChildScrollView(
@@ -115,7 +122,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Form(
                 key: _formKey,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 32,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
@@ -144,9 +154,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 15),
                       _inputField(_emailController, 'Email', Icons.email),
                       const SizedBox(height: 15),
-                      _inputField(_passwordController, 'Senha', Icons.lock, obscure: true),
+                      _inputField(
+                        _passwordController,
+                        'Senha',
+                        Icons.lock,
+                        obscure: true,
+                      ),
                       const SizedBox(height: 15),
-                      _inputField(_confirmPasswordController, 'Confirmar Senha', Icons.lock, obscure: true),
+                      _inputField(
+                        _confirmPasswordController,
+                        'Confirmar Senha',
+                        Icons.lock,
+                        obscure: true,
+                      ),
                       const SizedBox(height: 25),
                       SizedBox(
                         width: double.infinity,
@@ -159,20 +179,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          child: _isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : const Text(
-                                  'Cadastrar',
-                                  style: TextStyle(
+                          child:
+                              _isLoading
+                                  ? const CircularProgressIndicator(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                  )
+                                  : const Text(
+                                    'Cadastrar',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
                         ),
                       ),
                       const SizedBox(height: 16),
                       TextButton(
-                        onPressed: _isLoading ? null : () => Navigator.pop(context),
+                        onPressed:
+                            _isLoading ? null : () => Navigator.pop(context),
                         child: const Text('Já tem uma conta? Faça login'),
                       ),
                     ],
@@ -186,7 +210,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _inputField(TextEditingController controller, String label, IconData icon, {bool obscure = false}) {
+  Widget _inputField(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    bool obscure = false,
+  }) {
     return TextFormField(
       controller: controller,
       obscureText: obscure,
@@ -235,7 +264,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return TextFormField(
       controller: _birthController,
       readOnly: true,
-      validator: (value) => value == null || value.isEmpty ? 'Data obrigatória' : null,
+      validator:
+          (value) => value == null || value.isEmpty ? 'Data obrigatória' : null,
       decoration: InputDecoration(
         labelText: 'Data de Nascimento',
         prefixIcon: const Icon(Icons.calendar_today, color: Color(0xFF2BB462)),
@@ -270,7 +300,12 @@ class RegisterCurveClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
     path.lineTo(0, size.height - 80);
-    path.quadraticBezierTo(size.width * 0.4, size.height + 30, size.width, size.height - 100);
+    path.quadraticBezierTo(
+      size.width * 0.4,
+      size.height + 30,
+      size.width,
+      size.height - 100,
+    );
     path.lineTo(size.width, 0);
     path.close();
     return path;

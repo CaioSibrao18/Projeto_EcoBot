@@ -67,7 +67,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       final responseData = json.decode(response.body);
 
       if (response.statusCode == 200) {
-        // Mostra mensagem de sucesso
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -77,20 +76,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             duration: const Duration(seconds: 3),
           ),
         );
-
-        // Espera 3 segundos antes de navegar
-        await Future.delayed(const Duration(seconds: 3));
-
-        // Navega para tela de login (substitua '/login' pela sua rota real)
-        if (mounted) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            '/', // Rota da tela de login
-            (Route<dynamic> route) => false, // Remove todas as telas da pilha
-          );
-        }
+        Navigator.popUntil(context, (route) => route.isFirst);
       } else {
-        // Mostra mensagem de erro e permanece na tela
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -123,7 +110,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDF7),
+      backgroundColor: const Color(0xFFEFF3F6),
       body: Stack(
         children: [
           ClipPath(
@@ -243,16 +230,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       obscureText: obscure ? _obscurePassword : false,
       validator: (value) {
         if (value == null || value.isEmpty) return 'Campo obrigatório';
-        if (label.contains('senha') && value.length < 6) {
+        if (label.contains('senha') && value.length < 6)
           return 'Mínimo 6 caracteres';
-        }
         return null;
       },
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: const Color(0xFF2BB462)),
         filled: true,
-        fillColor: const Color(0xFFFDFDF7),
+        fillColor: const Color(0xFFF7F7F7),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
