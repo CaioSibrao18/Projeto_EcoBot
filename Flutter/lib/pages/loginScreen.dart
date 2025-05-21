@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'registerScreen.dart';
 import 'forgetPasswordScreen.dart';
@@ -48,11 +47,6 @@ class _LoginScreenState extends State<LoginScreen> {
       final responseData = json.decode(response.body);
 
       if (response.statusCode == 200) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userToken', responseData['token']);
-        await prefs.setString('userName', responseData['user']['nome']);
-
-        if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/menu_games');
       } else {
         setState(() {
@@ -73,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDF7),
+      backgroundColor: const Color(0xFFEFF3F6),
       body: Stack(
         children: [
           ClipPath(
@@ -114,9 +108,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.isEmpty)
                             return 'Insira seu email';
-                          }
                           if (!value.contains('@')) return 'Email inválido';
                           return null;
                         },
@@ -127,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Color(0xFF2BB462),
                           ),
                           filled: true,
-                          fillColor: const Color(0xFFFDFDF7),
+                          fillColor: const Color(0xFFF7F7F7),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide.none,
@@ -139,9 +132,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _passwordController,
                         obscureText: true,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.isEmpty)
                             return 'Insira sua senha';
-                          }
                           return null;
                         },
                         decoration: InputDecoration(
@@ -151,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Color(0xFF2BB462),
                           ),
                           filled: true,
-                          fillColor: const Color(0xFFFDFDF7),
+                          fillColor: const Color(0xFFF7F7F7),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide.none,
