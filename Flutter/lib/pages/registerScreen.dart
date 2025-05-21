@@ -54,7 +54,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (response.statusCode == 201) {
         _showSnackBar('Cadastro realizado com sucesso!');
         _clearForm();
-        // Adição: Volta para a tela de login após 3 segundos
         Future.delayed(const Duration(seconds: 3), () {
           if (mounted) {
             Navigator.pop(context);

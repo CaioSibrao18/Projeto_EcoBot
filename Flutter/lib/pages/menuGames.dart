@@ -9,9 +9,10 @@ class MenuGames extends StatelessWidget {
       backgroundColor: const Color(0xFFFDFDF7),
       body: Column(
         children: [
+          _buildUserHeader(context),
           const SizedBox(height: 20),
           const LogoImage(),
-          const SizedBox(height: 12),
+          const SizedBox(height: 40),
           const TitleText(),
           const SizedBox(height: 40),
           Expanded(
@@ -23,12 +24,42 @@ class MenuGames extends StatelessWidget {
                   runSpacing: 16,
                   alignment: WrapAlignment.center,
                   children: [
-                    _gameTile(context, 'Soletrar por Letras', 'assets/images/iconpalavra.png', '/spelling_letters'),
-                    _gameTile(context, 'Soletrar por Sílabas', 'assets/images/iconsilaba.png', '/spelling_syllables'),
-                    _gameTile(context, 'Coleta Fácil', 'assets/images/iconcoletafacil.png', '/easy_trash_sorting'),
-                    _gameTile(context, 'Coleta Difícil', 'assets/images/iconcoletadificil.png', '/trash_sorting'),
-                    _gameTile(context, 'Quiz Fácil', 'assets/images/iconquizfacil.png', '/quiz_easy'),
-                    _gameTile(context, 'Quiz Difícil', 'assets/images/iconquizdificil.png', '/quiz_hard'),
+                    _gameTile(
+                      context,
+                      'Soletrar por Letras',
+                      'assets/images/iconpalavra.png',
+                      '/spelling_letters',
+                    ),
+                    _gameTile(
+                      context,
+                      'Soletrar por Sílabas',
+                      'assets/images/iconsilaba.png',
+                      '/spelling_syllables',
+                    ),
+                    _gameTile(
+                      context,
+                      'Coleta Fácil',
+                      'assets/images/iconcoletafacil.png',
+                      '/easy_trash_sorting',
+                    ),
+                    _gameTile(
+                      context,
+                      'Coleta Difícil',
+                      'assets/images/iconcoletadificil.png',
+                      '/trash_sorting',
+                    ),
+                    _gameTile(
+                      context,
+                      'Quiz Fácil',
+                      'assets/images/iconquizfacil.png',
+                      '/quiz_easy',
+                    ),
+                    _gameTile(
+                      context,
+                      'Quiz Difícil',
+                      'assets/images/iconquizdificil.png',
+                      '/quiz_hard',
+                    ),
                   ],
                 ),
               ),
@@ -39,7 +70,72 @@ class MenuGames extends StatelessWidget {
     );
   }
 
-  static Widget _gameTile(BuildContext context, String title, String imagePath, String route) {
+  Widget _buildUserHeader(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 20, bottom: 50, left: 16, right: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2BB462),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            'Olá, seja bem vindo ao Ecobot!',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: () => _showLogoutConfirmation(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Sair da conta'),
+          content: const Text('Você realmente deseja sair da sua conta?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: const Text('Sair'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static Widget _gameTile(
+    BuildContext context,
+    String title,
+    String imagePath,
+    String route,
+  ) {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, route),
       child: Container(
@@ -59,13 +155,8 @@ class MenuGames extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              imagePath,
-              width: 64,
-              height: 64,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(height: 10),
+            Image.asset(imagePath, width: 64, height: 64, fit: BoxFit.contain),
+            const SizedBox(height: 20),
             Text(
               title,
               textAlign: TextAlign.center,
@@ -95,11 +186,7 @@ class TitleText extends StatelessWidget {
         color: Colors.black87,
         fontFamily: 'PressStart2P',
         shadows: [
-          Shadow(
-            blurRadius: 4,
-            offset: Offset(1, 1),
-            color: Colors.black12,
-          ),
+          Shadow(blurRadius: 4, offset: Offset(1, 1), color: Colors.black12),
         ],
       ),
     );
@@ -111,9 +198,6 @@ class LogoImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      'assets/images/logoEcoQuest.png',
-      width: 150,
-    );
+    return Image.asset('assets/images/logoEcoQuest.png', width: 150);
   }
 }
