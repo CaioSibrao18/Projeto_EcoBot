@@ -6,34 +6,32 @@ class MenuGames extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEFF3F6),
-      body: Stack(
+      backgroundColor: const Color(0xFFFDFDF7),
+      body: Column(
         children: [
-          const WaveHeader(),
-          SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                const LogoImage(),
-                const SizedBox(height: 60),
-                const TitleText(),
-                const SizedBox(height: 24),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: ListView(
-                      children: [
-                        _gameButton(context, 'Soletrar por Letras', '/spelling_letters'),
-                        _gameButton(context, 'Soletrar por Sílabas', '/spelling_syllables'),
-                        _gameButton(context, 'Coleta Seletiva (Fácil)', '/easy_trash_sorting'),
-                        _gameButton(context, 'Coleta Seletiva (Difícil)', '/trash_sorting'),
-                        _gameButton(context, 'Quiz sobre Sustentabilidade (Fácil)', '/quiz_easy'),
-                        _gameButton(context, 'Quiz sobre Sustentabilidade (Difícil)', '/quiz_hard'),
-                      ],
-                    ),
-                  ),
+          const SizedBox(height: 20),
+          const LogoImage(),
+          const SizedBox(height: 12),
+          const TitleText(),
+          const SizedBox(height: 40),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Center(
+                child: Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    _gameTile(context, 'Soletrar por Letras', 'assets/images/iconpalavra.png', '/spelling_letters'),
+                    _gameTile(context, 'Soletrar por Sílabas', 'assets/images/iconsilaba.png', '/spelling_syllables'),
+                    _gameTile(context, 'Coleta Fácil', 'assets/images/iconcoletafacil.png', '/easy_trash_sorting'),
+                    _gameTile(context, 'Coleta Difícil', 'assets/images/iconcoletadificil.png', '/trash_sorting'),
+                    _gameTile(context, 'Quiz Fácil', 'assets/images/iconquizfacil.png', '/quiz_easy'),
+                    _gameTile(context, 'Quiz Difícil', 'assets/images/iconquizdificil.png', '/quiz_hard'),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -41,50 +39,44 @@ class MenuGames extends StatelessWidget {
     );
   }
 
-  static Widget _gameButton(BuildContext context, String title, String route) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF2BB462),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-          elevation: 4,
-        ),
-        onPressed: () => Navigator.pushNamed(context, route),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
+  static Widget _gameTile(BuildContext context, String title, String imagePath, String route) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, route),
+      child: Container(
+        width: MediaQuery.of(context).size.width / 2.8,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 6,
+              offset: Offset(0, 4),
             ),
-            const Icon(Icons.play_arrow, size: 26, color: Colors.white),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class WaveHeader extends StatelessWidget {
-  const WaveHeader({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipPath(
-      clipper: WaveClipper(),
-      child: Container(
-        height: 240,
-        color: const Color(0xFF2BB462),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              imagePath,
+              width: 64,
+              height: 64,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -99,9 +91,9 @@ class TitleText extends StatelessWidget {
       "Escolha um jogo para começar",
       textAlign: TextAlign.center,
       style: const TextStyle(
-        fontSize: 18,
+        fontSize: 14,
         color: Colors.black87,
-        fontFamily: 'PressStart2P', 
+        fontFamily: 'PressStart2P',
         shadows: [
           Shadow(
             blurRadius: 4,
@@ -121,25 +113,7 @@ class LogoImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Image.asset(
       'assets/images/logoEcoQuest.png',
-      width: 180,
+      width: 150,
     );
   }
-}
-
-class WaveClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(0, size.height - 40);
-    path.quadraticBezierTo(
-        size.width * 0.25, size.height, size.width * 0.5, size.height - 40);
-    path.quadraticBezierTo(
-        size.width * 0.75, size.height - 80, size.width, size.height - 40);
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

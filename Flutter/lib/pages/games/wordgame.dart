@@ -11,22 +11,24 @@ class SpellingGameLetters extends StatefulWidget {
 
 class _SpellingGameLettersState extends State<SpellingGameLetters> {
   final List<Map<String, dynamic>> words = [
+    {'word': 'reciclar', 'letters': ['r', 'e', 'c', 'i', 'c', 'l', 'a', 'r']},
     {'word': 'ecossistema', 'letters': ['e', 'c', 'o', 's', 's', 'i', 's', 't', 'e', 'm', 'a']},
-    {'word': 'fotossintese', 'letters': ['f', 'o', 't', 'o', 's', 's', 'i', 'n', 't', 'e', 's', 'e']},
-    {'word': 'sustentavel', 'letters': ['s', 'u', 's', 't', 'e', 'n', 't', 'a', 'v', 'e', 'l']},
-    {'word': 'biodiverso', 'letters': ['b', 'i', 'o', 'd', 'i', 'v', 'e', 'r', 's', 'o']},
-    {'word': 'renovavel', 'letters': ['r', 'e', 'n', 'o', 'v', 'a', 'v', 'e', 'l']},
-    {'word': 'carbono', 'letters': ['c', 'a', 'r', 'b', 'o', 'n', 'o']},
-    {'word': 'geotermica', 'letters': ['g', 'e', 'o', 't', 'e', 'r', 'm', 'i', 'c', 'a']},
     {'word': 'compostagem', 'letters': ['c', 'o', 'm', 'p', 'o', 's', 't', 'a', 'g', 'e', 'm']},
-    {'word': 'ambiental', 'letters': ['a', 'm', 'b', 'i', 'e', 'n', 't', 'a', 'l']},
-    {'word': 'fotovoltaico', 'letters': ['f', 'o', 't', 'o', 'v', 'o', 'l', 't', 'a', 'i', 'c', 'o']},
+    {'word': 'sustentabilidade', 'letters': ['s', 'u', 's', 't', 'e', 'n', 't', 'a', 'b', 'i', 'l', 'i', 'd', 'a', 'd', 'e']},
+    {'word': 'biodiversidade', 'letters': ['b', 'i', 'o', 'd', 'i', 'v', 'e', 'r', 's', 'i', 'd', 'a', 'd', 'e']},
+    {'word': 'energia', 'letters': ['e', 'n', 'e', 'r', 'g', 'i', 'a']},
+    {'word': 'natureza', 'letters': ['n', 'a', 't', 'u', 'r', 'e', 'z', 'a']},
+    {'word': 'renovavel', 'letters': ['r', 'e', 'n', 'o', 'v', 'a', 'v', 'e', 'l']},
+    {'word': 'preservar', 'letters': ['p', 'r', 'e', 's', 'e', 'r', 'v', 'a', 'r']},
+    {'word': 'consciente', 'letters': ['c', 'o', 'n', 's', 'c', 'i', 'e', 'n', 't', 'e']},
   ];
 
   int currentWordIndex = 0;
   int correctAnswers = 0;
   List<String> selectedLetters = [];
   List<String> availableLetters = [];
+  bool showCorrectWord = false;
+  String correctWord = '';
   Color boxColor = Colors.grey[200]!;
 
   @override
@@ -40,33 +42,44 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
       selectedLetters.clear();
       availableLetters = List.from(words[currentWordIndex]['letters']);
       availableLetters.shuffle();
+      showCorrectWord = false;
+      correctWord = words[currentWordIndex]['word'];
       boxColor = Colors.grey[200]!;
     });
   }
 
   void checkAnswer() {
     String formedWord = selectedLetters.join('');
-    String correctWord = words[currentWordIndex]['word'];
+    String answer = correctWord;
 
-    if (formedWord == correctWord) {
+    if (formedWord == answer) {
       setState(() {
         boxColor = Colors.greenAccent;
         correctAnswers++;
       });
+      Future.delayed(const Duration(seconds: 1), () {
+        goToNextWord();
+      });
     } else {
       setState(() {
         boxColor = Colors.redAccent;
+        showCorrectWord = true;
+      });
+      Future.delayed(const Duration(seconds: 2), () {
+        goToNextWord();
       });
     }
+  }
 
-    Future.delayed(const Duration(seconds: 1), () {
-      if (currentWordIndex < words.length - 1) {
-        setState(() => currentWordIndex++);
+  void goToNextWord() {
+    if (currentWordIndex < words.length - 1) {
+      setState(() {
+        currentWordIndex++;
         resetGame();
-      } else {
-        showResult();
-      }
-    });
+      });
+    } else {
+      showResult();
+    }
   }
 
   void showResult() {
@@ -75,22 +88,17 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text(
-          'Resultado',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Resultado'),
         content: Text('Você acertou ${percentage.toStringAsFixed(1)}% das palavras!'),
         actions: [
           TextButton(
             onPressed: () {
-              _sendResultToBackend(correctAnswers); // ✅ Envia antes de zerar
-
+              _sendResultToBackend(correctAnswers);
               setState(() {
                 currentWordIndex = 0;
                 correctAnswers = 0;
                 resetGame();
               });
-
               Navigator.pop(context);
             },
             child: const Text('Tentar Novamente'),
@@ -102,154 +110,179 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
 
   Future<void> _sendResultToBackend(int acertos) async {
     final url = Uri.parse('http://localhost:5000/api/saveResult');
-    final response = await http.post(
+    await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'usuario_id': 4,
         'acertos': acertos,
-        'tempo_segundos': 0, // valor fixo porque este jogo não usa tempo
+        'tempo_segundos': 0,
       }),
     );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      print('Resultado enviado com sucesso!');
-    } else {
-      print('Erro ao enviar o resultado: ${response.body}');
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     int half = (availableLetters.length / 2).ceil();
-
-    List<String> topRowLetters = availableLetters.take(half).toList();
-    List<String> bottomRowLetters = availableLetters.skip(half).toList();
+    List<String> topRow = availableLetters.take(half).toList();
+    List<String> bottomRow = availableLetters.skip(half).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFEFF3F6),
-      appBar: AppBar(
-        title: const Text('Soletrar por Letras'),
-        centerTitle: true,
-        backgroundColor: const Color(0xFF2BB462),
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+      backgroundColor: const Color(0xFFFDFDF7),
+      body: SafeArea(
+        child: Stack(
           children: [
-            const Text(
-              'Arraste as letras para formar a palavra correta',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: topRowLetters.map((letter) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                child: Draggable<String>(
-                  data: letter,
-                  feedback: _letterTile(letter, dragging: true),
-                  childWhenDragging: Opacity(
-                    opacity: 0.5,
-                    child: _letterTile(letter),
-                  ),
-                  child: _letterTile(letter),
-                ),
-              )).toList(),
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: bottomRowLetters.map((letter) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                child: Draggable<String>(
-                  data: letter,
-                  feedback: _letterTile(letter, dragging: true),
-                  childWhenDragging: Opacity(
-                    opacity: 0.5,
-                    child: _letterTile(letter),
-                  ),
-                  child: _letterTile(letter),
-                ),
-              )).toList(),
-            ),
-
-            const SizedBox(height: 30),
-
-            DragTarget<String>(
-              builder: (context, candidateData, rejectedData) => Container(
+            Center(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
-                height: 80,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: boxColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF2BB462), width: 2),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  selectedLetters.join(''),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'PressStart2P',
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/logoEcoQuest.png',
+                      height: 240,
+                      width: 240,
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Arraste as letras para formar a palavra correta',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'PressStart2P',
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildLetterRow(topRow),
+                    _buildLetterRow(bottomRow),
+                    const SizedBox(height: 30),
+                    DragTarget<String>(
+                      builder: (context, candidateData, rejectedData) => Container(
+                        padding: const EdgeInsets.all(16),
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: boxColor,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: const Color(0xFF2BB462), width: 2),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          selectedLetters.join(''),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'PressStart2P',
+                          ),
+                        ),
+                      ),
+                      onAccept: (data) {
+                        if (availableLetters.contains(data)) {
+                          setState(() {
+                            selectedLetters.add(data);
+                            availableLetters.remove(data);
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 30),
+                    if (showCorrectWord)
+                      Column(
+                        children: [
+                          const Text(
+                            'Palavra correta:',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontFamily: 'PressStart2P',
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            correctWord
+                                .split('')
+                                .map((l) => l)
+                                .join('-'),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                              fontFamily: 'PressStart2P',
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: checkAnswer,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2BB462),
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: const Text('Confirmar', style: TextStyle(color: Colors.white)),
+                        ),
+                        const SizedBox(width: 16),
+                        ElevatedButton(
+                          onPressed: resetGame,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: const Text('Limpar', style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Palavra ${currentWordIndex + 1} de ${words.length}',
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontFamily: 'PressStart2P',
+                        fontSize: 10,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
-              onAccept: (data) {
-                if (availableLetters.contains(data)) {
-                  setState(() {
-                    selectedLetters.add(data);
-                    availableLetters.remove(data);
-                  });
-                }
-              },
             ),
-
-            const SizedBox(height: 30),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: checkAnswer,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2BB462),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text('Confirmar', style: TextStyle(color: Colors.white)),
-                ),
-                const SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: resetGame,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text('Limpar', style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            Text(
-              'Palavra ${currentWordIndex + 1} de ${words.length}',
-              style: const TextStyle(color: Colors.black54),
+            Positioned(
+              top: 16,
+              left: 16,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, size: 28, color: Color(0xFF2BB462)),
+                onPressed: () => Navigator.pop(context),
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildLetterRow(List<String> letters) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: letters.map((letter) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Draggable<String>(
+          data: letter,
+          feedback: _letterTile(letter, dragging: true),
+          childWhenDragging: Opacity(
+            opacity: 0.5,
+            child: _letterTile(letter),
+          ),
+          child: _letterTile(letter),
+        ),
+      )).toList(),
     );
   }
 

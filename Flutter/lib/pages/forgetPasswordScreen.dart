@@ -70,7 +70,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEFF3F6),
+      backgroundColor: const Color(0xFFFDFDF7),
       body: Stack(
         children: [
           ClipPath(
@@ -127,7 +127,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           labelText: 'E-mail',
                           prefixIcon: const Icon(Icons.email, color: Color(0xFF2BB462)),
                           filled: true,
-                          fillColor: const Color(0xFFF7F7F7),
+                          fillColor: const Color(0xFFFDFDF7),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide.none,

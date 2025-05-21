@@ -11,16 +11,46 @@ class SpellingGameSyllables extends StatefulWidget {
 
 class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   final List<Map<String, dynamic>> words = [
-    {'word': 're-ci-clar', 'syllables': ['re', 'ci', 'clar']},
-    {'word': 'e-ner-gi-a', 'syllables': ['e', 'ner', 'gi', 'a']},
-    {'word': 'sus-ten-tá-vel', 'syllables': ['sus', 'ten', 'tá', 'vel']},
-    {'word': 'a-ma-zô-nia', 'syllables': ['a', 'ma', 'zô', 'nia']},
-    {'word': 'a-gua', 'syllables': ['a', 'gua']},
-    {'word': 'na-tu-re-za', 'syllables': ['na', 'tu', 're', 'za']},
-    {'word': 'po-lu-i-ção', 'syllables': ['po', 'lu', 'i', 'ção']},
-    {'word': 're-u-ti-li-zar', 'syllables': ['re', 'u', 'ti', 'li', 'zar']},
-    {'word': 'com-pos-ta-gem', 'syllables': ['com', 'pos', 'ta', 'gem']},
-    {'word': 'bio-de-gra-dá-vel', 'syllables': ['bio', 'de', 'gra', 'dá', 'vel']},
+    {
+      'word': 're-ci-clar',
+      'syllables': ['re', 'ci', 'clar'],
+    },
+    {
+      'word': 'e-ner-gi-a',
+      'syllables': ['e', 'ner', 'gi', 'a'],
+    },
+    {
+      'word': 'sus-ten-tá-vel',
+      'syllables': ['sus', 'ten', 'tá', 'vel'],
+    },
+    {
+      'word': 'a-ma-zô-nia',
+      'syllables': ['a', 'ma', 'zô', 'nia'],
+    },
+    {
+      'word': 'a-gua',
+      'syllables': ['a', 'gua'],
+    },
+    {
+      'word': 'na-tu-re-za',
+      'syllables': ['na', 'tu', 're', 'za'],
+    },
+    {
+      'word': 'po-lu-i-ção',
+      'syllables': ['po', 'lu', 'i', 'ção'],
+    },
+    {
+      'word': 're-u-ti-li-zar',
+      'syllables': ['re', 'u', 'ti', 'li', 'zar'],
+    },
+    {
+      'word': 'com-pos-ta-gem',
+      'syllables': ['com', 'pos', 'ta', 'gem'],
+    },
+    {
+      'word': 'bio-de-gra-dá-vel',
+      'syllables': ['bio', 'de', 'gra', 'dá', 'vel'],
+    },
   ];
 
   int currentWordIndex = 0;
@@ -28,6 +58,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   late List<String> availableSyllables;
   List<String> selectedSyllables = [];
   Color boxColor = Colors.grey.shade200;
+  String? incorrectWord;
 
   @override
   void initState() {
@@ -41,6 +72,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
       availableSyllables = List.from(words[currentWordIndex]['syllables']);
       availableSyllables.shuffle();
       boxColor = Colors.grey.shade200;
+      incorrectWord = null;
     });
   }
 
@@ -48,25 +80,37 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
     final formedWord = selectedSyllables.join('-');
     final correctWord = words[currentWordIndex]['word'];
 
-    setState(() {
-      if (formedWord == correctWord) {
+    if (formedWord == correctWord) {
+      setState(() {
         boxColor = Colors.greenAccent;
         correctAnswers++;
-      } else {
+      });
+      Future.delayed(const Duration(seconds: 1), () {
+        if (currentWordIndex < words.length - 1) {
+          setState(() {
+            currentWordIndex++;
+          });
+          resetGame();
+        } else {
+          showResult();
+        }
+      });
+    } else {
+      setState(() {
         boxColor = Colors.redAccent;
-      }
-    });
-
-    Future.delayed(const Duration(seconds: 1), () {
-      if (currentWordIndex < words.length - 1) {
-        setState(() {
-          currentWordIndex++;
-        });
-        resetGame();
-      } else {
-        showResult();
-      }
-    });
+        incorrectWord = correctWord;
+      });
+      Future.delayed(const Duration(seconds: 2), () {
+        if (currentWordIndex < words.length - 1) {
+          setState(() {
+            currentWordIndex++;
+          });
+          resetGame();
+        } else {
+          showResult();
+        }
+      });
+    }
   }
 
   void showResult() {
@@ -74,29 +118,30 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
 
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text(
-          'Resultado',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: Text('Você acertou ${percentage.toStringAsFixed(1)}% das palavras!'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              _sendResultToBackend(correctAnswers); // ✅ Envia antes de zerar
-
-              setState(() {
-                currentWordIndex = 0;
-                correctAnswers = 0;
-                resetGame();
-              });
-
-              Navigator.pop(context);
-            },
-            child: const Text('Tentar Novamente'),
+      builder:
+          (_) => AlertDialog(
+            title: const Text(
+              'Resultado',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Text(
+              'Você acertou ${percentage.toStringAsFixed(1)}% das palavras!',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  _sendResultToBackend(correctAnswers);
+                  setState(() {
+                    currentWordIndex = 0;
+                    correctAnswers = 0;
+                    resetGame();
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text('Tentar Novamente'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -108,7 +153,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
       body: json.encode({
         'usuario_id': 4,
         'acertos': acertos,
-        'tempo_segundos': 0, // valor fixo porque este jogo não usa tempo
+        'tempo_segundos': 0,
       }),
     );
 
@@ -142,112 +187,159 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEFF3F6),
+      backgroundColor: const Color(0xFFFDFDF7),
       appBar: AppBar(
-        title: const Text('Soletrar por Sílabas'),
-        centerTitle: true,
-        backgroundColor: const Color(0xFF2BB462),
+        backgroundColor: const Color(0xfffdfdf7),
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xff2bb462)),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              'Arraste as sílabas para formar a palavra correta',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: availableSyllables
-                  .map(
-                    (syllable) => Draggable<String>(
-                      data: syllable,
-                      feedback: _syllableTile(syllable, dragging: true),
-                      childWhenDragging: Opacity(
-                        opacity: 0.5,
-                        child: _syllableTile(syllable),
-                      ),
-                      child: _syllableTile(syllable),
-                    ),
-                  )
-                  .toList(),
-            ),
-            const SizedBox(height: 30),
-            DragTarget<String>(
-              builder: (context, candidateData, rejectedData) => Container(
-                padding: const EdgeInsets.all(16),
-                height: 100,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: boxColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF2BB462), width: 2),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  selectedSyllables.join('-'),
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'PressStart2P',  
-                  ),
-                ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20),
+              // Logo no topo com tamanho 240x240
+              Image.asset(
+                'assets/images/logoEcoQuest.png',
+                width: 240,
+                height: 240,
               ),
-              onAccept: (data) {
-                if (!selectedSyllables.contains(data)) {
-                  setState(() {
-                    selectedSyllables.add(data);
-                    availableSyllables.remove(data);
-                  });
-                }
-              },
-            ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: checkAnswer,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2BB462),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Confirmar',
-                    style: TextStyle(color: Colors.white),
-                  ),
+              const SizedBox(height: 20),
+              const Text(
+                'Arraste as sílabas para formar a palavra correta',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'PressStart2P',
                 ),
-                const SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: resetGame,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 30),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                alignment: WrapAlignment.center,
+                children:
+                    availableSyllables
+                        .map(
+                          (syllable) => Draggable<String>(
+                            data: syllable,
+                            feedback: _syllableTile(syllable, dragging: true),
+                            childWhenDragging: Opacity(
+                              opacity: 0.5,
+                              child: _syllableTile(syllable),
+                            ),
+                            child: _syllableTile(syllable),
+                          ),
+                        )
+                        .toList(),
+              ),
+              const SizedBox(height: 40),
+              DragTarget<String>(
+                builder:
+                    (context, candidateData, rejectedData) => Container(
+                      padding: const EdgeInsets.all(16),
+                      height: 100,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: boxColor,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFF2BB462),
+                          width: 2,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        selectedSyllables.join('-'),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
                     ),
-                  ),
-                  child: const Text(
-                    'Limpar',
-                    style: TextStyle(color: Colors.white),
+                onAccept: (data) {
+                  if (!selectedSyllables.contains(data)) {
+                    setState(() {
+                      selectedSyllables.add(data);
+                      availableSyllables.remove(data);
+                    });
+                  }
+                },
+              ),
+              if (incorrectWord != null) ...[
+                const SizedBox(height: 20),
+                Text(
+                  'Palavra correta: $incorrectWord',
+                  style: const TextStyle(
+                    color: Colors.redAccent,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PressStart2P',
+                    fontSize: 12,
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Palavra ${currentWordIndex + 1} de ${words.length}',
-              style: const TextStyle(color: Colors.black54),
-            ),
-          ],
+              const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: checkAnswer,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2BB462),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text(
+                      'Confirmar',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  ElevatedButton(
+                    onPressed: resetGame,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text(
+                      'Limpar',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Palavra ${currentWordIndex + 1} de ${words.length}',
+                style: const TextStyle(
+                  color: Colors.black54,
+                  fontFamily: 'PressStart2P',
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );

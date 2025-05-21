@@ -85,7 +85,8 @@ class _QuizScreenState extends State<QuizScreenEasy> {
   void checkAnswer(int index) {
     setState(() {
       selectedOption = index;
-      if (index == questions[currentQuestionIndex]['correctIndex']) {
+      bool isCorrect = index == questions[currentQuestionIndex]['correctIndex'];
+      if (isCorrect) {
         correctAnswers++;
       }
       Future.delayed(const Duration(seconds: 2), () {
@@ -108,67 +109,52 @@ class _QuizScreenState extends State<QuizScreenEasy> {
 
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(
-              'Resultado',
-              style: TextStyle(
-                color: Colors.teal[800],
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            content: Container(
-              decoration: BoxDecoration(
-                color: Colors.teal[50],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '$correctAnswers/${questions.length} perguntas corretas',
-                    style: TextStyle(fontSize: 18, color: Colors.teal[900]),
-                  ),
-                  const SizedBox(height: 15),
-                  Text(
-                    correctAnswers > questions.length / 3
-                        ? 'Parabéns, você domina o assunto!'
-                        : 'Você ainda pode melhorar, continue estudando!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.teal[800],
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    currentQuestionIndex = 0;
-                    correctAnswers = 0;
-                    _stopwatch.reset();
-                    _stopwatch.start();
-                  });
-                },
-                child: Text(
-                  'Reiniciar',
-                  style: TextStyle(color: Colors.teal[700]),
-                ),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFFFDFDF7),
+        title: const Text(
+          'Resultado',
+          style: TextStyle(
+            color: Color(0xFF2BB462),
+            fontWeight: FontWeight.bold,
+            fontFamily: 'PressStart2P',
+            fontSize: 14,
           ),
+        ),
+        content: Text(
+          '$correctAnswers/${questions.length} corretas',
+          style: const TextStyle(
+            fontFamily: 'PressStart2P',
+            fontSize: 12,
+            color: Colors.black,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              setState(() {
+                currentQuestionIndex = 0;
+                correctAnswers = 0;
+                _stopwatch.reset();
+                _stopwatch.start();
+              });
+            },
+            child: const Text(
+              'Reiniciar',
+              style: TextStyle(
+                color: Color(0xFF2BB462),
+                fontFamily: 'PressStart2P',
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 
   Future<void> _enviarParaBackend(int acertos, int tempoSegundos) async {
     final url = Uri.parse('http://localhost:5000/api/saveResult');
-    final response = await http.post(
+    await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
@@ -177,139 +163,90 @@ class _QuizScreenState extends State<QuizScreenEasy> {
         'tempo_segundos': tempoSegundos,
       }),
     );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      print('Resultado enviado com sucesso!');
-    } else {
-      print('Erro ao enviar o resultado: ${response.body}');
-    }
   }
-  
 
   @override
   Widget build(BuildContext context) {
     var questionData = questions[currentQuestionIndex];
     return Scaffold(
+      backgroundColor: const Color(0xFFFDFDF7),
       appBar: AppBar(
-        backgroundColor: Colors.teal[700],
-        title: Text(
-          'Game Quiz',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 20,
-          ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF2BB462)),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        centerTitle: true,
-        elevation: 5,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.teal[50]!, Colors.white],
-          ),
-        ),
+      body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 2,
-                  blurRadius: 8,
-                  offset: Offset(0, 3),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                'assets/images/logoEcoQuest.png',
+                width: 240,
+                height: 240,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                questionData['question'],
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'PressStart2P',
                 ),
-              ],
-            ),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.teal[100],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    questionData['question'],
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.teal[900],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 25),
-                ...List.generate(questionData['options'].length, (index) {
-                  Color buttonColor = Colors.teal[400]!;
-                  if (selectedOption != null) {
-                    if (index == questionData['correctIndex']) {
-                      buttonColor =
-                          Colors.green; 
-                    } else if (index == selectedOption) {
-                      buttonColor =
-                          Colors.red; 
-                    }
+              ),
+              const SizedBox(height: 24),
+              ...List.generate(questionData['options'].length, (index) {
+                Color backgroundColor = Colors.white;
+                Color borderColor = Colors.blueGrey;
+                Color textColor = Colors.black;
+
+                if (selectedOption != null) {
+                  if (index == questionData['correctIndex']) {
+                    backgroundColor = Colors.green;
+                    borderColor = Colors.green;
+                    textColor = Colors.white;
+                  } else if (index == selectedOption) {
+                    backgroundColor = Colors.red;
+                    borderColor = Colors.red;
+                    textColor = Colors.white;
                   }
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Material(
-                      elevation: 3,
-                      borderRadius: BorderRadius.circular(30),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              buttonColor,
-                            ),
-                            padding: WidgetStateProperty.all(
-                              EdgeInsets.symmetric(vertical: 16),
-                            ),
-                            shape: WidgetStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            elevation: WidgetStateProperty.all(3),
-                            shadowColor: WidgetStateProperty.all(
-                              Colors.grey.withOpacity(0.5),
-                            ),
-                          ),
-                          onPressed:
-                              selectedOption == null
-                                  ? () => checkAnswer(index)
-                                  : null,
-                          child: Text(
-                            questionData['options'][index],
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                } else {
+                  backgroundColor = Colors.white;
+                  borderColor = Colors.blueGrey;
+                  textColor = Colors.black;
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: backgroundColor,
+                      foregroundColor: textColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: borderColor, width: 2),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      elevation: 0,
+                    ),
+                    onPressed:
+                        selectedOption == null ? () => checkAnswer(index) : null,
+                    child: Text(
+                      questionData['options'][index],
+                      style: const TextStyle(
+                        fontFamily: 'PressStart2P',
+                        fontSize: 10,
                       ),
                     ),
-                  );
-                }),
-                SizedBox(height: 20),
-                Text(
-                  'Pergunta ${currentQuestionIndex + 1} de ${questions.length}',
-                  style: TextStyle(
-                    color: Colors.teal[700],
-                    fontStyle: FontStyle.italic,
                   ),
-                ),
-              ],
-            ),
+                );
+              }),
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),

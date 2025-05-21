@@ -70,6 +70,12 @@ flutter:
     - assets/images/Click.png
     - assets/images/Puzzle.png
     - assets/images/FundoVerde.png
+    - assets/images/iconcoletafacil.png
+    - assets/images/iconcoletadificil.png
+    - assets/images/iconpalavra.png
+    - assets/images/iconquizdificil.png
+    - assets/images/iconquizfacil.png
+    - assets/images/iconsilaba.png
 
   fonts:
     - family: PressStart2P

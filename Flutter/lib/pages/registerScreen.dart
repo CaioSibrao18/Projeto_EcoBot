@@ -99,7 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEFF3F6),
+      backgroundColor: const Color(0xFFFDFDF7),
       body: Stack(
         children: [
           ClipPath(
