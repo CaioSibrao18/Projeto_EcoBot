@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'menuGames_logic.dart';
 
-
 class MenuGames extends StatelessWidget {
   const MenuGames({super.key});
 
@@ -75,32 +74,52 @@ class MenuGames extends StatelessWidget {
   Widget _buildUserHeader(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 20, bottom: 50, left: 16, right: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2BB462),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'Olá, seja bem vindo ao Ecobot!',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2BB462),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Text(
+              'Olá, seja bem vindo ao EcoQuest!',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () => _showLogoutConfirmation(context),
+
+          Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFF2BB462),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: GestureDetector(
+              onTap: () => _showLogoutConfirmation(context),
+              child: const Center(
+                child: Icon(Icons.logout, color: Colors.white, size: 24),
+              ),
+            ),
           ),
         ],
       ),
@@ -149,7 +168,7 @@ class MenuGames extends StatelessWidget {
             BoxShadow(
               color: Colors.black12,
               blurRadius: 6,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -180,10 +199,10 @@ class TitleText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return const Text(
       "Escolha um jogo para começar",
       textAlign: TextAlign.center,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 14,
         color: Colors.black87,
         fontFamily: 'PressStart2P',
