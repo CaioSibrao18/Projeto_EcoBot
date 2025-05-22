@@ -230,8 +230,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       obscureText: obscure ? _obscurePassword : false,
       validator: (value) {
         if (value == null || value.isEmpty) return 'Campo obrigatório';
-        if (label.contains('senha') && value.length < 6)
+        if (label.contains('senha') && value.length < 6) {
           return 'Mínimo 6 caracteres';
+        }
         return null;
       },
       decoration: InputDecoration(

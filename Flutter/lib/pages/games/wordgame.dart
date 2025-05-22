@@ -176,10 +176,10 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
                           ),
                         ),
                       ),
-                      onAccept: (data) {
+                      onAcceptWithDetails: (data) {
                         if (availableLetters.contains(data)) {
                           setState(() {
-                            selectedLetters.add(data);
+                            selectedLetters.add(data as String);
                             availableLetters.remove(data);
                           });
                         }

@@ -67,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDF7),
+      backgroundColor: const Color(0xFFEFF3F6),
       body: Stack(
         children: [
           ClipPath(
@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Color(0xFF2BB462),
                           ),
                           filled: true,
-                          fillColor: const Color(0xFFFDFDF7),
+                          fillColor: const Color(0xFFF7F7F7),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide.none,
@@ -143,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Color(0xFF2BB462),
                           ),
                           filled: true,
-                          fillColor: const Color(0xFFFDFDF7),
+                          fillColor: const Color(0xFFF7F7F7),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide.none,

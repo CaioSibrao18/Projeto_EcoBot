@@ -266,10 +266,10 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
                         ),
                       ),
                     ),
-                onAccept: (data) {
+                onAcceptWithDetails: (data) {
                   if (!selectedSyllables.contains(data)) {
                     setState(() {
-                      selectedSyllables.add(data);
+                      selectedSyllables.add(data as String);
                       availableSyllables.remove(data);
                     });
                   }
