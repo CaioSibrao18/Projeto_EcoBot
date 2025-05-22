@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'menuGames_logic.dart';
+
 
 class MenuGames extends StatelessWidget {
   const MenuGames({super.key});
@@ -41,7 +43,7 @@ class MenuGames extends StatelessWidget {
 
   static Widget _gameTile(BuildContext context, String title, String imagePath, String route) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, route),
+      onTap: () => GameNavigator.navigateTo(context, route),
       child: Container(
         width: MediaQuery.of(context).size.width / 2.8,
         decoration: BoxDecoration(
