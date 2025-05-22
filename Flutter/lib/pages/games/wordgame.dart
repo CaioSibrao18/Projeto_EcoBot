@@ -123,10 +123,6 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
 
   @override
   Widget build(BuildContext context) {
-    int half = (availableLetters.length / 2).ceil();
-    List<String> topRow = availableLetters.take(half).toList();
-    List<String> bottomRow = availableLetters.skip(half).toList();
-
     return Scaffold(
       backgroundColor: const Color(0xFFFDFDF7),
       body: SafeArea(
@@ -154,13 +150,26 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    _buildLetterRow(topRow),
-                    _buildLetterRow(bottomRow),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: availableLetters.map((letter) => Draggable<String>(
+                        data: letter,
+                        feedback: _letterTile(letter, dragging: true),
+                        childWhenDragging: Opacity(
+                          opacity: 0.5,
+                          child: _letterTile(letter),
+                        ),
+                        child: _letterTile(letter),
+                      )).toList(),
+                    ),
                     const SizedBox(height: 30),
                     DragTarget<String>(
                       builder: (context, candidateData, rejectedData) => Container(
                         padding: const EdgeInsets.all(16),
                         height: 80,
+                        width: double.infinity,
                         decoration: BoxDecoration(
                           color: boxColor,
                           borderRadius: BorderRadius.circular(16),
@@ -168,19 +177,21 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          selectedLetters.join(''),
+                          selectedLetters.join('').toUpperCase(),
+                          textAlign: TextAlign.center,
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'PressStart2P',
+                            color: Color(0xFF2BB462),
                           ),
                         ),
                       ),
                       onAcceptWithDetails: (data) {
-                        if (availableLetters.contains(data)) {
+                        if (availableLetters.contains(data.data)) {
                           setState(() {
-                            selectedLetters.add(data as String);
-                            availableLetters.remove(data);
+                            selectedLetters.add(data.data);
+                            availableLetters.remove(data.data);
                           });
                         }
                       },
@@ -198,10 +209,7 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
                             ),
                           ),
                           Text(
-                            correctWord
-                                .split('')
-                                .map((l) => l)
-                                .join('-'),
+                            correctWord.split('').join('-').toUpperCase(),
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.red,
@@ -265,24 +273,6 @@ class _SpellingGameLettersState extends State<SpellingGameLetters> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildLetterRow(List<String> letters) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: letters.map((letter) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        child: Draggable<String>(
-          data: letter,
-          feedback: _letterTile(letter, dragging: true),
-          childWhenDragging: Opacity(
-            opacity: 0.5,
-            child: _letterTile(letter),
-          ),
-          child: _letterTile(letter),
-        ),
-      )).toList(),
     );
   }
 

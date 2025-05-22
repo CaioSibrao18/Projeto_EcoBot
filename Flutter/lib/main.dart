@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: const [Locale('pt', 'BR')],
 
-      initialRoute: '/app_telalogin',
+      initialRoute: '/login',
       routes: {
         '/': (context) => const LoginScreen(),
         '/menu_games': (context) => MenuGames(),
