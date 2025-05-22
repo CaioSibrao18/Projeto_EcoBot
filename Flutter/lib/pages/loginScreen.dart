@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'registerScreen.dart';
 import 'forgetPasswordScreen.dart';
+import 'login_logic.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -80,10 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Form(
                 key: _formKey,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 32,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
@@ -107,18 +105,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value == null || value.isEmpty)
-                            return 'Insira seu email';
-                          if (!value.contains('@')) return 'Email inválido';
-                          return null;
-                        },
+                        validator: LoginValidator.validateEmail,
                         decoration: InputDecoration(
                           labelText: 'E-mail',
-                          prefixIcon: const Icon(
-                            Icons.email,
-                            color: Color(0xFF2BB462),
-                          ),
+                          prefixIcon: const Icon(Icons.email, color: Color(0xFF2BB462)),
                           filled: true,
                           fillColor: const Color(0xFFF7F7F7),
                           border: OutlineInputBorder(
@@ -131,17 +121,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _passwordController,
                         obscureText: true,
-                        validator: (value) {
-                          if (value == null || value.isEmpty)
-                            return 'Insira sua senha';
-                          return null;
-                        },
+                        validator: LoginValidator.validatePassword,
                         decoration: InputDecoration(
                           labelText: 'Senha',
-                          prefixIcon: const Icon(
-                            Icons.lock,
-                            color: Color(0xFF2BB462),
-                          ),
+                          prefixIcon: const Icon(Icons.lock, color: Color(0xFF2BB462)),
                           filled: true,
                           fillColor: const Color(0xFFF7F7F7),
                           border: OutlineInputBorder(
@@ -170,50 +153,42 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          child:
-                              _isLoading
-                                  ? const CircularProgressIndicator(
+                          child: _isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text(
+                                  'Entrar',
+                                  style: TextStyle(
                                     color: Colors.white,
-                                  )
-                                  : const Text(
-                                    'Entrar',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    fontWeight: FontWeight.bold,
                                   ),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 16),
                       TextButton(
-                        onPressed:
-                            _isLoading
-                                ? null
-                                : () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) =>
-                                              const ForgetPasswordScreen(),
-                                    ),
-                                  );
-                                },
+                        onPressed: _isLoading
+                            ? null
+                            : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ForgetPasswordScreen(),
+                                  ),
+                                );
+                              },
                         child: const Text('Esqueci a senha'),
                       ),
                       TextButton(
-                        onPressed:
-                            _isLoading
-                                ? null
-                                : () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => const RegisterScreen(),
-                                    ),
-                                  );
-                                },
+                        onPressed: _isLoading
+                            ? null
+                            : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const RegisterScreen(),
+                                  ),
+                                );
+                              },
                         child: const Text('Criar conta'),
                       ),
                     ],
