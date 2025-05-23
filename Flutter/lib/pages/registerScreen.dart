@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'registerScreen_logic.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -145,19 +146,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         height: 200,
                       ),
                       const SizedBox(height: 20),
-                      _inputField(_nameController, 'Nome', Icons.person),
+                      _inputField(
+                        _nameController,
+                        'Nome',
+                        Icons.person,
+                        validator: RegisterValidator.validateName,
+                      ),
                       const SizedBox(height: 15),
                       _datePickerField(),
                       const SizedBox(height: 15),
                       _dropdownGenderField(),
                       const SizedBox(height: 15),
-                      _inputField(_emailController, 'Email', Icons.email),
+                      _inputField(
+                        _emailController,
+                        'Email',
+                        Icons.email,
+                        validator: RegisterValidator.validateEmail,
+                      ),
                       const SizedBox(height: 15),
                       _inputField(
                         _passwordController,
                         'Senha',
                         Icons.lock,
                         obscure: true,
+                        validator: RegisterValidator.validatePassword,
                       ),
                       const SizedBox(height: 15),
                       _inputField(
@@ -165,6 +177,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         'Confirmar Senha',
                         Icons.lock,
                         obscure: true,
+                        validator: (value) =>
+                            RegisterValidator.validateConfirmPassword(
+                                _passwordController.text, value),
                       ),
                       const SizedBox(height: 25),
                       SizedBox(
@@ -178,18 +193,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          child:
-                              _isLoading
-                                  ? const CircularProgressIndicator(
+                          child: _isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : const Text(
+                                  'Cadastrar',
+                                  style: TextStyle(
                                     color: Colors.white,
-                                  )
-                                  : const Text(
-                                    'Cadastrar',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    fontWeight: FontWeight.bold,
                                   ),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -214,16 +228,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     String label,
     IconData icon, {
     bool obscure = false,
+    String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
       obscureText: obscure,
-      validator: (value) {
-        if (value == null || value.isEmpty) return 'Campo obrigatório';
-        if (label == 'Email' && !value.contains('@')) return 'Email inválido';
-        if (label == 'Senha' && value.length < 6) return 'Mínimo 6 caracteres';
-        return null;
-      },
+      validator: validator,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: const Color(0xFF2BB462)),
@@ -245,7 +255,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         DropdownMenuItem(value: 'Masculino', child: Text('Masculino')),
       ],
       onChanged: (value) => setState(() => _selectedGender = value),
-      validator: (value) => value == null ? 'Selecione um gênero' : null,
+      validator: RegisterValidator.validateGender,
       decoration: InputDecoration(
         labelText: 'Gênero',
         prefixIcon: const Icon(Icons.person, color: Color(0xFF2BB462)),
@@ -263,8 +273,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return TextFormField(
       controller: _birthController,
       readOnly: true,
-      validator:
-          (value) => value == null || value.isEmpty ? 'Data obrigatória' : null,
+      validator: RegisterValidator.validateBirthDate,
       decoration: InputDecoration(
         labelText: 'Data de Nascimento',
         prefixIcon: const Icon(Icons.calendar_today, color: Color(0xFF2BB462)),
@@ -286,7 +295,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
         if (pickedDate != null) {
           setState(() {
-            _birthController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+            _birthController.text =
+                DateFormat('dd/MM/yyyy').format(pickedDate);
           });
         }
       },
