@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:ecoquest/pages/loginScreen.dart';
 import 'package:ecoquest/pages/resetPassword.dart';
 import 'package:ecoquest/pages/forgetPasswordScreen.dart';
 import 'package:ecoquest/pages/registerScreen.dart';
-
-import 'pages/menuGames.dart';
+import 'package:ecoquest/pages/menuGames.dart';
 
 import 'package:ecoquest/pages/games/wordgame.dart';
 import 'package:ecoquest/pages/games/syllablegame.dart';
@@ -27,7 +25,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -37,17 +34,17 @@ class MyApp extends StatelessWidget {
 
       initialRoute: '/login',
       routes: {
-        '/': (context) => const LoginScreen(),
-        '/menu_games': (context) => MenuGames(),
-        '/forget_password': (context) => ForgetPasswordScreen(),
-        '/reset_password': (context) => ResetPasswordScreen(email: ''),
-        '/spelling_letters': (context) => SpellingGameLetters(),
-        '/spelling_syllables': (context) => SpellingGameSyllables(),
-        '/trash_sorting': (context) => TrashSortingGame(),
-        '/quiz_easy': (context) => QuizScreenEasy(),
-        '/quiz_hard': (context) => QuizScreenHard(),
-        '/easy_trash_sorting': (context) => EasyTrashSortingGame(),
+        '/login': (context) => const LoginScreen(),
+        '/menu_games': (context) => const MenuGames(),
+        '/forget_password': (context) => const ForgetPasswordScreen(),
+        '/reset_password': (context) => const ResetPasswordScreen(email: ''),
         '/register': (context) => const RegisterScreen(),
+        '/spelling_letters': (context) => const SpellingGameLetters(),
+        '/spelling_syllables': (context) => const SpellingGameSyllables(),
+        '/easy_trash_sorting': (context) => const EasyTrashSortingGame(),
+        '/trash_sorting': (context) => const TrashSortingGame(),
+        '/quiz_easy': (context) => const QuizScreenEasy(),
+        '/quiz_hard': (context) => const QuizScreenHard(),
       },
     );
   }
