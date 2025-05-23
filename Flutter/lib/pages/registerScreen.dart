@@ -16,8 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _birthController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   String? _selectedGender;
@@ -25,8 +24,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _registerUser() async {
     if (!_formKey.currentState!.validate()) return;
+
     if (_passwordController.text != _confirmPasswordController.text) {
       _showSnackBar('As senhas não coincidem', isError: true);
+      return;
+    }
+
+    if (_selectedGender == null) {
+      _showSnackBar('Selecione um gênero', isError: true);
       return;
     }
 
@@ -39,10 +44,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final formattedDate = DateFormat('yyyy-MM-dd').format(birthDate);
 
       final response = await http.post(
+
         Uri.parse('http://localhost:5000/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          'nome': _nameController.text,
+          'nome': _nameController.text.trim(),
           'data_nascimento': formattedDate,
           'genero': _selectedGender == 'Masculino' ? 'M' : 'F',
           'email': _emailController.text.trim().toLowerCase(),
@@ -62,16 +68,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
       } else {
         _showSnackBar(
-          responseData['error'] ?? 'Erro no cadastro',
+          responseData['error'] ?? responseData['message'] ?? 'Erro no cadastro',
           isError: true,
         );
       }
     } catch (e) {
       _showSnackBar('Erro de conexão: ${e.toString()}', isError: true);
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -122,18 +130,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Form(
                 key: _formKey,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 32,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black12,
                         blurRadius: 10,
-                        offset: const Offset(0, 6),
+                        offset: Offset(0, 6),
                       ),
                     ],
                   ),
@@ -194,9 +199,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           child: _isLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
+                              ? const CircularProgressIndicator(color: Colors.white)
                               : const Text(
                                   'Cadastrar',
                                   style: TextStyle(
@@ -208,8 +211,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 16),
                       TextButton(
-                        onPressed:
-                            _isLoading ? null : () => Navigator.pop(context),
+                        onPressed: _isLoading ? null : () => Navigator.pop(context),
                         child: const Text('Já tem uma conta? Faça login'),
                       ),
                     ],
@@ -255,7 +257,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         DropdownMenuItem(value: 'Masculino', child: Text('Masculino')),
       ],
       onChanged: (value) => setState(() => _selectedGender = value),
-      validator: RegisterValidator.validateGender,
+      validator: (value) => value == null ? 'Selecione um gênero' : null,
       decoration: InputDecoration(
         labelText: 'Gênero',
         prefixIcon: const Icon(Icons.person, color: Color(0xFF2BB462)),
@@ -273,7 +275,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return TextFormField(
       controller: _birthController,
       readOnly: true,
-      validator: RegisterValidator.validateBirthDate,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Campo obrigatório';
+        }
+        try {
+          DateFormat('dd/MM/yyyy').parse(value);
+        } catch (_) {
+          return 'Data inválida';
+        }
+        return null;
+      },
       decoration: InputDecoration(
         labelText: 'Data de Nascimento',
         prefixIcon: const Icon(Icons.calendar_today, color: Color(0xFF2BB462)),
@@ -285,19 +297,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
       onTap: () async {
-        FocusScope.of(context).requestFocus(FocusNode());
-        DateTime? pickedDate = await showDatePicker(
+        final now = DateTime.now();
+        final pickedDate = await showDatePicker(
           context: context,
-          initialDate: DateTime(2000),
+          initialDate: DateTime(now.year - 10),
           firstDate: DateTime(1900),
-          lastDate: DateTime.now(),
-          locale: const Locale("pt", "BR"),
+          lastDate: now,
         );
         if (pickedDate != null) {
-          setState(() {
-            _birthController.text =
-                DateFormat('dd/MM/yyyy').format(pickedDate);
-          });
+          _birthController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
         }
       },
     );
@@ -307,19 +315,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 class RegisterCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(0, size.height - 80);
-    path.quadraticBezierTo(
-      size.width * 0.4,
-      size.height + 30,
-      size.width,
-      size.height - 100,
-    );
+    Path path = Path();
+    path.lineTo(0, size.height - 60);
+    path.quadraticBezierTo(size.width / 2, size.height, size.width, size.height - 60);
     path.lineTo(size.width, 0);
     path.close();
     return path;
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }

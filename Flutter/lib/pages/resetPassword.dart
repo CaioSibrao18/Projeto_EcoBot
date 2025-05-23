@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+
 class ResetPasswordScreen extends StatefulWidget {
   final String email;
 
@@ -188,18 +189,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          child:
-                              _isLoading
-                                  ? const CircularProgressIndicator(
+                          child: _isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : const Text(
+                                  'Redefinir Senha',
+                                  style: TextStyle(
                                     color: Colors.white,
-                                  )
-                                  : const Text(
-                                    'Redefinir Senha',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    fontWeight: FontWeight.bold,
                                   ),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -244,18 +244,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
-        suffixIcon:
-            obscure
-                ? IconButton(
-                  icon: Icon(
-                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                    color: Colors.grey,
-                  ),
-                  onPressed:
-                      () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
-                )
-                : null,
+        suffixIcon: obscure
+            ? IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.grey,
+                ),
+                onPressed: () =>
+                    setState(() => _obscurePassword = !_obscurePassword),
+              )
+            : null,
       ),
     );
   }
