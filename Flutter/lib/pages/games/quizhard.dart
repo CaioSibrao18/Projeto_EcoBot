@@ -13,7 +13,7 @@ class _QuizScreenState extends State<QuizScreenHard> {
   final List<Map<String, dynamic>> questions = [
     {
       'question': 'A lata amarela é destinada a qual tipo de lixo?',
-      'options': ['Papel', 'Vidro', 'Organico', 'Metal'],
+      'options': ['Papel', 'Vidro', 'Orgânico', 'Metal'],
       'correctIndex': 3,
     },
     {
@@ -26,7 +26,61 @@ class _QuizScreenState extends State<QuizScreenHard> {
       ],
       'correctIndex': 0,
     },
-    // ... (mantenha o restante das perguntas)
+    {
+      'question': 'Qual das opções abaixo é reciclável?',
+      'options': ['Isopor', 'Espelho quebrado', 'Papelão', 'Papel carbono'],
+      'correctIndex': 2,
+    },
+    {
+      'question': 'Qual é a cor da lixeira para lixo orgânico?',
+      'options': ['Preta', 'Verde', 'Marrom', 'Laranja'],
+      'correctIndex': 2,
+    },
+    {
+      'question': 'O que NÃO deve ser descartado em lixeira de vidro?',
+      'options': ['Garrafa de cerveja', 'Copo de vidro', 'Espelho', 'Pote de vidro'],
+      'correctIndex': 2,
+    },
+    {
+      'question': 'Qual é o principal benefício da reciclagem de alumínio?',
+      'options': [
+        'Evita desmatamento',
+        'Reduz emissão de carbono',
+        'Economiza energia',
+        'Gera mais empregos'
+      ],
+      'correctIndex': 2,
+    },
+    {
+      'question': 'O que é compostagem?',
+      'options': [
+        'Tipo de coleta seletiva',
+        'Processo de transformação de resíduos orgânicos em adubo',
+        'Sistema de filtragem de água',
+        'Forma de reciclar metal'
+      ],
+      'correctIndex': 1,
+    },
+    {
+      'question': 'Qual destes materiais leva mais tempo para se decompor?',
+      'options': ['Plástico', 'Papel', 'Metal', 'Vidro'],
+      'correctIndex': 3,
+    },
+    {
+      'question': 'Qual das atitudes abaixo ajuda na preservação do meio ambiente?',
+      'options': [
+        'Descarte de óleo na pia',
+        'Utilizar sacolas plásticas',
+        'Reduzir o consumo de água',
+        'Queimar lixo'
+      ],
+      'correctIndex': 2,
+    },
+    {
+      'question': 'A cor azul das lixeiras é usada para qual tipo de resíduo?',
+      'options': ['Metal', 'Plástico', 'Vidro', 'Papel'],
+      'correctIndex': 3,
+    },
   ];
 
   int currentQuestionIndex = 0;
