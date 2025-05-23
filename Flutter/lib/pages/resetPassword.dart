@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'resetPassword_logic.dart';
 
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -40,7 +41,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Future<void> _resetPassword() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_newPasswordController.text != _confirmPasswordController.text) {
+    if (!ResetPasswordService.passwordsMatch(
+      _newPasswordController.text,
+      _confirmPasswordController.text,
+    )) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('As senhas não coincidem'),
@@ -55,41 +59,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     });
 
     try {
-      final response = await http.post(
-        Uri.parse('http://localhost:5000/reset-password'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'email': widget.email.trim(),
-          'token': _tokenController.text.trim(),
-          'nova_senha': _newPasswordController.text.trim(),
-        }),
+      final result = await ResetPasswordService.resetPassword(
+        email: widget.email,
+        token: _tokenController.text,
+        novaSenha: _newPasswordController.text,
       );
 
-      final responseData = json.decode(response.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message']),
+          backgroundColor: result['success'] ? Colors.green : Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              responseData['message'] ?? 'Senha alterada com sucesso!',
-            ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 3),
-          ),
-        );
+      if (result['success']) {
         Navigator.popUntil(context, (route) => route.isFirst);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              responseData['error'] ??
-                  responseData['message'] ??
-                  'Erro ao redefinir senha',
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -229,12 +214,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       controller: controller,
       obscureText: obscure ? _obscurePassword : false,
       validator: (value) {
-        if (value == null || value.isEmpty) return 'Campo obrigatório';
-        if (label.contains('senha') && value.length < 6) {
-          return 'Mínimo 6 caracteres';
+        if (label.contains('senha')) {
+          return ResetPasswordService.validatePassword(value ?? '');
         }
-        return null;
+        return ResetPasswordService.validateRequiredField(value ?? '');
       },
+      
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: const Color(0xFF2BB462)),
