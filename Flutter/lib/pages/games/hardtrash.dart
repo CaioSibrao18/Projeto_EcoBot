@@ -20,7 +20,7 @@ class _TrashSortingGameState extends State<TrashSortingGame> {
     {'image': 'assets/images/potevidro.png', 'correctBin': 'verde'},
     {'image': 'assets/images/caderno.png', 'correctBin': 'azul'},
     {'image': 'assets/images/carne.png', 'correctBin': 'marrom'},
-    {'image': 'assets/images/jornal.png', 'correctBin': 'azul'},
+    {'image': 'assets/images/copovidro.png', 'correctBin': 'verde'},
   ];
 
   final Map<String, String> binImages = {
