@@ -93,6 +93,15 @@ flutter:
     - assets/images/maça.png
     - assets/images/potevidro.png
     - assets/images/sacola.png
+    - assets/images/amarelalixeira.png
+    - assets/images/azullixeira.png
+    - assets/images/marromlixeira.png
+    - assets/images/vermelhalixeira.png
+    - assets/images/verdelixeira.png
+    - assets/images/salgadinho.png
+    - assets/images/canudo.png
+    - assets/images/copovidro.png
+
 
   fonts:
     - family: PressStart2P
