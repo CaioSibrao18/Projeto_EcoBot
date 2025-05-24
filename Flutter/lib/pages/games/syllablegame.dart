@@ -60,6 +60,8 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   Color boxColor = Colors.grey.shade200;
   String? incorrectWord;
   final Stopwatch _stopwatch = Stopwatch();
+  final Stopwatch _wordStopwatch = Stopwatch(); // Cronômetro por palavra
+  List<int> _wordTimes = []; // Lista para armazenar tempos por palavra
   bool _isLoading = false;
   Map<String, dynamic>? _analysisData;
 
@@ -67,6 +69,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   void initState() {
     super.initState();
     _stopwatch.start();
+    _wordStopwatch.start(); // Inicia o cronômetro por palavra
     resetGame();
   }
 
@@ -80,6 +83,49 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
     });
   }
 
+  void checkAnswer() {
+    // Para o cronômetro da palavra atual e armazena o tempo
+    _wordStopwatch.stop();
+    int wordTime = _wordStopwatch.elapsed.inSeconds;
+    _wordTimes.add(wordTime);
+
+    final formedWord = selectedSyllables.join('-');
+    final correctWord = words[currentWordIndex]['word'];
+
+    if (formedWord == correctWord) {
+      setState(() {
+        boxColor = Colors.greenAccent;
+        correctAnswers++;
+      });
+      Future.delayed(const Duration(seconds: 1), () {
+        _wordStopwatch.reset(); // Reinicia para próxima palavra
+        _wordStopwatch.start();
+        goToNextWord();
+      });
+    } else {
+      setState(() {
+        boxColor = Colors.redAccent;
+        incorrectWord = correctWord;
+      });
+      Future.delayed(const Duration(seconds: 2), () {
+        _wordStopwatch.reset(); // Reinicia para próxima palavra
+        _wordStopwatch.start();
+        goToNextWord();
+      });
+    }
+  }
+
+  void goToNextWord() {
+    if (currentWordIndex < words.length - 1) {
+      setState(() {
+        currentWordIndex++;
+        resetGame();
+      });
+    } else {
+      _showResult();
+    }
+  }
+
   Future<void> _enviarParaBackend(int acertos, int tempoSegundos) async {
     try {
       final url = Uri.parse('http://localhost:5000/api/saveResult');
@@ -90,6 +136,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
           'usuario_id': 4,
           'acertos': acertos,
           'tempo_segundos': tempoSegundos,
+          'tempos_palavras': _wordTimes, // Envia os tempos individuais
         }),
       );
     } catch (e) {
@@ -125,43 +172,6 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
       print('Erro ao obter análise da IA: $e');
     }
     return null;
-  }
-
-  void checkAnswer() {
-    final formedWord = selectedSyllables.join('-');
-    final correctWord = words[currentWordIndex]['word'];
-
-    if (formedWord == correctWord) {
-      setState(() {
-        boxColor = Colors.greenAccent;
-        correctAnswers++;
-      });
-      Future.delayed(const Duration(seconds: 1), () {
-        if (currentWordIndex < words.length - 1) {
-          setState(() {
-            currentWordIndex++;
-          });
-          resetGame();
-        } else {
-          _showResult();
-        }
-      });
-    } else {
-      setState(() {
-        boxColor = Colors.redAccent;
-        incorrectWord = correctWord;
-      });
-      Future.delayed(const Duration(seconds: 2), () {
-        if (currentWordIndex < words.length - 1) {
-          setState(() {
-            currentWordIndex++;
-          });
-          resetGame();
-        } else {
-          _showResult();
-        }
-      });
-    }
   }
 
   void _showResult() async {
@@ -223,6 +233,9 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
                           _analysisData = null;
                           _stopwatch.reset();
                           _stopwatch.start();
+                          _wordStopwatch.reset();
+                          _wordStopwatch.start();
+                          _wordTimes.clear();
                         });
                         resetGame();
                       },
@@ -301,6 +314,12 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
     }
 
     Widget _buildCurrentResult() {
+      // Calcula a média localmente para exibição
+      double speedAvg =
+          _wordTimes.isNotEmpty
+              ? _wordTimes.reduce((a, b) => a + b) / _wordTimes.length
+              : 0;
+
       return Card(
         elevation: 3,
         margin: const EdgeInsets.symmetric(vertical: 12),
@@ -353,9 +372,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
               ),
               _buildStatWithExplanation(
                 'Velocidade Média',
-                currentPeriod?['speed_avg'] != null
-                    ? '${currentPeriod!['speed_avg'].toStringAsFixed(2)}s'
-                    : null,
+                speedAvg.toStringAsFixed(2) + 's', // Usa o cálculo local
                 'Tempo médio por palavra',
                 Colors.red.shade700,
               ),
@@ -681,11 +698,11 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
                                 .toList(),
                       ),
                     ),
-                onWillAccept: (data) => true,
-                onAccept: (data) {
+                onWillAcceptWithDetails: (data) => true,
+                onAcceptWithDetails: (data) {
                   if (!selectedSyllables.contains(data)) {
                     setState(() {
-                      selectedSyllables.add(data);
+                      selectedSyllables.add(data as String);
                       availableSyllables.remove(data);
                     });
                   }
