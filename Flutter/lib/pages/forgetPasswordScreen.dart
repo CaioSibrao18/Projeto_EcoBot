@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'resetPassword.dart';
+import 'forgetPasswordScreen_logic.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({super.key});
@@ -23,18 +24,11 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     });
 
     try {
-      final response = await http.post(
-        Uri.parse('http://localhost:5000/forget-password'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'email': _emailController.text.trim().toLowerCase(),
-        }),
-      );
+      final result = await ForgetPasswordService.sendResetEmail(_emailController.text);
 
-      final responseData = json.decode(response.body);
+      if (!mounted) return;
 
-      if (response.statusCode == 200) {
-        if (!mounted) return;
+      if (result['success']) {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -42,21 +36,14 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
           ),
         );
       } else {
-        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(responseData['error'] ?? 'Erro ao enviar email'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(result['message']), backgroundColor: Colors.red),
         );
       }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro de conexão: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('Erro de conexão: \$e'), backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) {
@@ -118,11 +105,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) return 'Insira seu e-mail';
-                          if (!value.contains('@')) return 'E-mail inválido';
-                          return null;
-                        },
+                        validator: (value) => ForgetPasswordService.validateEmail(value ?? ''),
                         decoration: InputDecoration(
                           labelText: 'E-mail',
                           prefixIcon: const Icon(Icons.email, color: Color(0xFF2BB462)),
