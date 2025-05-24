@@ -15,6 +15,7 @@ from sklearn.exceptions import DataConversionWarning
 warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 
 class ResultController:
+
    
     FEEDBACK_RULES = {
         'accuracy': [
@@ -154,12 +155,12 @@ class ResultController:
             processed_data = []
             for d in historical_data:
                 if 'porcentagem' not in d:
-                    total = d.get('total_questoes', d.get('acertos', 1))
+                    total = 10  # valor fixo conforme o banco
                     d['porcentagem'] = (d.get('acertos', 0) / total) * 100 if total > 0 else 0
-                
+
                 if 'tempo_por_questao' not in d:
                     d['tempo_por_questao'] = d.get('tempo_segundos', 0) / d.get('acertos', 1) if d.get('acertos', 0) > 0 else 0
-                
+
                 processed_data.append(d)
 
         
