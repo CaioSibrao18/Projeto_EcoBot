@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'quizeasy_logic.dart';
 
 class QuizScreenEasy extends StatefulWidget {
   const QuizScreenEasy({super.key});
@@ -10,97 +11,91 @@ class QuizScreenEasy extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreenEasy> {
-  final List<Map<String, dynamic>> questions = [
-    {
-      "question": "Qual cor de lixeira é usada para plástico?",
-      "options": ["Azul", "Vermelha", "Verde"],
-      "correctIndex": 1,
-    },
-    {
-      "question": "Qual cor de lixeira é usada para plástico?",
-      "options": ["Azul", "Vermelha", "Verde"],
-      "correctIndex": 1,
-    },
-    {
-      "question": "O vidro pode ser reciclado?",
-      "options": ["Sim", "Não", "Somente garrafas"],
-      "correctIndex": 0,
-    },
-    {
-      "question": "Onde devemos jogar uma lata de refrigerante?",
-      "options": ["Lixeira amarela", "Lixeira azul", "Lixeira verde"],
-      "correctIndex": 0,
-    },
-    {
-      "question": "Qual destes materiais é reciclável?",
-      "options": ["Casca de banana", "Garrafa PET", "Guardanapo sujo"],
-      "correctIndex": 1,
-    },
-    {
-      "question": "O que fazer com pilhas usadas?",
-      "options": [
-        "Jogar no lixo comum",
-        "Levar a um ponto de coleta",
-        "Enterrar no quintal",
-      ],
-      "correctIndex": 1,
-    },
-    {
-      "question": "Qual é o destino correto para papelão?",
-      "options": ["Lixeira azul", "Lixeira vermelha", "Lixeira verde"],
-      "correctIndex": 0,
-    },
-    {
-      "question": "Qual destes itens NÃO pode ser reciclado?",
-      "options": ["Pote de vidro", "Papel higiênico usado", "Garrafa plástica"],
-      "correctIndex": 1,
-    },
-    {
-      "question": "Qual o principal benefício da reciclagem?",
-      "options": ["Reduzir a poluição", "Aumentar o lixo", "Poluir rios"],
-      "correctIndex": 0,
-    },
-    {
-      "question": "Podemos jogar óleo de cozinha usado na pia?",
-      "options": ["Sim", "Não", "Somente óleo novo"],
-      "correctIndex": 1,
-    },
-    {
-      "question": "Reciclar ajuda a:",
-      "options": [
-        "Preservar o meio ambiente",
-        "Aumentar a poluição",
-        "Desperdiçar recursos",
-      ],
-      "correctIndex": 0,
-    },
-  ];
-
-  int currentQuestionIndex = 0;
-  int? selectedOption;
-  int correctAnswers = 0;
-  final Stopwatch _stopwatch = Stopwatch();
+  late QuizEasyLogic gameLogic;
   bool _isLoading = false;
   Map<String, dynamic>? _analysisData;
 
   @override
   void initState() {
     super.initState();
-    _stopwatch.start();
+    
+    gameLogic = QuizEasyLogic(
+      questions: const [
+        {
+          "question": "Qual cor de lixeira é usada para plástico?",
+          "options": ["Azul", "Vermelha", "Verde"],
+          "correctIndex": 1,
+        },
+        {
+          "question": "Qual cor de lixeira é usada para plástico?",
+          "options": ["Azul", "Vermelha", "Verde"],
+          "correctIndex": 1,
+        },
+        {
+          "question": "O vidro pode ser reciclado?",
+          "options": ["Sim", "Não", "Somente garrafas"],
+          "correctIndex": 0,
+        },
+        {
+          "question": "Onde devemos jogar uma lata de refrigerante?",
+          "options": ["Lixeira amarela", "Lixeira azul", "Lixeira verde"],
+          "correctIndex": 0,
+        },
+        {
+          "question": "Qual destes materiais é reciclável?",
+          "options": ["Casca de banana", "Garrafa PET", "Guardanapo sujo"],
+          "correctIndex": 1,
+        },
+        {
+          "question": "O que fazer com pilhas usadas?",
+          "options": [
+            "Jogar no lixo comum",
+            "Levar a um ponto de coleta",
+            "Enterrar no quintal",
+          ],
+          "correctIndex": 1,
+        },
+        {
+          "question": "Qual é o destino correto para papelão?",
+          "options": ["Lixeira azul", "Lixeira vermelha", "Lixeira verde"],
+          "correctIndex": 0,
+        },
+        {
+          "question": "Qual destes itens NÃO pode ser reciclado?",
+          "options": ["Pote de vidro", "Papel higiênico usado", "Garrafa plástica"],
+          "correctIndex": 1,
+        },
+        {
+          "question": "Qual o principal benefício da reciclagem?",
+          "options": ["Reduzir a poluição", "Aumentar o lixo", "Poluir rios"],
+          "correctIndex": 0,
+        },
+        {
+          "question": "Podemos jogar óleo de cozinha usado na pia?",
+          "options": ["Sim", "Não", "Somente óleo novo"],
+          "correctIndex": 1,
+        },
+        {
+          "question": "Reciclar ajuda a:",
+          "options": [
+            "Preservar o meio ambiente",
+            "Aumentar a poluição",
+            "Desperdiçar recursos",
+          ],
+          "correctIndex": 0,
+        },
+      ],
+    );
   }
 
   void checkAnswer(int index) {
     setState(() {
-      selectedOption = index;
-      bool isCorrect = index == questions[currentQuestionIndex]['correctIndex'];
-      if (isCorrect) {
-        correctAnswers++;
-      }
+      gameLogic.checkAnswer(index);
+      
       Future.delayed(const Duration(seconds: 2), () {
         setState(() {
-          selectedOption = null;
-          if (currentQuestionIndex < questions.length - 1) {
-            currentQuestionIndex++;
+          if (!gameLogic.isGameOver()) {
+            gameLogic.nextQuestion();
           } else {
             _showResult();
           }
@@ -157,14 +152,14 @@ class _QuizScreenState extends State<QuizScreenEasy> {
   }
 
   void _showResult() async {
-    _stopwatch.stop();
-    int tempoSegundos = _stopwatch.elapsed.inSeconds;
+    final results = gameLogic.getGameResults();
+    int tempoSegundos = results['timeInSeconds'];
 
     setState(() {
       _isLoading = true;
     });
 
-    await _enviarParaBackend(correctAnswers, tempoSegundos);
+    await _enviarParaBackend(results['correctAnswers'], tempoSegundos);
     final analysisData = await _getAIAnalysis();
 
     setState(() {
@@ -175,65 +170,61 @@ class _QuizScreenState extends State<QuizScreenEasy> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder:
-          (context) => Dialog(
-            backgroundColor: const Color(0xFFFDFDF7),
-            insetPadding: const EdgeInsets.all(20),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 500),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      'Resultado',
-                      style: const TextStyle(
-                        color: Color(0xFF2BB462),
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'PressStart2P',
-                        fontSize: 14,
-                      ),
-                    ),
+      builder: (context) => Dialog(
+        backgroundColor: const Color(0xFFFDFDF7),
+        insetPadding: const EdgeInsets.all(20),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 500),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  'Resultado',
+                  style: const TextStyle(
+                    color: Color(0xFF2BB462),
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PressStart2P',
+                    fontSize: 14,
                   ),
-                  const Divider(height: 1, color: Colors.grey),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: _buildResultsContent(tempoSegundos),
-                    ),
-                  ),
-                  const Divider(height: 1, color: Colors.grey),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        setState(() {
-                          currentQuestionIndex = 0;
-                          correctAnswers = 0;
-                          _analysisData = null;
-                          _stopwatch.reset();
-                          _stopwatch.start();
-                        });
-                      },
-                      child: const Text(
-                        'Reiniciar',
-                        style: TextStyle(
-                          color: Color(0xFF2BB462),
-                          fontFamily: 'PressStart2P',
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              const Divider(height: 1, color: Colors.grey),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: _buildResultsContent(tempoSegundos),
+                ),
+              ),
+              const Divider(height: 1, color: Colors.grey),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      gameLogic.resetGame();
+                      _analysisData = null;
+                    });
+                  },
+                  child: const Text(
+                    'Reiniciar',
+                    style: TextStyle(
+                      color: Color(0xFF2BB462),
+                      fontFamily: 'PressStart2P',
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
+        ),
+      ),
     );
   }
 
-  Widget _buildResultsContent(int tempoSegundos) {
+ Widget _buildResultsContent(int tempoSegundos) {
     Widget _buildStatWithExplanation(
       String title,
       String? value,
@@ -323,11 +314,10 @@ class _QuizScreenState extends State<QuizScreenEasy> {
               ),
               const SizedBox(height: 18),
 
-              // Alterado: Removido o campo "Precisão" e alterado "Melhor Pontuação" para "Pontuação"
               _buildStatWithExplanation(
-                'Pontuação', // Alterado de "Melhor Pontuação"
+                'Pontuação',
                 currentPeriod?['best_score']?.toString(),
-                'Sua pontuação neste jogo', // Texto explicativo ajustado
+                'Sua pontuação neste jogo',
                 Colors.green.shade700,
               ),
               _buildStatWithExplanation(
@@ -356,7 +346,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
               const SizedBox(height: 20),
 
               Text(
-                '$correctAnswers/${questions.length} corretas',
+                '${gameLogic.correctAnswers}/${gameLogic.questions.length} corretas',
                 style: const TextStyle(
                   fontFamily: 'PressStart2P',
                   fontSize: 22,
@@ -383,10 +373,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
     Widget _buildTrendItem(String title, double? value) {
       if (value == null) return const SizedBox.shrink();
       final isPositive = value >= 0;
-      final display =
-          isPositive
-              ? '+${value.toStringAsFixed(2)}'
-              : value.toStringAsFixed(2);
+      final display = isPositive ? '+${value.toStringAsFixed(2)}' : value.toStringAsFixed(2);
       final color = isPositive ? Colors.green : Colors.red;
 
       return Padding(
@@ -470,107 +457,102 @@ class _QuizScreenState extends State<QuizScreenEasy> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children:
-              feedbacks
-                  .map<Widget>(
-                    (fb) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Text(
-                        '• ${fb.toString()}',
-                        style: const TextStyle(
-                          fontFamily: 'PressStart2P',
-                          fontSize: 12,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
+          children: feedbacks.map<Widget>((fb) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Text(
+              '• ${fb.toString()}',
+              style: const TextStyle(
+                fontFamily: 'PressStart2P',
+                fontSize: 12,
+                color: Colors.black87,
+              ),
+            ),
+          )).toList(),
         ),
       );
     }
 
     return _isLoading
         ? const Center(
-          child: CircularProgressIndicator(color: Color(0xFF2BB462)),
-        )
+            child: CircularProgressIndicator(color: Color(0xFF2BB462)),
+          )
         : SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildCurrentResult(),
-              if (previousPeriod != null) ...[
-                _buildSectionTitle('HISTÓRICO DESEMPENHO'),
-                _buildStatsCard('Período Anterior', [
-                  _buildStatWithExplanation(
-                    'Pontuação Anterior', // Alterado para manter consistência
-                    previousPeriod['best_score']?.toString(),
-                    'Sua pontuação anterior',
-                    Colors.green[700]!,
-                  ),
-                  _buildStatWithExplanation(
-                    'Consistência Anterior',
-                    previousPeriod['consistency']?.toStringAsFixed(2),
-                    'Estabilidade anterior dos resultados',
-                    Colors.orange[700]!,
-                  ),
-                  _buildStatWithExplanation(
-                    'Tentativas Anteriores',
-                    previousPeriod['count']?.toString(),
-                    'Número de jogos anteriores',
-                    Colors.purple[700]!,
-                  ),
-                  _buildStatWithExplanation(
-                    'Velocidade Anterior',
-                    previousPeriod['speed_avg'] != null
-                        ? '${previousPeriod['speed_avg'].toStringAsFixed(2)}s'
-                        : null,
-                    'Tempo médio anterior por questão',
-                    Colors.red[700]!,
-                  ),
-                ]),
-              ],
-              if (trends != null) ...[
-                _buildSectionTitle('TENDÊNCIAS'),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 1.5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Column(
-                      children: [
-                        _buildTrendItem(
-                          'Precisão',
-                          (trends['accuracy'] as num?)?.toDouble(),
-                        ),
-                        _buildTrendItem(
-                          'Consistência',
-                          (trends['consistency'] as num?)?.toDouble(),
-                        ),
-                        _buildTrendItem(
-                          'Velocidade',
-                          (trends['speed'] as num?)?.toDouble(),
-                        ),
-                      ],
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildCurrentResult(),
+                if (previousPeriod != null) ...[
+                  _buildSectionTitle('HISTÓRICO DESEMPENHO'),
+                  _buildStatsCard('Período Anterior', [
+                    _buildStatWithExplanation(
+                      'Pontuação Anterior',
+                      previousPeriod['best_score']?.toString(),
+                      'Sua pontuação anterior',
+                      Colors.green[700]!,
+                    ),
+                    _buildStatWithExplanation(
+                      'Consistência Anterior',
+                      previousPeriod['consistency']?.toStringAsFixed(2),
+                      'Estabilidade anterior dos resultados',
+                      Colors.orange[700]!,
+                    ),
+                    _buildStatWithExplanation(
+                      'Tentativas Anteriores',
+                      previousPeriod['count']?.toString(),
+                      'Número de jogos anteriores',
+                      Colors.purple[700]!,
+                    ),
+                    _buildStatWithExplanation(
+                      'Velocidade Anterior',
+                      previousPeriod['speed_avg'] != null
+                          ? '${previousPeriod['speed_avg'].toStringAsFixed(2)}s'
+                          : null,
+                      'Tempo médio anterior por questão',
+                      Colors.red[700]!,
+                    ),
+                  ]),
+                ],
+                if (trends != null) ...[
+                  _buildSectionTitle('TENDÊNCIAS'),
+                  Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 1.5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(
+                        children: [
+                          _buildTrendItem(
+                            'Precisão',
+                            (trends['accuracy'] as num?)?.toDouble(),
+                          ),
+                          _buildTrendItem(
+                            'Consistência',
+                            (trends['consistency'] as num?)?.toDouble(),
+                          ),
+                          _buildTrendItem(
+                            'Velocidade',
+                            (trends['speed'] as num?)?.toDouble(),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                ],
+                _buildSectionTitle('RECOMENDAÇÕES'),
+                _buildFeedbackList(feedbackList),
+                const SizedBox(height: 40),
               ],
-              _buildSectionTitle('RECOMENDAÇÕES'),
-              _buildFeedbackList(feedbackList),
-              const SizedBox(height: 40),
-            ],
-          ),
-        );
+            ),
+          );
   }
 
   @override
   Widget build(BuildContext context) {
-    var questionData = questions[currentQuestionIndex];
+    var questionData = gameLogic.getCurrentQuestion();
     return Scaffold(
       backgroundColor: const Color(0xFFFDFDF7),
       appBar: AppBar(
@@ -607,12 +589,12 @@ class _QuizScreenState extends State<QuizScreenEasy> {
                 Color borderColor = Colors.blueGrey;
                 Color textColor = Colors.black;
 
-                if (selectedOption != null) {
+                if (gameLogic.selectedOption != null) {
                   if (index == questionData['correctIndex']) {
                     backgroundColor = Colors.green;
                     borderColor = Colors.green;
                     textColor = Colors.white;
-                  } else if (index == selectedOption) {
+                  } else if (index == gameLogic.selectedOption) {
                     backgroundColor = Colors.red;
                     borderColor = Colors.red;
                     textColor = Colors.white;
@@ -636,10 +618,9 @@ class _QuizScreenState extends State<QuizScreenEasy> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       elevation: 0,
                     ),
-                    onPressed:
-                        selectedOption == null
-                            ? () => checkAnswer(index)
-                            : null,
+                    onPressed: gameLogic.selectedOption == null
+                        ? () => checkAnswer(index)
+                        : null,
                     child: Text(
                       questionData['options'][index],
                       style: const TextStyle(
