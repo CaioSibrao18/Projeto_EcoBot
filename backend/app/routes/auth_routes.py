@@ -4,10 +4,26 @@ from controllers.result_controller import ResultController
 from datetime import datetime
 import numpy as np
 import pandas as pd
+import math
+
+
 
 
 
 def init_auth_routes(app):
+
+
+    def clean_nan(obj):
+        if isinstance(obj, dict):
+            return {k: clean_nan(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [clean_nan(x) for x in obj]
+        elif isinstance(obj, float):
+            if math.isnan(obj):
+                return None
+            return obj
+        else:
+            return obj
 
     @app.route('/')
     def home():
@@ -121,7 +137,6 @@ def init_auth_routes(app):
             
             response, status_code = ResultController.generate_evolution_feedback(usuario_id)
             
-            
             if status_code == 200 and 'analysis' in response:
                 ai_model = current_app.model
                 le = current_app.le
@@ -131,7 +146,12 @@ def init_auth_routes(app):
                         accuracy = response['analysis']['current_period']['accuracy_avg']
                         speed = response['analysis']['current_period']['speed_avg']
 
-                      
+                        # Substitui NaN antes de criar o DataFrame
+                        if isinstance(accuracy, float) and math.isnan(accuracy):
+                            accuracy = None
+                        if isinstance(speed, float) and math.isnan(speed):
+                            speed = None
+
                         features = pd.DataFrame([[accuracy, speed]], columns=['porcentagem', 'tempo_segundos'])
                         pred_encoded = ai_model.predict(features)
                         feedback_pred = le.inverse_transform(pred_encoded)[0]
@@ -143,7 +163,9 @@ def init_auth_routes(app):
                     except Exception as e:
                         print(f"Erro na predição IA: {e}")
 
-            
+            # Remove todos os NaNs do objeto antes de retornar JSON
+            response = clean_nan(response)
+
             return jsonify(response), status_code
         
         except Exception as e:

@@ -132,7 +132,25 @@ class _QuizScreenState extends State<QuizScreenEasy> {
         Uri.parse('http://localhost:5000/results/feedback?usuario_id=4'),
       );
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        var data = json.decode(response.body);
+
+        // EXEMPLO: Alterar o feedback para outra coisa
+        if (data['analysis'] != null && data['analysis']['feedback'] != null) {
+          data['analysis']['feedback'] = [
+            "🎯 Feedback personalizado",
+            "🚀 Continue praticando!",
+            "💡 Dica extra: revise as perguntas erradas",
+            "IA: análise customizada",
+          ];
+        }
+
+        // Exemplo: alterar a precisão média atual
+        if (data['analysis'] != null &&
+            data['analysis']['current_period'] != null) {
+          data['analysis']['current_period']['accuracy_avg'] = 95.0;
+        }
+
+        return data;
       }
     } catch (e) {
       print('Erro ao obter análise da IA: $e');
@@ -218,104 +236,351 @@ class _QuizScreenState extends State<QuizScreenEasy> {
   }
 
   Widget _buildResultsContent(int tempoSegundos) {
-    final currentPeriod = _analysisData?['analysis']?['current_period'];
-    final feedbackList = _analysisData?['analysis']?['feedback'] ?? [];
-    final aiFeedback =
-        _analysisData?['analysis']?['feedback_detail']?['ai']?['messages'] ??
-        [];
+    // Função para construir o widget de estatística com explicação
+    Widget _buildStatWithExplanation(
+      String title,
+      String? value,
+      String explanation,
+      Color color,
+    ) {
+      if (value == null || value == 'N/A') return const SizedBox.shrink();
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$title: $value',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: color,
+                fontFamily: 'PressStart2P',
+                fontSize: 12,
+              ),
+            ),
+            Text(
+              explanation,
+              style: const TextStyle(
+                fontFamily: 'PressStart2P',
+                fontSize: 10,
+                color: Colors.black54,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final analysis = _analysisData?['analysis'];
+    final currentPeriod = analysis?['current_period'];
+    final previousPeriod = analysis?['previous_period'];
+    final trends = analysis?['trends'];
+    final feedbackList = analysis?['feedback'] ?? [];
+
+    // RESULTADO ATUAL DO JOGO (sempre visível primeiro)
+    Widget _buildCurrentResult() {
+      return Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              'QUIZ CONCLUÍDO!',
+              style: TextStyle(
+                fontFamily: 'PressStart2P',
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2BB462),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            const Text(
+              'Resumo do Jogo Recém Finalizado',
+              style: TextStyle(
+                fontFamily: 'PressStart2P',
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Usando _buildStatWithExplanation para cada estatística, filtrando null/'N/A'
+            ...[
+              _buildStatWithExplanation(
+                'Precisão Média',
+                currentPeriod?['accuracy_avg'] != null
+                    ? '${currentPeriod!['accuracy_avg'].toStringAsFixed(2)}%'
+                    : null,
+                'Porcentagem média de acertos no jogo recém finalizado',
+                Colors.blue,
+              ),
+              _buildStatWithExplanation(
+                'Melhor Pontuação',
+                currentPeriod?['best_score']?.toString(),
+                'Sua melhor pontuação neste jogo',
+                Colors.green,
+              ),
+              _buildStatWithExplanation(
+                'Consistência',
+                currentPeriod?['consistency'] != null
+                    ? currentPeriod!['consistency'].toStringAsFixed(2)
+                    : null,
+                'Consistência dos seus resultados (quanto menor, melhor)',
+                Colors.orange,
+              ),
+              _buildStatWithExplanation(
+                'Tentativas',
+                currentPeriod?['count']?.toString(),
+                'Número de tentativas realizadas',
+                Colors.purple,
+              ),
+              _buildStatWithExplanation(
+                'Velocidade Média',
+                currentPeriod?['speed_avg'] != null
+                    ? '${currentPeriod!['speed_avg'].toStringAsFixed(2)}s'
+                    : null,
+                'Tempo médio gasto por questão',
+                Colors.red,
+              ),
+            ].whereType<Widget>().toList(),
+
+            const SizedBox(height: 12),
+
+            Text(
+              '$correctAnswers/${questions.length} corretas',
+              style: const TextStyle(
+                fontFamily: 'PressStart2P',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Tempo: $tempoSegundos segundos',
+              style: const TextStyle(fontFamily: 'PressStart2P', fontSize: 12),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget _buildTrendItem(String title, double? value) {
+      if (value == null) return const SizedBox.shrink();
+      String display =
+          value >= 0
+              ? '+${value.toStringAsFixed(2)}'
+              : value.toStringAsFixed(2);
+      Color color = value >= 0 ? Colors.green : Colors.red;
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: Row(
+          children: [
+            Text(
+              '$title: ',
+              style: const TextStyle(
+                fontFamily: 'PressStart2P',
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              display,
+              style: TextStyle(
+                fontFamily: 'PressStart2P',
+                fontSize: 10,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return _isLoading
         ? const Center(
           child: CircularProgressIndicator(color: Color(0xFF2BB462)),
         )
-        : Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Acertos: $correctAnswers/${questions.length}',
-              style: const TextStyle(
-                fontFamily: 'PressStart2P',
-                fontSize: 12,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 12),
+        : SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Resultado atual do jogo (SEMPRE NO TOPO)
+              _buildCurrentResult(),
+              const SizedBox(height: 20),
 
-            Text(
-              'Tempo: $tempoSegundos segundos',
-              style: const TextStyle(
-                fontFamily: 'PressStart2P',
-                fontSize: 12,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 20),
+              // Análise detalhada (média histórica)
+              if (currentPeriod != null) ...[
+                const Text(
+                  'ANÁLISE DETALHADA',
+                  style: TextStyle(
+                    fontFamily: 'PressStart2P',
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...[
+                  _buildStatWithExplanation(
+                    'Precisão',
+                    currentPeriod['accuracy_avg'] != null
+                        ? '${currentPeriod['accuracy_avg'].toStringAsFixed(2)}%'
+                        : null,
+                    'Porcentagem média de acertos em todas as tentativas',
+                    Colors.blue,
+                  ),
+                  _buildStatWithExplanation(
+                    'Melhor pontuação',
+                    currentPeriod['best_score']?.toString(),
+                    'Sua melhor pontuação alcançada neste período',
+                    Colors.green,
+                  ),
+                  _buildStatWithExplanation(
+                    'Consistência',
+                    currentPeriod['consistency']?.toStringAsFixed(2),
+                    'Quão consistentes foram seus resultados (quanto menor, mais consistente)',
+                    Colors.orange,
+                  ),
+                  _buildStatWithExplanation(
+                    'Tentativas',
+                    currentPeriod['count']?.toString(),
+                    'Número de vezes que você realizou o quiz neste período',
+                    Colors.purple,
+                  ),
+                  _buildStatWithExplanation(
+                    'Velocidade',
+                    currentPeriod['speed_avg'] != null
+                        ? '${currentPeriod['speed_avg'].toStringAsFixed(2)}s'
+                        : null,
+                    'Tempo médio gasto por questão (em segundos)',
+                    Colors.red,
+                  ),
+                ].whereType<Widget>().toList(),
+                const SizedBox(height: 20),
+              ],
 
-            const Text(
-              'Status: sucesso',
-              style: TextStyle(
-                fontFamily: 'PressStart2P',
-                fontSize: 12,
-                color: Color(0xFF2BB462),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
+              // Histórico período anterior
+              if (previousPeriod != null) ...[
+                const Text(
+                  'HISTÓRICO DESEMPENHO',
+                  style: TextStyle(
+                    fontFamily: 'PressStart2P',
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ...[
+                  _buildStatWithExplanation(
+                    'Precisão Anterior',
+                    previousPeriod['accuracy_avg'] != null
+                        ? '${previousPeriod['accuracy_avg'].toStringAsFixed(2)}%'
+                        : null,
+                    'Porcentagem média de acertos no período anterior',
+                    Colors.blueGrey,
+                  ),
+                  _buildStatWithExplanation(
+                    'Melhor pontuação Anterior',
+                    previousPeriod['best_score']?.toString(),
+                    'Sua melhor pontuação no período anterior',
+                    Colors.green[700]!,
+                  ),
+                  _buildStatWithExplanation(
+                    'Consistência Anterior',
+                    previousPeriod['consistency']?.toStringAsFixed(2),
+                    'Consistência dos resultados anteriores',
+                    Colors.orange[700]!,
+                  ),
+                  _buildStatWithExplanation(
+                    'Tentativas Anteriores',
+                    previousPeriod['count']?.toString(),
+                    'Número de tentativas no período anterior',
+                    Colors.purple[700]!,
+                  ),
+                  _buildStatWithExplanation(
+                    'Velocidade Anterior',
+                    previousPeriod['speed_avg'] != null
+                        ? '${previousPeriod['speed_avg'].toStringAsFixed(2)}s'
+                        : null,
+                    'Tempo médio gasto por questão no período anterior',
+                    Colors.red[700]!,
+                  ),
+                ].whereType<Widget>().toList(),
+                const SizedBox(height: 20),
+              ],
 
-            const Text(
-              '📊 Estatísticas atuais:',
-              style: TextStyle(
-                fontFamily: 'PressStart2P',
-                fontSize: 12,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
+              // Tendências
+              if (trends != null) ...[
+                const Text(
+                  'TENDÊNCIAS',
+                  style: TextStyle(
+                    fontFamily: 'PressStart2P',
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _buildTrendItem(
+                  'Precisão',
+                  (trends['accuracy'] as num?)?.toDouble(),
+                ),
+                _buildTrendItem(
+                  'Consistência',
+                  (trends['consistency'] as num?)?.toDouble(),
+                ),
+                _buildTrendItem(
+                  'Velocidade',
+                  (trends['speed'] as num?)?.toDouble(),
+                ),
+                const SizedBox(height: 20),
+              ],
 
-            if (currentPeriod != null) ...[
-              _buildStatItem(
-                'Precisão média:',
-                '${currentPeriod['accuracy_avg']?.toStringAsFixed(2) ?? 'N/A'}% (acertos gerais no período)',
+              // Feedback
+              const Text(
+                'RECOMENDAÇÕES',
+                style: TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              _buildStatItem(
-                'Melhor pontuação:',
-                '${currentPeriod['best_score']?.toStringAsFixed(2) ?? 'N/A'} (melhor resultado alcançado)',
-              ),
-              _buildStatItem(
-                'Consistência:',
-                '${currentPeriod['consistency']?.toStringAsFixed(2) ?? 'N/A'} (estabilidade dos resultados)',
-              ),
-              _buildStatItem(
-                'Tentativas:',
-                '${currentPeriod['count'] ?? 'N/A'} (quantidade de jogos feitos)',
-              ),
-              _buildStatItem(
-                'Velocidade média:',
-                '${currentPeriod['speed_avg']?.toStringAsFixed(2) ?? 'N/A'} segundos por item',
-              ),
+              const SizedBox(height: 12),
+              if (feedbackList.isNotEmpty) ...[
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children:
+                        feedbackList
+                            .map<Widget>(
+                              (fb) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Text(
+                                  '• ${fb.toString()}',
+                                  style: const TextStyle(
+                                    fontFamily: 'PressStart2P',
+                                    fontSize: 10,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                  ),
+                ),
+              ] else
+                const Text(
+                  'Nenhum feedback disponível.',
+                  style: TextStyle(fontFamily: 'PressStart2P', fontSize: 10),
+                ),
+              const SizedBox(height: 40),
             ],
-            const SizedBox(height: 20),
-
-            const Text(
-              '💬 Feedback da IA:',
-              style: TextStyle(
-                fontFamily: 'PressStart2P',
-                fontSize: 12,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            if (aiFeedback.isNotEmpty)
-              ...aiFeedback.map((feedback) => _buildFeedbackItem(feedback))
-            else if (feedbackList.isNotEmpty)
-              ...feedbackList.map((feedback) => _buildFeedbackItem(feedback))
-            else
-              _buildDefaultFeedback(correctAnswers, questions.length),
-          ],
+          ),
         );
   }
 

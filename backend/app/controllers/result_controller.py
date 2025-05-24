@@ -151,7 +151,6 @@ class ResultController:
                     "suggestion": "Complete um quiz para receber feedback"
                 }, 200
 
-        
             processed_data = []
             for d in historical_data:
                 if 'porcentagem' not in d:
@@ -163,21 +162,23 @@ class ResultController:
 
                 processed_data.append(d)
 
-        
-            now = datetime.now()
-            recent_period = [d for d in processed_data if d['jogado_em'] >= now - timedelta(weeks=4)] or processed_data[:2]
-            older_period = [d for d in processed_data if now - timedelta(weeks=8) <= d['jogado_em'] < now - timedelta(weeks=4)]
+            # Ordena os dados do mais recente para o mais antigo
+            processed_data = sorted(processed_data, key=lambda x: x['jogado_em'], reverse=True)
+
+            # Pega o último resultado como recent_period (lista com 1 elemento)
+            recent_period = processed_data[:1]
+
+            # Pega o restante como older_period (todos os anteriores)
+            older_period = processed_data[1:] if len(processed_data) > 1 else []
 
             recent_stats = ResultController._calculate_stats(recent_period)
             older_stats = ResultController._calculate_stats(older_period) if older_period else None
 
-         
             rules_feedback = ResultController._generate_rules_feedback(recent_stats)
             ai_feedback = ResultController._generate_ai_feedback(recent_stats)
-            
-         
+
             combined_feedback = list(dict.fromkeys(rules_feedback + (ai_feedback['messages'] if ai_feedback else [])))
-            
+
             response = {
                 "current_period": recent_stats,
                 "previous_period": older_stats,
@@ -201,6 +202,8 @@ class ResultController:
         except Exception as e:
             traceback.print_exc()
             return {"status": "error", "error": str(e)}, 500
+
+
 
 
     @staticmethod
