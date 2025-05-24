@@ -236,7 +236,6 @@ class _QuizScreenState extends State<QuizScreenEasy> {
   }
 
   Widget _buildResultsContent(int tempoSegundos) {
-    // Função para construir o widget de estatística com explicação
     Widget _buildStatWithExplanation(
       String title,
       String? value,
@@ -245,7 +244,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
     ) {
       if (value == null || value == 'N/A') return const SizedBox.shrink();
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(vertical: 6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -255,14 +254,15 @@ class _QuizScreenState extends State<QuizScreenEasy> {
                 fontWeight: FontWeight.bold,
                 color: color,
                 fontFamily: 'PressStart2P',
-                fontSize: 12,
+                fontSize: 13,
               ),
             ),
+            const SizedBox(height: 2),
             Text(
               explanation,
               style: const TextStyle(
                 fontFamily: 'PressStart2P',
-                fontSize: 10,
+                fontSize: 11,
                 color: Colors.black54,
               ),
             ),
@@ -277,123 +277,218 @@ class _QuizScreenState extends State<QuizScreenEasy> {
     final trends = analysis?['trends'];
     final feedbackList = analysis?['feedback'] ?? [];
 
-    // RESULTADO ATUAL DO JOGO (sempre visível primeiro)
+    Widget _buildSectionTitle(String text) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontFamily: 'PressStart2P',
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+            color: Colors.blueAccent,
+          ),
+        ),
+      );
+    }
+
     Widget _buildCurrentResult() {
-      return Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              'QUIZ CONCLUÍDO!',
-              style: TextStyle(
-                fontFamily: 'PressStart2P',
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2BB462),
+      return Card(
+        elevation: 3,
+        margin: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        color: const Color(0xFFE8F5E9), // verde claro suave
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              const Text(
+                'QUIZ CONCLUÍDO!',
+                style: TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2BB462),
+                  letterSpacing: 1.2,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 14),
+              const Text(
+                'Resumo do Jogo Recém Finalizado',
+                style: TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueAccent,
+                ),
+              ),
+              const SizedBox(height: 18),
 
-            const Text(
-              'Resumo do Jogo Recém Finalizado',
-              style: TextStyle(
-                fontFamily: 'PressStart2P',
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-            ),
-            const SizedBox(height: 12),
+              ...[
+                _buildStatWithExplanation(
+                  'Melhor Pontuação',
+                  currentPeriod?['best_score']?.toString(),
+                  'Sua melhor pontuação neste jogo',
+                  Colors.green.shade700,
+                ),
+                _buildStatWithExplanation(
+                  'Consistência',
+                  currentPeriod?['consistency'] != null
+                      ? currentPeriod!['consistency'].toStringAsFixed(2)
+                      : null,
+                  'Quanto menor, mais consistente',
+                  Colors.orange.shade700,
+                ),
+                _buildStatWithExplanation(
+                  'Tentativas',
+                  currentPeriod?['count']?.toString(),
+                  'Número de tentativas realizadas',
+                  Colors.purple.shade700,
+                ),
+                _buildStatWithExplanation(
+                  'Velocidade Média',
+                  currentPeriod?['speed_avg'] != null
+                      ? '${currentPeriod!['speed_avg'].toStringAsFixed(2)}s'
+                      : null,
+                  'Tempo médio por questão',
+                  Colors.red.shade700,
+                ),
+              ].whereType<Widget>(),
 
-            // Usando _buildStatWithExplanation para cada estatística, filtrando null/'N/A'
-            ...[
-              _buildStatWithExplanation(
-                'Precisão Média',
-                currentPeriod?['accuracy_avg'] != null
-                    ? '${currentPeriod!['accuracy_avg'].toStringAsFixed(2)}%'
-                    : null,
-                'Porcentagem média de acertos no jogo recém finalizado',
-                Colors.blue,
-              ),
-              _buildStatWithExplanation(
-                'Melhor Pontuação',
-                currentPeriod?['best_score']?.toString(),
-                'Sua melhor pontuação neste jogo',
-                Colors.green,
-              ),
-              _buildStatWithExplanation(
-                'Consistência',
-                currentPeriod?['consistency'] != null
-                    ? currentPeriod!['consistency'].toStringAsFixed(2)
-                    : null,
-                'Consistência dos seus resultados (quanto menor, melhor)',
-                Colors.orange,
-              ),
-              _buildStatWithExplanation(
-                'Tentativas',
-                currentPeriod?['count']?.toString(),
-                'Número de tentativas realizadas',
-                Colors.purple,
-              ),
-              _buildStatWithExplanation(
-                'Velocidade Média',
-                currentPeriod?['speed_avg'] != null
-                    ? '${currentPeriod!['speed_avg'].toStringAsFixed(2)}s'
-                    : null,
-                'Tempo médio gasto por questão',
-                Colors.red,
-              ),
-            ].whereType<Widget>().toList(),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 12),
-
-            Text(
-              '$correctAnswers/${questions.length} corretas',
-              style: const TextStyle(
-                fontFamily: 'PressStart2P',
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+              Text(
+                '$correctAnswers/${questions.length} corretas',
+                style: const TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                  letterSpacing: 1.1,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Tempo: $tempoSegundos segundos',
-              style: const TextStyle(fontFamily: 'PressStart2P', fontSize: 12),
-            ),
-          ],
+              const SizedBox(height: 6),
+              Text(
+                'Tempo: $tempoSegundos segundos',
+                style: const TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 13,
+                  color: Colors.black54,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
 
     Widget _buildTrendItem(String title, double? value) {
       if (value == null) return const SizedBox.shrink();
-      String display =
-          value >= 0
+      final isPositive = value >= 0;
+      final display =
+          isPositive
               ? '+${value.toStringAsFixed(2)}'
               : value.toStringAsFixed(2);
-      Color color = value >= 0 ? Colors.green : Colors.red;
+      final color = isPositive ? Colors.green : Colors.red;
 
       return Padding(
-        padding: const EdgeInsets.only(bottom: 6),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
           children: [
             Text(
               '$title: ',
               style: const TextStyle(
                 fontFamily: 'PressStart2P',
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
             ),
             Text(
               display,
               style: TextStyle(
                 fontFamily: 'PressStart2P',
-                fontSize: 10,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
                 color: color,
               ),
             ),
           ],
+        ),
+      );
+    }
+
+    Widget _buildStatsCard(String title, List<Widget> stats) {
+      return Card(
+        elevation: 2,
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const Divider(color: Colors.grey, height: 18),
+              ...stats,
+            ],
+          ),
+        ),
+      );
+    }
+
+    Widget _buildFeedbackList(List<dynamic> feedbacks) {
+      if (feedbacks.isEmpty) {
+        return const Text(
+          'Nenhum feedback disponível.',
+          style: TextStyle(
+            fontFamily: 'PressStart2P',
+            fontSize: 12,
+            color: Colors.black45,
+          ),
+        );
+      }
+      return Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade300,
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              feedbacks
+                  .map<Widget>(
+                    (fb) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Text(
+                        '• ${fb.toString()}',
+                        style: const TextStyle(
+                          fontFamily: 'PressStart2P',
+                          fontSize: 12,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
         ),
       );
     }
@@ -403,99 +498,77 @@ class _QuizScreenState extends State<QuizScreenEasy> {
           child: CircularProgressIndicator(color: Color(0xFF2BB462)),
         )
         : SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Resultado atual do jogo (SEMPRE NO TOPO)
               _buildCurrentResult(),
-              const SizedBox(height: 20),
-
-              // Análise detalhada (média histórica)
               if (currentPeriod != null) ...[
-                const Text(
-                  'ANÁLISE DETALHADA',
-                  style: TextStyle(
-                    fontFamily: 'PressStart2P',
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ...[
+                _buildSectionTitle('ANÁLISE DETALHADA'),
+                _buildStatsCard('Estatísticas Atuais', [
                   _buildStatWithExplanation(
                     'Precisão',
                     currentPeriod['accuracy_avg'] != null
                         ? '${currentPeriod['accuracy_avg'].toStringAsFixed(2)}%'
                         : null,
-                    'Porcentagem média de acertos em todas as tentativas',
-                    Colors.blue,
+                    'Porcentagem média de acertos',
+                    Colors.blue.shade700,
                   ),
                   _buildStatWithExplanation(
                     'Melhor pontuação',
                     currentPeriod['best_score']?.toString(),
-                    'Sua melhor pontuação alcançada neste período',
-                    Colors.green,
+                    'Pontuação máxima alcançada',
+                    Colors.green.shade700,
                   ),
                   _buildStatWithExplanation(
                     'Consistência',
                     currentPeriod['consistency']?.toStringAsFixed(2),
-                    'Quão consistentes foram seus resultados (quanto menor, mais consistente)',
-                    Colors.orange,
+                    'Resultados mais estáveis',
+                    Colors.orange.shade700,
                   ),
                   _buildStatWithExplanation(
                     'Tentativas',
                     currentPeriod['count']?.toString(),
-                    'Número de vezes que você realizou o quiz neste período',
-                    Colors.purple,
+                    'Número de jogos realizados',
+                    Colors.purple.shade700,
                   ),
                   _buildStatWithExplanation(
                     'Velocidade',
                     currentPeriod['speed_avg'] != null
                         ? '${currentPeriod['speed_avg'].toStringAsFixed(2)}s'
                         : null,
-                    'Tempo médio gasto por questão (em segundos)',
-                    Colors.red,
+                    'Tempo médio por questão',
+                    Colors.red.shade700,
                   ),
-                ].whereType<Widget>().toList(),
-                const SizedBox(height: 20),
+                ]),
               ],
-
-              // Histórico período anterior
               if (previousPeriod != null) ...[
-                const Text(
-                  'HISTÓRICO DESEMPENHO',
-                  style: TextStyle(
-                    fontFamily: 'PressStart2P',
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ...[
+                _buildSectionTitle('HISTÓRICO DESEMPENHO'),
+                _buildStatsCard('Período Anterior', [
                   _buildStatWithExplanation(
                     'Precisão Anterior',
                     previousPeriod['accuracy_avg'] != null
                         ? '${previousPeriod['accuracy_avg'].toStringAsFixed(2)}%'
                         : null,
-                    'Porcentagem média de acertos no período anterior',
-                    Colors.blueGrey,
+                    'Acertos médios no período anterior',
+                    Colors.blueGrey.shade700,
                   ),
                   _buildStatWithExplanation(
                     'Melhor pontuação Anterior',
                     previousPeriod['best_score']?.toString(),
-                    'Sua melhor pontuação no período anterior',
+                    'Maior pontuação anterior',
                     Colors.green[700]!,
                   ),
                   _buildStatWithExplanation(
                     'Consistência Anterior',
                     previousPeriod['consistency']?.toStringAsFixed(2),
-                    'Consistência dos resultados anteriores',
+                    'Estabilidade anterior dos resultados',
                     Colors.orange[700]!,
                   ),
                   _buildStatWithExplanation(
                     'Tentativas Anteriores',
                     previousPeriod['count']?.toString(),
-                    'Número de tentativas no período anterior',
+                    'Número de jogos anteriores',
                     Colors.purple[700]!,
                   ),
                   _buildStatWithExplanation(
@@ -503,81 +576,42 @@ class _QuizScreenState extends State<QuizScreenEasy> {
                     previousPeriod['speed_avg'] != null
                         ? '${previousPeriod['speed_avg'].toStringAsFixed(2)}s'
                         : null,
-                    'Tempo médio gasto por questão no período anterior',
+                    'Tempo médio anterior por questão',
                     Colors.red[700]!,
                   ),
-                ].whereType<Widget>().toList(),
-                const SizedBox(height: 20),
+                ]),
               ],
-
-              // Tendências
               if (trends != null) ...[
-                const Text(
-                  'TENDÊNCIAS',
-                  style: TextStyle(
-                    fontFamily: 'PressStart2P',
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                _buildSectionTitle('TENDÊNCIAS'),
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 1.5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      children: [
+                        _buildTrendItem(
+                          'Precisão',
+                          (trends['accuracy'] as num?)?.toDouble(),
+                        ),
+                        _buildTrendItem(
+                          'Consistência',
+                          (trends['consistency'] as num?)?.toDouble(),
+                        ),
+                        _buildTrendItem(
+                          'Velocidade',
+                          (trends['speed'] as num?)?.toDouble(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: 10),
-                _buildTrendItem(
-                  'Precisão',
-                  (trends['accuracy'] as num?)?.toDouble(),
-                ),
-                _buildTrendItem(
-                  'Consistência',
-                  (trends['consistency'] as num?)?.toDouble(),
-                ),
-                _buildTrendItem(
-                  'Velocidade',
-                  (trends['speed'] as num?)?.toDouble(),
-                ),
-                const SizedBox(height: 20),
               ],
-
-              // Feedback
-              const Text(
-                'RECOMENDAÇÕES',
-                style: TextStyle(
-                  fontFamily: 'PressStart2P',
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              if (feedbackList.isNotEmpty) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children:
-                        feedbackList
-                            .map<Widget>(
-                              (fb) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: Text(
-                                  '• ${fb.toString()}',
-                                  style: const TextStyle(
-                                    fontFamily: 'PressStart2P',
-                                    fontSize: 10,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                  ),
-                ),
-              ] else
-                const Text(
-                  'Nenhum feedback disponível.',
-                  style: TextStyle(fontFamily: 'PressStart2P', fontSize: 10),
-                ),
+              _buildSectionTitle('RECOMENDAÇÕES'),
+              _buildFeedbackList(feedbackList),
               const SizedBox(height: 40),
             ],
           ),
