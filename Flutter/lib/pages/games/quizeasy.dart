@@ -134,7 +134,6 @@ class _QuizScreenState extends State<QuizScreenEasy> {
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
 
-        // EXEMPLO: Alterar o feedback para outra coisa
         if (data['analysis'] != null && data['analysis']['feedback'] != null) {
           data['analysis']['feedback'] = [
             "🎯 Feedback personalizado",
@@ -144,7 +143,6 @@ class _QuizScreenState extends State<QuizScreenEasy> {
           ];
         }
 
-        // Exemplo: alterar a precisão média atual
         if (data['analysis'] != null &&
             data['analysis']['current_period'] != null) {
           data['analysis']['current_period']['accuracy_avg'] = 95.0;
@@ -298,7 +296,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
         elevation: 3,
         margin: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        color: const Color(0xFFE8F5E9), // verde claro suave
+        color: const Color(0xFFE8F5E9),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -325,36 +323,35 @@ class _QuizScreenState extends State<QuizScreenEasy> {
               ),
               const SizedBox(height: 18),
 
-              ...[
-                _buildStatWithExplanation(
-                  'Melhor Pontuação',
-                  currentPeriod?['best_score']?.toString(),
-                  'Sua melhor pontuação neste jogo',
-                  Colors.green.shade700,
-                ),
-                _buildStatWithExplanation(
-                  'Consistência',
-                  currentPeriod?['consistency'] != null
-                      ? currentPeriod!['consistency'].toStringAsFixed(2)
-                      : null,
-                  'Quanto menor, mais consistente',
-                  Colors.orange.shade700,
-                ),
-                _buildStatWithExplanation(
-                  'Tentativas',
-                  currentPeriod?['count']?.toString(),
-                  'Número de tentativas realizadas',
-                  Colors.purple.shade700,
-                ),
-                _buildStatWithExplanation(
-                  'Velocidade Média',
-                  currentPeriod?['speed_avg'] != null
-                      ? '${currentPeriod!['speed_avg'].toStringAsFixed(2)}s'
-                      : null,
-                  'Tempo médio por questão',
-                  Colors.red.shade700,
-                ),
-              ].whereType<Widget>(),
+              // Alterado: Removido o campo "Precisão" e alterado "Melhor Pontuação" para "Pontuação"
+              _buildStatWithExplanation(
+                'Pontuação', // Alterado de "Melhor Pontuação"
+                currentPeriod?['best_score']?.toString(),
+                'Sua pontuação neste jogo', // Texto explicativo ajustado
+                Colors.green.shade700,
+              ),
+              _buildStatWithExplanation(
+                'Consistência',
+                currentPeriod?['consistency'] != null
+                    ? currentPeriod!['consistency'].toStringAsFixed(2)
+                    : null,
+                'Quanto menor, mais consistente',
+                Colors.orange.shade700,
+              ),
+              _buildStatWithExplanation(
+                'Tentativas',
+                currentPeriod?['count']?.toString(),
+                'Número de tentativas realizadas',
+                Colors.purple.shade700,
+              ),
+              _buildStatWithExplanation(
+                'Velocidade Média',
+                currentPeriod?['speed_avg'] != null
+                    ? '${currentPeriod!['speed_avg'].toStringAsFixed(2)}s'
+                    : null,
+                'Tempo médio por questão',
+                Colors.red.shade700,
+              ),
 
               const SizedBox(height: 20),
 
@@ -503,60 +500,13 @@ class _QuizScreenState extends State<QuizScreenEasy> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildCurrentResult(),
-              if (currentPeriod != null) ...[
-                _buildSectionTitle('ANÁLISE DETALHADA'),
-                _buildStatsCard('Estatísticas Atuais', [
-                  _buildStatWithExplanation(
-                    'Precisão',
-                    currentPeriod['accuracy_avg'] != null
-                        ? '${currentPeriod['accuracy_avg'].toStringAsFixed(2)}%'
-                        : null,
-                    'Porcentagem média de acertos',
-                    Colors.blue.shade700,
-                  ),
-                  _buildStatWithExplanation(
-                    'Melhor pontuação',
-                    currentPeriod['best_score']?.toString(),
-                    'Pontuação máxima alcançada',
-                    Colors.green.shade700,
-                  ),
-                  _buildStatWithExplanation(
-                    'Consistência',
-                    currentPeriod['consistency']?.toStringAsFixed(2),
-                    'Resultados mais estáveis',
-                    Colors.orange.shade700,
-                  ),
-                  _buildStatWithExplanation(
-                    'Tentativas',
-                    currentPeriod['count']?.toString(),
-                    'Número de jogos realizados',
-                    Colors.purple.shade700,
-                  ),
-                  _buildStatWithExplanation(
-                    'Velocidade',
-                    currentPeriod['speed_avg'] != null
-                        ? '${currentPeriod['speed_avg'].toStringAsFixed(2)}s'
-                        : null,
-                    'Tempo médio por questão',
-                    Colors.red.shade700,
-                  ),
-                ]),
-              ],
               if (previousPeriod != null) ...[
                 _buildSectionTitle('HISTÓRICO DESEMPENHO'),
                 _buildStatsCard('Período Anterior', [
                   _buildStatWithExplanation(
-                    'Precisão Anterior',
-                    previousPeriod['accuracy_avg'] != null
-                        ? '${previousPeriod['accuracy_avg'].toStringAsFixed(2)}%'
-                        : null,
-                    'Acertos médios no período anterior',
-                    Colors.blueGrey.shade700,
-                  ),
-                  _buildStatWithExplanation(
-                    'Melhor pontuação Anterior',
+                    'Pontuação Anterior', // Alterado para manter consistência
                     previousPeriod['best_score']?.toString(),
-                    'Maior pontuação anterior',
+                    'Sua pontuação anterior',
                     Colors.green[700]!,
                   ),
                   _buildStatWithExplanation(
@@ -616,72 +566,6 @@ class _QuizScreenState extends State<QuizScreenEasy> {
             ],
           ),
         );
-  }
-
-  Widget _buildStatItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: RichText(
-        text: TextSpan(
-          style: const TextStyle(
-            fontFamily: 'PressStart2P',
-            fontSize: 10,
-            color: Colors.black,
-            height: 1.5,
-          ),
-          children: [
-            TextSpan(
-              text: '$label ',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            TextSpan(text: value),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDefaultFeedback(int correctAnswers, int totalQuestions) {
-    double percentage = (correctAnswers / totalQuestions) * 100;
-    String feedback;
-
-    if (percentage == 0) {
-      feedback = "🔄 Hora de praticar mais! Tente novamente.";
-    } else if (percentage < 30) {
-      feedback = "💡 Você está começando, continue praticando!";
-    } else if (percentage < 70) {
-      feedback = "👍 Bom trabalho! Você está melhorando!";
-    } else if (percentage < 90) {
-      feedback = "👏 Ótimo desempenho! Continue assim!";
-    } else {
-      feedback = "🎯 Excelente! Desempenho excepcional!";
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Text(
-        feedback,
-        style: const TextStyle(
-          fontFamily: 'PressStart2P',
-          fontSize: 10,
-          color: Colors.black,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFeedbackItem(dynamic feedback) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Text(
-        feedback?.toString() ?? '',
-        style: const TextStyle(
-          fontFamily: 'PressStart2P',
-          fontSize: 10,
-          color: Colors.black,
-        ),
-      ),
-    );
   }
 
   @override
