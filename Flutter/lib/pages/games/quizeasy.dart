@@ -22,7 +22,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
     gameLogic = QuizEasyLogic(
       questions: const [
         {
-          "question": "Qual cor de lixeira é usada para plástico?",
+          "question": "Qual cor de lixeira é usada para papel?",
           "options": ["Azul", "Vermelha", "Verde"],
           "correctIndex": 1,
         },

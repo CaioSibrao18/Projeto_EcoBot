@@ -66,27 +66,20 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/telaFundo.png
     - assets/images/logoEcoQuest.png
-    - assets/images/FundoForgetPassword.png
-    - assets/images/FundoResetPassword.png
-    - assets/images/Trash.png
-    - assets/images/Click.png
-    - assets/images/Puzzle.png
-    - assets/images/FundoVerde.png
     - assets/images/iconcoletafacil.png
     - assets/images/iconcoletadificil.png
     - assets/images/iconpalavra.png
     - assets/images/iconquizdificil.png
     - assets/images/iconquizfacil.png
     - assets/images/iconsilaba.png
-    - assets/images/caderno.png
+    - assets/images/revista.png
     - assets/images/caixadeleite.png
     - assets/images/caixapapelao.png
     - assets/images/carne.png
     - assets/images/cascabanana.png
     - assets/images/envelope.png
-    - assets/images/garrafa.png
+    - assets/images/garrafavidro.png
     - assets/images/garrafapet.png
     - assets/images/jornal.png
     - assets/images/latinha.png

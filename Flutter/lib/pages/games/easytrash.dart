@@ -11,13 +11,13 @@ class EasyTrashSortingGame extends StatefulWidget {
 
 class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
   final List<Map<String, dynamic>> trashItems = [
-    {'image': 'assets/images/caderno.png', 'correctBin': 'azul'},
+    {'image': 'assets/images/revista.png', 'correctBin': 'azul'},
     {'image': 'assets/images/caixadeleite.png', 'correctBin': 'azul'},
     {'image': 'assets/images/envelope.png', 'correctBin': 'azul'},
     {'image': 'assets/images/sacola.png', 'correctBin': 'vermelha'},
     {'image': 'assets/images/latinha.png', 'correctBin': 'amarelo'},
     {'image': 'assets/images/caixapapelao.png', 'correctBin': 'azul'},
-    {'image': 'assets/images/garrafa.png', 'correctBin': 'vermelha'},
+    {'image': 'assets/images/garrafapet.png', 'correctBin': 'vermelha'},
     {'image': 'assets/images/canudo.png', 'correctBin': 'vermelha'},
     {'image': 'assets/images/salgadinho.png', 'correctBin': 'vermelha'},
     {'image': 'assets/images/jornal.png', 'correctBin': 'azul'},

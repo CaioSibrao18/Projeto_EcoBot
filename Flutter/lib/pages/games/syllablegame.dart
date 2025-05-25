@@ -11,46 +11,16 @@ class SpellingGameSyllables extends StatefulWidget {
 
 class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   final List<Map<String, dynamic>> words = [
-    {
-      'word': 're-ci-clar',
-      'syllables': ['re', 'ci', 'clar'],
-    },
-    {
-      'word': 'e-ner-gi-a',
-      'syllables': ['e', 'ner', 'gi', 'a'],
-    },
-    {
-      'word': 'sus-ten-tá-vel',
-      'syllables': ['sus', 'ten', 'tá', 'vel'],
-    },
-    {
-      'word': 'a-ma-zô-nia',
-      'syllables': ['a', 'ma', 'zô', 'nia'],
-    },
-    {
-      'word': 'a-gua',
-      'syllables': ['a', 'gua'],
-    },
-    {
-      'word': 'na-tu-re-za',
-      'syllables': ['na', 'tu', 're', 'za'],
-    },
-    {
-      'word': 'po-lu-i-ção',
-      'syllables': ['po', 'lu', 'i', 'ção'],
-    },
-    {
-      'word': 're-u-ti-li-zar',
-      'syllables': ['re', 'u', 'ti', 'li', 'zar'],
-    },
-    {
-      'word': 'com-pos-ta-gem',
-      'syllables': ['com', 'pos', 'ta', 'gem'],
-    },
-    {
-      'word': 'bio-de-gra-dá-vel',
-      'syllables': ['bio', 'de', 'gra', 'dá', 'vel'],
-    },
+    {'word': 're-ci-clar', 'syllables': ['re', 'ci', 'clar']},
+    {'word': 'e-ner-gi-a', 'syllables': ['e', 'ner', 'gi', 'a']},
+    {'word': 'sus-ten-tá-vel', 'syllables': ['sus', 'ten', 'tá', 'vel']},
+    {'word': 'a-ma-zô-nia', 'syllables': ['a', 'ma', 'zô', 'nia']},
+    {'word': 'a-gua', 'syllables': ['a', 'gua']},
+    {'word': 'na-tu-re-za', 'syllables': ['na', 'tu', 're', 'za']},
+    {'word': 'po-lu-i-ção', 'syllables': ['po', 'lu', 'i', 'ção']},
+    {'word': 're-u-ti-li-zar', 'syllables': ['re', 'u', 'ti', 'li', 'zar']},
+    {'word': 'com-pos-ta-gem', 'syllables': ['com', 'pos', 'ta', 'gem']},
+    {'word': 'bio-de-gra-dá-vel', 'syllables': ['bio', 'de', 'gra', 'dá', 'vel']},
   ];
 
   int currentWordIndex = 0;
@@ -60,8 +30,8 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   Color boxColor = Colors.grey.shade200;
   String? incorrectWord;
   final Stopwatch _stopwatch = Stopwatch();
-  final Stopwatch _wordStopwatch = Stopwatch(); // Cronômetro por palavra
-  List<int> _wordTimes = []; // Lista para armazenar tempos por palavra
+  final Stopwatch _wordStopwatch = Stopwatch();
+  List<int> _wordTimes = [];
   bool _isLoading = false;
   Map<String, dynamic>? _analysisData;
 
@@ -69,13 +39,13 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   void initState() {
     super.initState();
     _stopwatch.start();
-    _wordStopwatch.start(); // Inicia o cronômetro por palavra
+    _wordStopwatch.start();
     resetGame();
   }
 
   void resetGame() {
     setState(() {
-      selectedSyllables = [];
+      selectedSyllables.clear();
       availableSyllables = List.from(words[currentWordIndex]['syllables']);
       availableSyllables.shuffle();
       boxColor = Colors.grey.shade200;
@@ -84,7 +54,6 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
   }
 
   void checkAnswer() {
-    // Para o cronômetro da palavra atual e armazena o tempo
     _wordStopwatch.stop();
     int wordTime = _wordStopwatch.elapsed.inSeconds;
     _wordTimes.add(wordTime);
@@ -98,7 +67,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
         correctAnswers++;
       });
       Future.delayed(const Duration(seconds: 1), () {
-        _wordStopwatch.reset(); // Reinicia para próxima palavra
+        _wordStopwatch.reset();
         _wordStopwatch.start();
         goToNextWord();
       });
@@ -108,7 +77,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
         incorrectWord = correctWord;
       });
       Future.delayed(const Duration(seconds: 2), () {
-        _wordStopwatch.reset(); // Reinicia para próxima palavra
+        _wordStopwatch.reset();
         _wordStopwatch.start();
         goToNextWord();
       });
@@ -136,7 +105,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
           'usuario_id': 4,
           'acertos': acertos,
           'tempo_segundos': tempoSegundos,
-          'tempos_palavras': _wordTimes, // Envia os tempos individuais
+          'tempos_palavras': _wordTimes,
         }),
       );
     } catch (e) {
@@ -161,8 +130,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
           ];
         }
 
-        if (data['analysis'] != null &&
-            data['analysis']['current_period'] != null) {
+        if (data['analysis'] != null && data['analysis']['current_period'] != null) {
           data['analysis']['current_period']['accuracy_avg'] = 90.0;
         }
 
@@ -193,65 +161,64 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder:
-          (context) => Dialog(
-            backgroundColor: const Color(0xFFFDFDF7),
-            insetPadding: const EdgeInsets.all(20),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 500),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      'Resultado - Jogo de Sílabas',
-                      style: const TextStyle(
-                        color: Color(0xFF2BB462),
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'PressStart2P',
-                        fontSize: 14,
-                      ),
-                    ),
+      builder: (context) => Dialog(
+        backgroundColor: const Color(0xFFFDFDF7),
+        insetPadding: const EdgeInsets.all(20),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 500),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  'Resultado - Jogo de Sílabas',
+                  style: const TextStyle(
+                    color: Color(0xFF2BB462),
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PressStart2P',
+                    fontSize: 14,
                   ),
-                  const Divider(height: 1, color: Colors.grey),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: _buildResultsContent(tempoSegundos),
-                    ),
-                  ),
-                  const Divider(height: 1, color: Colors.grey),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        setState(() {
-                          currentWordIndex = 0;
-                          correctAnswers = 0;
-                          _analysisData = null;
-                          _stopwatch.reset();
-                          _stopwatch.start();
-                          _wordStopwatch.reset();
-                          _wordStopwatch.start();
-                          _wordTimes.clear();
-                        });
-                        resetGame();
-                      },
-                      child: const Text(
-                        'Reiniciar',
-                        style: TextStyle(
-                          color: Color(0xFF2BB462),
-                          fontFamily: 'PressStart2P',
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              const Divider(height: 1, color: Colors.grey),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: _buildResultsContent(tempoSegundos),
+                ),
+              ),
+              const Divider(height: 1, color: Colors.grey),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      currentWordIndex = 0;
+                      correctAnswers = 0;
+                      _analysisData = null;
+                      _stopwatch.reset();
+                      _stopwatch.start();
+                      _wordStopwatch.reset();
+                      _wordStopwatch.start();
+                      _wordTimes.clear();
+                    });
+                    resetGame();
+                  },
+                  child: const Text(
+                    'Reiniciar',
+                    style: TextStyle(
+                      color: Color(0xFF2BB462),
+                      fontFamily: 'PressStart2P',
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
+        ),
+      ),
     );
   }
 
@@ -314,11 +281,9 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
     }
 
     Widget _buildCurrentResult() {
-      // Calcula a média localmente para exibição
-      double speedAvg =
-          _wordTimes.isNotEmpty
-              ? _wordTimes.reduce((a, b) => a + b) / _wordTimes.length
-              : 0;
+      double speedAvg = _wordTimes.isNotEmpty
+          ? _wordTimes.reduce((a, b) => a + b) / _wordTimes.length
+          : 0;
 
       return Card(
         elevation: 3,
@@ -358,9 +323,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
               ),
               _buildStatWithExplanation(
                 'Consistência',
-                currentPeriod?['consistency'] != null
-                    ? currentPeriod!['consistency'].toStringAsFixed(2)
-                    : null,
+                currentPeriod?['consistency']?.toStringAsFixed(2),
                 'Quanto menor, mais consistente',
                 Colors.orange.shade700,
               ),
@@ -372,7 +335,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
               ),
               _buildStatWithExplanation(
                 'Velocidade Média',
-                speedAvg.toStringAsFixed(2) + 's', // Usa o cálculo local
+                speedAvg.toStringAsFixed(2) + 's',
                 'Tempo médio por palavra',
                 Colors.red.shade700,
               ),
@@ -405,10 +368,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
     Widget _buildTrendItem(String title, double? value) {
       if (value == null) return const SizedBox.shrink();
       final isPositive = value >= 0;
-      final display =
-          isPositive
-              ? '+${value.toStringAsFixed(2)}'
-              : value.toStringAsFixed(2);
+      final display = isPositive ? '+${value.toStringAsFixed(2)}' : value.toStringAsFixed(2);
       final color = isPositive ? Colors.green : Colors.red;
 
       return Padding(
@@ -492,106 +452,102 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children:
-              feedbacks
-                  .map<Widget>(
-                    (fb) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Text(
-                        '• ${fb.toString()}',
-                        style: const TextStyle(
-                          fontFamily: 'PressStart2P',
-                          fontSize: 12,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
+          children: feedbacks.map<Widget>((fb) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Text(
+              '• ${fb.toString()}',
+              style: const TextStyle(
+                fontFamily: 'PressStart2P',
+                fontSize: 12,
+                color: Colors.black87,
+              ),
+            ),
+          )).toList(),
         ),
       );
     }
 
     return _isLoading
         ? const Center(
-          child: CircularProgressIndicator(color: Color(0xFF2BB462)),
-        )
+            child: CircularProgressIndicator(color: Color(0xFF2BB462)),
+          )
         : SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildCurrentResult(),
-              if (previousPeriod != null) ...[
-                _buildSectionTitle('HISTÓRICO DESEMPENHO'),
-                _buildStatsCard('Período Anterior', [
-                  _buildStatWithExplanation(
-                    'Pontuação Anterior',
-                    previousPeriod['best_score']?.toString(),
-                    'Sua pontuação anterior',
-                    Colors.green[700]!,
-                  ),
-                  _buildStatWithExplanation(
-                    'Consistência Anterior',
-                    previousPeriod['consistency']?.toStringAsFixed(2),
-                    'Estabilidade anterior dos resultados',
-                    Colors.orange[700]!,
-                  ),
-                  _buildStatWithExplanation(
-                    'Tentativas Anteriores',
-                    previousPeriod['count']?.toString(),
-                    'Número de jogos anteriores',
-                    Colors.purple[700]!,
-                  ),
-                  _buildStatWithExplanation(
-                    'Velocidade Anterior',
-                    previousPeriod['speed_avg'] != null
-                        ? '${previousPeriod['speed_avg'].toStringAsFixed(2)}s'
-                        : null,
-                    'Tempo médio anterior por palavra',
-                    Colors.red[700]!,
-                  ),
-                ]),
-              ],
-              if (trends != null) ...[
-                _buildSectionTitle('TENDÊNCIAS'),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 1.5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Column(
-                      children: [
-                        _buildTrendItem(
-                          'Precisão',
-                          (trends['accuracy'] as num?)?.toDouble(),
-                        ),
-                        _buildTrendItem(
-                          'Consistência',
-                          (trends['consistency'] as num?)?.toDouble(),
-                        ),
-                        _buildTrendItem(
-                          'Velocidade',
-                          (trends['speed'] as num?)?.toDouble(),
-                        ),
-                      ],
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildCurrentResult(),
+                if (previousPeriod != null) ...[
+                  _buildSectionTitle('HISTÓRICO DESEMPENHO'),
+                  _buildStatsCard('Período Anterior', [
+                    _buildStatWithExplanation(
+                      'Pontuação Anterior',
+                      previousPeriod['best_score']?.toString(),
+                      'Sua pontuação anterior',
+                      Colors.green[700]!,
+                    ),
+                    _buildStatWithExplanation(
+                      'Consistência Anterior',
+                      previousPeriod['consistency']?.toStringAsFixed(2),
+                      'Estabilidade anterior dos resultados',
+                      Colors.orange[700]!,
+                    ),
+                    _buildStatWithExplanation(
+                      'Tentativas Anteriores',
+                      previousPeriod['count']?.toString(),
+                      'Número de jogos anteriores',
+                      Colors.purple[700]!,
+                    ),
+                    _buildStatWithExplanation(
+                      'Velocidade Anterior',
+                      previousPeriod['speed_avg'] != null
+                          ? '${previousPeriod['speed_avg'].toStringAsFixed(2)}s'
+                          : null,
+                      'Tempo médio anterior por palavra',
+                      Colors.red[700]!,
+                    ),
+                  ]),
+                ],
+                if (trends != null) ...[
+                  _buildSectionTitle('TENDÊNCIAS'),
+                  Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 1.5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(
+                        children: [
+                          _buildTrendItem(
+                            'Precisão',
+                            (trends['accuracy'] as num?)?.toDouble(),
+                          ),
+                          _buildTrendItem(
+                            'Consistência',
+                            (trends['consistency'] as num?)?.toDouble(),
+                          ),
+                          _buildTrendItem(
+                            'Velocidade',
+                            (trends['speed'] as num?)?.toDouble(),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                ],
+                _buildSectionTitle('RECOMENDAÇÕES'),
+                _buildFeedbackList(feedbackList),
+                const SizedBox(height: 40),
               ],
-              _buildSectionTitle('RECOMENDAÇÕES'),
-              _buildFeedbackList(feedbackList),
-              const SizedBox(height: 40),
-            ],
-          ),
-        );
+            ),
+          );
   }
 
   Widget _syllableTile(String syllable, {bool dragging = false}) {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         color: dragging ? const Color(0xFF2BB462) : Colors.white,
@@ -619,13 +575,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xff2bb462)),
-          onPressed: () {
-            setState(() {
-              selectedSyllables.clear();
-              availableSyllables.clear();
-            });
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Center(
@@ -652,60 +602,69 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
               ),
               const SizedBox(height: 30),
 
-              /// Sílabas disponíveis
+              // Sílabas disponíveis
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
                 alignment: WrapAlignment.center,
-                children:
-                    availableSyllables
-                        .map(
-                          (syllable) => Draggable<String>(
-                            data: syllable,
-                            feedback: _syllableTile(syllable, dragging: true),
-                            childWhenDragging: Opacity(
-                              opacity: 0.5,
-                              child: _syllableTile(syllable),
-                            ),
-                            child: _syllableTile(syllable),
-                          ),
-                        )
-                        .toList(),
+                children: availableSyllables.map((syllable) {
+                  return Draggable<String>(
+                    data: syllable,
+                    feedback: _syllableTile(syllable, dragging: true),
+                    childWhenDragging: Container(),
+                    child: _syllableTile(syllable),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 40),
 
-              /// Área de montagem
+              // Área de montagem
               DragTarget<String>(
-                builder:
-                    (context, candidateData, rejectedData) => Container(
-                      padding: const EdgeInsets.all(16),
-                      height: 100,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: boxColor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: const Color(0xFF2BB462),
-                          width: 2,
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Wrap(
-                        spacing: 8,
-                        children:
-                            selectedSyllables
-                                .map((syllable) => _syllableTile(syllable))
-                                .toList(),
+                builder: (context, candidateData, rejectedData) {
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    height: 120,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: boxColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFF2BB462),
+                        width: 2,
                       ),
                     ),
+                    alignment: Alignment.center,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ...selectedSyllables.expand((syllable) {
+                            final index = selectedSyllables.indexOf(syllable);
+                            return [
+                              _syllableTile(syllable),
+                              if (index < selectedSyllables.length - 1)
+                                const Text(
+                                  '-',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                            ];
+                          }).toList(),
+                        ],
+                      ),
+                    ),
+                  );
+                },
                 onWillAcceptWithDetails: (data) => true,
                 onAcceptWithDetails: (data) {
-                  if (!selectedSyllables.contains(data)) {
-                    setState(() {
-                      selectedSyllables.add(data as String);
-                      availableSyllables.remove(data);
-                    });
-                  }
+                  setState(() {
+                    selectedSyllables.add(data.data);
+                    availableSyllables.remove(data.data);
+                  });
                 },
               ),
 
@@ -727,7 +686,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: checkAnswer,
+                    onPressed: selectedSyllables.isNotEmpty ? checkAnswer : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2BB462),
                       padding: const EdgeInsets.symmetric(
