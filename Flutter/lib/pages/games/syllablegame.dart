@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'syllablegame_logic.dart';
 
 class SpellingGameSyllables extends StatefulWidget {
   const SpellingGameSyllables({super.key});
@@ -23,15 +24,10 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
     {'word': 'bio-de-gra-dá-vel', 'syllables': ['bio', 'de', 'gra', 'dá', 'vel']},
   ];
 
-  int currentWordIndex = 0;
-  int correctAnswers = 0;
-  late List<String> availableSyllables;
-  List<String> selectedSyllables = [];
+  late SyllableGameLogic gameLogic;
   Color boxColor = Colors.grey.shade200;
-  String? incorrectWord;
   final Stopwatch _stopwatch = Stopwatch();
   final Stopwatch _wordStopwatch = Stopwatch();
-  List<int> _wordTimes = [];
   bool _isLoading = false;
   Map<String, dynamic>? _analysisData;
 
@@ -40,54 +36,38 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
     super.initState();
     _stopwatch.start();
     _wordStopwatch.start();
+    gameLogic = SyllableGameLogic(words: words);
     resetGame();
   }
 
   void resetGame() {
     setState(() {
-      selectedSyllables.clear();
-      availableSyllables = List.from(words[currentWordIndex]['syllables']);
-      availableSyllables.shuffle();
+      gameLogic.resetGame();
       boxColor = Colors.grey.shade200;
-      incorrectWord = null;
     });
   }
 
   void checkAnswer() {
     _wordStopwatch.stop();
-    int wordTime = _wordStopwatch.elapsed.inSeconds;
-    _wordTimes.add(wordTime);
+    gameLogic.wordTimes.add(_wordStopwatch.elapsed.inSeconds);
 
-    final formedWord = selectedSyllables.join('-');
-    final correctWord = words[currentWordIndex]['word'];
+    final isCorrect = gameLogic.checkAnswer();
+    
+    setState(() {
+      boxColor = isCorrect ? Colors.greenAccent : Colors.redAccent;
+    });
 
-    if (formedWord == correctWord) {
-      setState(() {
-        boxColor = Colors.greenAccent;
-        correctAnswers++;
-      });
-      Future.delayed(const Duration(seconds: 1), () {
-        _wordStopwatch.reset();
-        _wordStopwatch.start();
-        goToNextWord();
-      });
-    } else {
-      setState(() {
-        boxColor = Colors.redAccent;
-        incorrectWord = correctWord;
-      });
-      Future.delayed(const Duration(seconds: 2), () {
-        _wordStopwatch.reset();
-        _wordStopwatch.start();
-        goToNextWord();
-      });
-    }
+    Future.delayed(Duration(seconds: isCorrect ? 1 : 2), () {
+      _wordStopwatch.reset();
+      _wordStopwatch.start();
+      goToNextWord();
+    });
   }
 
   void goToNextWord() {
-    if (currentWordIndex < words.length - 1) {
+    if (!gameLogic.isGameComplete) {
       setState(() {
-        currentWordIndex++;
+        gameLogic.goToNextWord();
         resetGame();
       });
     } else {
@@ -105,7 +85,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
           'usuario_id': 4,
           'acertos': acertos,
           'tempo_segundos': tempoSegundos,
-          'tempos_palavras': _wordTimes,
+          'tempos_palavras': gameLogic.wordTimes,
         }),
       );
     } catch (e) {
@@ -150,7 +130,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
       _isLoading = true;
     });
 
-    await _enviarParaBackend(correctAnswers, tempoSegundos);
+    await _enviarParaBackend(gameLogic.correctAnswers, tempoSegundos);
     final analysisData = await _getAIAnalysis();
 
     setState(() {
@@ -195,14 +175,12 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
                   onPressed: () {
                     Navigator.of(context).pop();
                     setState(() {
-                      currentWordIndex = 0;
-                      correctAnswers = 0;
+                      gameLogic = SyllableGameLogic(words: words);
                       _analysisData = null;
                       _stopwatch.reset();
                       _stopwatch.start();
                       _wordStopwatch.reset();
                       _wordStopwatch.start();
-                      _wordTimes.clear();
                     });
                     resetGame();
                   },
@@ -281,8 +259,8 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
     }
 
     Widget _buildCurrentResult() {
-      double speedAvg = _wordTimes.isNotEmpty
-          ? _wordTimes.reduce((a, b) => a + b) / _wordTimes.length
+      double speedAvg = gameLogic.wordTimes.isNotEmpty
+          ? gameLogic.wordTimes.reduce((a, b) => a + b) / gameLogic.wordTimes.length
           : 0;
 
       return Card(
@@ -341,7 +319,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
               ),
               const SizedBox(height: 20),
               Text(
-                '$correctAnswers/${words.length} corretas',
+                '${gameLogic.correctAnswers}/${words.length} corretas',
                 style: const TextStyle(
                   fontFamily: 'PressStart2P',
                   fontSize: 22,
@@ -607,7 +585,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
                 spacing: 10,
                 runSpacing: 10,
                 alignment: WrapAlignment.center,
-                children: availableSyllables.map((syllable) {
+                children: gameLogic.availableSyllables.map((syllable) {
                   return Draggable<String>(
                     data: syllable,
                     feedback: _syllableTile(syllable, dragging: true),
@@ -639,11 +617,11 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ...selectedSyllables.expand((syllable) {
-                            final index = selectedSyllables.indexOf(syllable);
+                          ...gameLogic.selectedSyllables.expand((syllable) {
+                            final index = gameLogic.selectedSyllables.indexOf(syllable);
                             return [
                               _syllableTile(syllable),
-                              if (index < selectedSyllables.length - 1)
+                              if (index < gameLogic.selectedSyllables.length - 1)
                                 const Text(
                                   '-',
                                   style: TextStyle(
@@ -662,16 +640,15 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
                 onWillAcceptWithDetails: (data) => true,
                 onAcceptWithDetails: (data) {
                   setState(() {
-                    selectedSyllables.add(data.data);
-                    availableSyllables.remove(data.data);
+                    gameLogic.addSyllable(data.data);
                   });
                 },
               ),
 
-              if (incorrectWord != null) ...[
+              if (gameLogic.incorrectWord != null) ...[
                 const SizedBox(height: 20),
                 Text(
-                  'Palavra correta: $incorrectWord',
+                  'Palavra correta: ${gameLogic.incorrectWord}',
                   style: const TextStyle(
                     color: Colors.redAccent,
                     fontWeight: FontWeight.bold,
@@ -686,7 +663,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: selectedSyllables.isNotEmpty ? checkAnswer : null,
+                    onPressed: gameLogic.selectedSyllables.isNotEmpty ? checkAnswer : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2BB462),
                       padding: const EdgeInsets.symmetric(
@@ -725,7 +702,7 @@ class _SpellingGameSyllablesState extends State<SpellingGameSyllables> {
 
               const SizedBox(height: 20),
               Text(
-                'Palavra ${currentWordIndex + 1} de ${words.length}',
+                'Palavra ${gameLogic.currentWordIndex + 1} de ${words.length}',
                 style: const TextStyle(
                   color: Colors.black54,
                   fontFamily: 'PressStart2P',
