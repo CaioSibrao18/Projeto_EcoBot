@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'easytrash_logic.dart';
 
 class EasyTrashSortingGame extends StatefulWidget {
   const EasyTrashSortingGame({super.key});
@@ -10,30 +11,12 @@ class EasyTrashSortingGame extends StatefulWidget {
 }
 
 class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
-  final List<Map<String, dynamic>> trashItems = [
-    {'image': 'assets/images/revista.png', 'correctBin': 'azul'},
-    {'image': 'assets/images/caixadeleite.png', 'correctBin': 'azul'},
-    {'image': 'assets/images/envelope.png', 'correctBin': 'azul'},
-    {'image': 'assets/images/sacola.png', 'correctBin': 'vermelha'},
-    {'image': 'assets/images/latinha.png', 'correctBin': 'amarelo'},
-    {'image': 'assets/images/caixapapelao.png', 'correctBin': 'azul'},
-    {'image': 'assets/images/garrafapet.png', 'correctBin': 'vermelha'},
-    {'image': 'assets/images/canudo.png', 'correctBin': 'vermelha'},
-    {'image': 'assets/images/salgadinho.png', 'correctBin': 'vermelha'},
-    {'image': 'assets/images/jornal.png', 'correctBin': 'azul'},
-  ];
-
+  late EasyTrashGameLogic gameLogic;
   final Map<String, String> binImages = {
     'azul': 'assets/images/azullixeira.png',
     'amarelo': 'assets/images/amarelalixeira.png',
     'vermelha': 'assets/images/vermelhalixeira.png',
   };
-
-  int currentItemIndex = 0;
-  int correctAnswers = 0;
-  String? lastResultText;
-  String? lastResultBin;
-  bool? lastResultCorrect;
   final Stopwatch _stopwatch = Stopwatch();
   bool _isLoading = false;
   Map<String, dynamic>? _analysisData;
@@ -41,27 +24,31 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
   @override
   void initState() {
     super.initState();
+    gameLogic = EasyTrashGameLogic(
+      trashItems: [
+        {'image': 'assets/images/revista.png', 'correctBin': 'azul'},
+        {'image': 'assets/images/caixadeleite.png', 'correctBin': 'azul'},
+        {'image': 'assets/images/envelope.png', 'correctBin': 'azul'},
+        {'image': 'assets/images/sacola.png', 'correctBin': 'vermelha'},
+        {'image': 'assets/images/latinha.png', 'correctBin': 'amarelo'},
+        {'image': 'assets/images/caixapapelao.png', 'correctBin': 'azul'},
+        {'image': 'assets/images/garrafapet.png', 'correctBin': 'vermelha'},
+        {'image': 'assets/images/canudo.png', 'correctBin': 'vermelha'},
+        {'image': 'assets/images/salgadinho.png', 'correctBin': 'vermelha'},
+        {'image': 'assets/images/jornal.png', 'correctBin': 'azul'},
+      ],
+    );
     _stopwatch.start();
   }
 
   void checkAnswer(String selectedBin) {
-    String correctBin = trashItems[currentItemIndex]['correctBin'];
-    bool isCorrect = selectedBin == correctBin;
-
+    gameLogic.checkAnswer(selectedBin);
+    
     setState(() {
-      lastResultText = correctBin;
-      lastResultBin = selectedBin;
-      lastResultCorrect = isCorrect;
-
-      if (isCorrect) correctAnswers++;
-
       Future.delayed(const Duration(seconds: 1), () {
         setState(() {
-          if (currentItemIndex < trashItems.length - 1) {
-            currentItemIndex++;
-            lastResultText = null;
-            lastResultCorrect = null;
-            lastResultBin = null;
+          if (!gameLogic.isGameFinished()) {
+            gameLogic.nextItem();
           } else {
             _stopwatch.stop();
             _showResult();
@@ -125,7 +112,7 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
       _isLoading = true;
     });
 
-    await _enviarParaBackend(correctAnswers, tempoSegundos);
+    await _enviarParaBackend(gameLogic.correctAnswers, tempoSegundos);
     final analysisData = await _getAIAnalysis();
 
     setState(() {
@@ -170,8 +157,7 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
                   onPressed: () {
                     Navigator.of(context).pop();
                     setState(() {
-                      currentItemIndex = 0;
-                      correctAnswers = 0;
+                      gameLogic.resetGame();
                       _analysisData = null;
                       _stopwatch.reset();
                       _stopwatch.start();
@@ -312,7 +298,7 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
               ),
               const SizedBox(height: 20),
               Text(
-                '$correctAnswers/${trashItems.length} corretos',
+                '${gameLogic.correctAnswers}/${gameLogic.getTotalItems()} corretos',
                 style: const TextStyle(
                   fontFamily: 'PressStart2P',
                   fontSize: 22,
@@ -518,8 +504,6 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
 
   @override
   Widget build(BuildContext context) {
-    String currentImage = trashItems[currentItemIndex]['image'];
-
     return Scaffold(
       backgroundColor: const Color(0xFFFDFDF7),
       body: SafeArea(
@@ -557,7 +541,7 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
                         color: Colors.black26,
                         blurRadius: 8,
                         offset: Offset(0, 3),
-                      ),
+                      )
                     ],
                   ),
                   child: SingleChildScrollView(
@@ -575,33 +559,33 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
                         ),
                         const SizedBox(height: 12),
                         Draggable<String>(
-                          data: trashItems[currentItemIndex]['correctBin'],
-                          feedback: Image.asset(currentImage, width: 80),
+                          data: gameLogic.getCorrectBinForCurrentItem(),
+                          feedback: Image.asset(gameLogic.getCurrentImage(), width: 80),
                           childWhenDragging: Opacity(
                             opacity: 0.5,
-                            child: Image.asset(currentImage, width: 80),
+                            child: Image.asset(gameLogic.getCurrentImage(), width: 80),
                           ),
-                          child: Image.asset(currentImage, width: 80),
+                          child: Image.asset(gameLogic.getCurrentImage(), width: 80),
                         ),
                         const SizedBox(height: 12),
-                        if (lastResultText != null)
+                        if (gameLogic.lastResultText != null)
                           Text(
-                            lastResultCorrect == true
-                                ? 'CERTO! ERA ${lastResultText!.toUpperCase()}'
-                                : 'ERRADO! ERA ${lastResultText!.toUpperCase()}',
+                            gameLogic.lastResultCorrect == true
+                                ? 'CERTO! ERA ${gameLogic.lastResultText!.toUpperCase()}'
+                                : 'ERRADO! ERA ${gameLogic.lastResultText!.toUpperCase()}',
                             style: TextStyle(
                               fontFamily: 'PressStart2P',
                               fontSize: 8,
-                              color: lastResultCorrect! ? Colors.green : Colors.red,
+                              color: gameLogic.lastResultCorrect! ? Colors.green : Colors.red,
                             ),
                           ),
                         const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: binImages.entries.map((entry) {
-                            final bool isSelected = lastResultBin == entry.key;
-                            final bool isCorrect = lastResultCorrect == true && isSelected;
-                            final bool isWrong = lastResultCorrect == false && isSelected;
+                            final bool isSelected = gameLogic.lastResultBin == entry.key;
+                            final bool isCorrect = gameLogic.lastResultCorrect == true && isSelected;
+                            final bool isWrong = gameLogic.lastResultCorrect == false && isSelected;
 
                             return Padding(
                               padding: const EdgeInsets.all(6.0),
@@ -631,7 +615,7 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          '${currentItemIndex + 1} / ${trashItems.length}',
+                          '${gameLogic.getCurrentProgress()} / ${gameLogic.getTotalItems()}',
                           style: const TextStyle(
                             fontFamily: 'PressStart2P',
                             fontSize: 8,
