@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'resetPassword.dart';
-import 'forgetPasswordScreen_logic.dart';
+import 'package:ecoquest/pages/forgetPasswordScreen_logic.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
-  const ForgetPasswordScreen({super.key});
+  final http.Client? client; // 🔹 Injeção de dependência para testes
+
+  const ForgetPasswordScreen({super.key, this.client});
 
   @override
   State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
@@ -24,11 +26,19 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     });
 
     try {
-      final result = await ForgetPasswordService.sendResetEmail(_emailController.text);
+      final client = widget.client ?? http.Client(); // 🔹 Usa o client injetado se disponível
+      final response = await client.post(
+        Uri.parse('http://localhost:5000/forget-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': _emailController.text.trim().toLowerCase(),
+        }),
+      );
 
-      if (!mounted) return;
+      final responseData = json.decode(response.body);
 
-      if (result['success']) {
+      if (response.statusCode == 200) {
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -36,14 +46,21 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
           ),
         );
       } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message']), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(responseData['error'] ?? 'Erro ao enviar email'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro de conexão: \$e'), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('Erro de conexão: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
       );
     } finally {
       if (mounted) {
@@ -105,7 +122,11 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) => ForgetPasswordService.validateEmail(value ?? ''),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Insira seu e-mail';
+                          if (!value.contains('@')) return 'E-mail inválido';
+                          return null;
+                        },
                         decoration: InputDecoration(
                           labelText: 'E-mail',
                           prefixIcon: const Icon(Icons.email, color: Color(0xFF2BB462)),
