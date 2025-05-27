@@ -1,10 +1,21 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class ApiService {
+/// Interface abstrata para facilitar testes
+abstract class IApiService {
+  Future<String> enviarResultado({
+    required int usuarioId,
+    required int acertos,
+    required int tempoSegundos,
+  });
+}
+
+/// Implementação real que faz chamada HTTP
+class ApiService implements IApiService {
   static const String baseUrl = 'http://localhost:5000';
 
-  static Future<String> enviarResultado({
+  @override
+  Future<String> enviarResultado({
     required int usuarioId,
     required int acertos,
     required int tempoSegundos,
