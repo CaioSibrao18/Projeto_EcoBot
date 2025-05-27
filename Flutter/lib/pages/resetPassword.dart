@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'resetPassword_logic.dart';
 
-
 class ResetPasswordScreen extends StatefulWidget {
   final String email;
 
@@ -219,7 +218,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         }
         return ResetPasswordService.validateRequiredField(value ?? '');
       },
-      
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: const Color(0xFF2BB462)),
