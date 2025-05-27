@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:ecoquest/services/authe_service.dart';
 import 'registerScreen.dart';
 import 'forgetPasswordScreen.dart';
-import 'login_logic.dart';
+import 'package:ecoquest/pages/login_logic.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final AuthService authService;
+
+  // 🔧 Corrigido: removido o `const` antes do AuthServiceImpl()
+  LoginScreen({super.key, AuthService? authService})
+      : authService = authService ?? AuthServiceImpl();
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -35,14 +39,9 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final url = Uri.parse('http://localhost:5000/auth/login');
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'email': _emailController.text.trim().toLowerCase(),
-          'senha': _passwordController.text,
-        }),
+      final response = await widget.authService.login(
+        _emailController.text.trim(),
+        _passwordController.text,
       );
 
       final responseData = json.decode(response.body);
@@ -105,7 +104,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        validator: LoginValidator.validateEmail,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Insira seu email';
+                          if (!value.contains('@')) return 'Email inválido';
+                          return null;
+                        },
                         decoration: InputDecoration(
                           labelText: 'E-mail',
                           prefixIcon: const Icon(Icons.email, color: Color(0xFF2BB462)),
@@ -121,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _passwordController,
                         obscureText: true,
-                        validator: LoginValidator.validatePassword,
+                        validator: (value) => value == null || value.isEmpty ? 'Insira sua senha' : null,
                         decoration: InputDecoration(
                           labelText: 'Senha',
                           prefixIcon: const Icon(Icons.lock, color: Color(0xFF2BB462)),
@@ -136,10 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (_errorMessage != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 10),
-                          child: Text(
-                            _errorMessage!,
-                            style: const TextStyle(color: Colors.red),
-                          ),
+                          child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
                         ),
                       const SizedBox(height: 30),
                       SizedBox(
@@ -149,19 +149,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: _isLoading ? null : _login,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2BB462),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                           child: _isLoading
                               ? const CircularProgressIndicator(color: Colors.white)
-                              : const Text(
-                                  'Entrar',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                              : const Text('Entrar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -171,9 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             : () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const ForgetPasswordScreen(),
-                                  ),
+                                  MaterialPageRoute(builder: (context) => const ForgetPasswordScreen()),
                                 );
                               },
                         child: const Text('Esqueci a senha'),
@@ -184,9 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             : () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const RegisterScreen(),
-                                  ),
+                                  MaterialPageRoute(builder: (context) => const RegisterScreen()),
                                 );
                               },
                         child: const Text('Criar conta'),
@@ -208,12 +196,7 @@ class LoginCurveClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
     path.lineTo(0, size.height - 80);
-    path.quadraticBezierTo(
-      size.width * 0.5,
-      size.height + 40,
-      size.width,
-      size.height - 80,
-    );
+    path.quadraticBezierTo(size.width * 0.5, size.height + 40, size.width, size.height - 80);
     path.lineTo(size.width, 0);
     path.close();
     return path;
