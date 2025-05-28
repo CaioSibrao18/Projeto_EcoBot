@@ -22,8 +22,7 @@ void main() {
 
   group('Envio de e-mail de redefinição (integração real com backend)', () {
     test('Retorna sucesso se o e-mail for reconhecido pelo backend', () async {
-      // Trocar e-mail para o que quisermos utilizar
-      const email = 'neto@email.com';
+      const email = 'victor.neto@sou.unifeob.edu.br';
       final result = await ForgetPasswordService.sendResetEmail(email);
       expect(result['success'], true);
     });

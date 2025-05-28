@@ -8,7 +8,6 @@ import 'package:ecoquest/pages/login_logic.dart';
 class LoginScreen extends StatefulWidget {
   final AuthService authService;
 
-  // 🔧 Corrigido: removido o `const` antes do AuthServiceImpl()
   LoginScreen({super.key, AuthService? authService})
       : authService = authService ?? AuthServiceImpl();
 

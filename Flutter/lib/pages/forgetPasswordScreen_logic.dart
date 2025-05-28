@@ -19,15 +19,38 @@ class ForgetPasswordService {
         body: json.encode({'email': trimmedEmail}),
       );
 
-      final data = json.decode(response.body);
+      print('DEBUG :: statusCode: ${response.statusCode}');
+      print('DEBUG :: body: ${response.body}');
 
-      if (response.statusCode == 200) {
-        return {'success': true, 'message': data['message'] ?? 'E-mail enviado com sucesso'};
+      final dynamic decoded = json.decode(response.body);
+
+      if (decoded is! Map<String, dynamic>) {
+        return {
+          'success': false,
+          'message': 'Resposta inesperada do servidor',
+        };
+      }
+
+      final data = decoded;
+      final mensagem = data['mensagem'] ?? 'Verifique seu e-mail';
+      final status = data['status']?.toString().toLowerCase();
+
+      if (response.statusCode == 200 && status == 'sucesso') {
+        return {
+          'success': true,
+          'message': mensagem,
+        };
       } else {
-        return {'success': false, 'message': data['error'] ?? 'Erro ao enviar e-mail'};
+        return {
+          'success': false,
+          'message': mensagem,
+        };
       }
     } catch (e) {
-      return {'success': false, 'message': 'Erro de conexão: ${e.toString()}'};
+      return {
+        'success': false,
+        'message': 'Erro de conexão: ${e.toString()}',
+      };
     }
   }
 }
