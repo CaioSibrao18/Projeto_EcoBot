@@ -4,7 +4,9 @@ import 'package:http/http.dart' as http;
 import 'easytrash_logic.dart';
 
 class EasyTrashSortingGame extends StatefulWidget {
-  const EasyTrashSortingGame({super.key});
+  final EasyTrashGameLogic? gameLogicOverride;
+
+  const EasyTrashSortingGame({super.key, this.gameLogicOverride});
 
   @override
   _EasyTrashSortingGameState createState() => _EasyTrashSortingGameState();
@@ -21,23 +23,25 @@ class _EasyTrashSortingGameState extends State<EasyTrashSortingGame> {
   bool _isLoading = false;
   Map<String, dynamic>? _analysisData;
 
-  @override
+    @override
   void initState() {
     super.initState();
-    gameLogic = EasyTrashGameLogic(
-      trashItems: [
-        {'image': 'assets/images/revista.png', 'correctBin': 'azul'},
-        {'image': 'assets/images/caixadeleite.png', 'correctBin': 'azul'},
-        {'image': 'assets/images/envelope.png', 'correctBin': 'azul'},
-        {'image': 'assets/images/sacola.png', 'correctBin': 'vermelha'},
-        {'image': 'assets/images/latinha.png', 'correctBin': 'amarelo'},
-        {'image': 'assets/images/caixapapelao.png', 'correctBin': 'azul'},
-        {'image': 'assets/images/garrafapet.png', 'correctBin': 'vermelha'},
-        {'image': 'assets/images/canudo.png', 'correctBin': 'vermelha'},
-        {'image': 'assets/images/salgadinho.png', 'correctBin': 'vermelha'},
-        {'image': 'assets/images/jornal.png', 'correctBin': 'azul'},
-      ],
-    );
+
+    gameLogic = widget.gameLogicOverride ??
+        EasyTrashGameLogic(
+          trashItems: [
+            {'image': 'assets/images/revista.png', 'correctBin': 'azul'},
+            {'image': 'assets/images/caixadeleite.png', 'correctBin': 'azul'},
+            {'image': 'assets/images/envelope.png', 'correctBin': 'azul'},
+            {'image': 'assets/images/sacola.png', 'correctBin': 'vermelha'},
+            {'image': 'assets/images/latinha.png', 'correctBin': 'amarelo'},
+            {'image': 'assets/images/caixapapelao.png', 'correctBin': 'azul'},
+            {'image': 'assets/images/garrafapet.png', 'correctBin': 'vermelha'},
+            {'image': 'assets/images/canudo.png', 'correctBin': 'vermelha'},
+            {'image': 'assets/images/salgadinho.png', 'correctBin': 'vermelha'},
+            {'image': 'assets/images/jornal.png', 'correctBin': 'azul'},
+          ],
+        );
     _stopwatch.start();
   }
 

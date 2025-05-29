@@ -40,11 +40,13 @@ dependencies:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
-  http_mock_adapter: ^0.3.0
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
   mockito: ^5.4.0
   build_runner: ^2.4.0
+  http_mock_adapter: ^0.3.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -94,6 +96,7 @@ flutter:
     - assets/images/salgadinho.png
     - assets/images/canudo.png
     - assets/images/copovidro.png
+    - assets/images/placeholder.png
 
 
   fonts:
