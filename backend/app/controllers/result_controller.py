@@ -154,7 +154,7 @@ class ResultController:
             processed_data = []
             for d in historical_data:
                 if 'porcentagem' not in d:
-                    total = 10  # valor fixo conforme o banco
+                    total = 10 
                     d['porcentagem'] = (d.get('acertos', 0) / total) * 100 if total > 0 else 0
 
                 if 'tempo_por_questao' not in d:
@@ -162,13 +162,11 @@ class ResultController:
 
                 processed_data.append(d)
 
-            # Ordena os dados do mais recente para o mais antigo
+            
             processed_data = sorted(processed_data, key=lambda x: x['jogado_em'], reverse=True)
 
-            # Pega o último resultado como recent_period (lista com 1 elemento)
             recent_period = processed_data[:1]
 
-            # Pega o restante como older_period (todos os anteriores)
             older_period = processed_data[1:] if len(processed_data) > 1 else []
 
             recent_stats = ResultController._calculate_stats(recent_period)

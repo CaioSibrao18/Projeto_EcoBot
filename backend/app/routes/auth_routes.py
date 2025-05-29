@@ -146,7 +146,7 @@ def init_auth_routes(app):
                         accuracy = response['analysis']['current_period']['accuracy_avg']
                         speed = response['analysis']['current_period']['speed_avg']
 
-                        # Substitui NaN antes de criar o DataFrame
+                        
                         if isinstance(accuracy, float) and math.isnan(accuracy):
                             accuracy = None
                         if isinstance(speed, float) and math.isnan(speed):
@@ -163,7 +163,7 @@ def init_auth_routes(app):
                     except Exception as e:
                         print(f"Erro na predição IA: {e}")
 
-            # Remove todos os NaNs do objeto antes de retornar JSON
+           
             response = clean_nan(response)
 
             return jsonify(response), status_code
