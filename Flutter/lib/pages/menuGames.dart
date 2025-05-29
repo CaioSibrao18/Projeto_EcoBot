@@ -142,7 +142,7 @@ class MenuGames extends StatelessWidget {
               child: const Text('Sair'),
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.pushReplacementNamed(context, '/login');
+                Navigator.pushReplacementNamed(context, '/');
               },
             ),
           ],

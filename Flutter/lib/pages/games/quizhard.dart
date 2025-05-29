@@ -15,26 +15,30 @@ class _QuizScreenState extends State<QuizScreenHard> {
       'question': 'A lata amarela é destinada a qual tipo de lixo?',
       'options': ['Papel', 'Vidro', 'Orgânico', 'Metal'],
       'correctIndex': 3,
+      'explanation': 'A lata amarela é específica para metais como alumínio e aço.'
     },
     {
-      'question': 'Quanto tempo leva para o papel sumir no meio ambiente?',
+      'question': 'Quanto tempo leva para o papel se decompor no meio ambiente?',
       'options': [
-        'Cerca de 400 anos',
-        'Cerca de 100 anos',
-        'Cerca de 60 anos',
-        'Cerca de 1000 anos',
+        'Cerca de 3 a 6 meses',
+        'Cerca de 1 ano',
+        'Cerca de 5 anos',
+        'Cerca de 10 anos',
       ],
       'correctIndex': 0,
+      'explanation': 'Papel comum leva de 3 a 6 meses, mas papéis plastificados podem levar mais.'
     },
     {
       'question': 'Qual das opções abaixo é reciclável?',
       'options': ['Isopor', 'Espelho quebrado', 'Papelão', 'Papel carbono'],
       'correctIndex': 2,
+      'explanation': 'Papelão é amplamente reciclável, enquanto isopor e espelhos têm reciclagem limitada.'
     },
     {
       'question': 'Qual é a cor da lixeira para lixo orgânico?',
       'options': ['Preta', 'Verde', 'Marrom', 'Laranja'],
       'correctIndex': 2,
+      'explanation': 'No Brasil, o padrão é marrom para resíduos orgânicos.'
     },
     {
       'question': 'O que NÃO deve ser descartado em lixeira de vidro?',
@@ -45,16 +49,18 @@ class _QuizScreenState extends State<QuizScreenHard> {
         'Pote de vidro',
       ],
       'correctIndex': 2,
+      'explanation': 'Espelhos contêm metais pesados e não são recicláveis como vidro comum.'
     },
     {
       'question': 'Qual é o principal benefício da reciclagem de alumínio?',
       'options': [
         'Evita desmatamento',
-        'Reduz emissão de carbono',
+        'Reduz emissão de carbono em 95%',
         'Economiza energia',
         'Gera mais empregos',
       ],
-      'correctIndex': 2,
+      'correctIndex': 1,
+      'explanation': 'Reciclar alumínio economiza 95% da energia vs. produção nova.'
     },
     {
       'question': 'O que é compostagem?',
@@ -65,15 +71,16 @@ class _QuizScreenState extends State<QuizScreenHard> {
         'Forma de reciclar metal',
       ],
       'correctIndex': 1,
+      'explanation': 'Compostagem transforma restos de comida em fertilizante natural.'
     },
     {
       'question': 'Qual destes materiais leva mais tempo para se decompor?',
-      'options': ['Plástico', 'Papel', 'Metal', 'Vidro'],
+      'options': ['Plástico (450 anos)', 'Papel (6 meses)', 'Metal (100 anos)', 'Vidro (1 milhão de anos)'],
       'correctIndex': 3,
+      'explanation': 'O vidro pode levar até 1 milhão de anos para se decompor!'
     },
     {
-      'question':
-          'Qual das atitudes abaixo ajuda na preservação do meio ambiente?',
+      'question': 'Qual atitude ajuda na preservação do meio ambiente?',
       'options': [
         'Descarte de óleo na pia',
         'Utilizar sacolas plásticas',
@@ -81,11 +88,13 @@ class _QuizScreenState extends State<QuizScreenHard> {
         'Queimar lixo',
       ],
       'correctIndex': 2,
+      'explanation': 'Reduzir o consumo de água é essencial para preservação.'
     },
     {
       'question': 'A cor azul das lixeiras é usada para qual tipo de resíduo?',
       'options': ['Metal', 'Plástico', 'Vidro', 'Papel'],
       'correctIndex': 3,
+      'explanation': 'Azul é padrão para papel/papelão no Brasil.'
     },
   ];
 
@@ -95,6 +104,7 @@ class _QuizScreenState extends State<QuizScreenHard> {
   final Stopwatch _stopwatch = Stopwatch();
   bool _isLoading = false;
   Map<String, dynamic>? _analysisData;
+  bool _showCorrectAnswer = false;
 
   @override
   void initState() {
@@ -105,12 +115,16 @@ class _QuizScreenState extends State<QuizScreenHard> {
   void checkAnswer(int index) {
     setState(() {
       selectedOption = index;
+      _showCorrectAnswer = true;
+      
       if (index == questions[currentQuestionIndex]['correctIndex']) {
         correctAnswers++;
       }
+
       Future.delayed(const Duration(seconds: 2), () {
         setState(() {
           selectedOption = null;
+          _showCorrectAnswer = false;
           if (currentQuestionIndex < questions.length - 1) {
             currentQuestionIndex++;
           } else {
@@ -187,61 +201,60 @@ class _QuizScreenState extends State<QuizScreenHard> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder:
-          (context) => Dialog(
-            backgroundColor: const Color(0xFFFDFDF7),
-            insetPadding: const EdgeInsets.all(20),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 500),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      'Resultado - Nível Difícil',
-                      style: const TextStyle(
-                        color: Color(0xFF2BB462),
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'PressStart2P',
-                        fontSize: 14,
-                      ),
-                    ),
+      builder: (context) => Dialog(
+        backgroundColor: const Color(0xFFFDFDF7),
+        insetPadding: const EdgeInsets.all(20),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 500),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  'Resultado - Nível Difícil',
+                  style: const TextStyle(
+                    color: Color(0xFF2BB462),
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PressStart2P',
+                    fontSize: 14,
                   ),
-                  const Divider(height: 1, color: Colors.grey),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: _buildResultsContent(tempoSegundos),
-                    ),
-                  ),
-                  const Divider(height: 1, color: Colors.grey),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        setState(() {
-                          currentQuestionIndex = 0;
-                          correctAnswers = 0;
-                          _analysisData = null;
-                          _stopwatch.reset();
-                          _stopwatch.start();
-                        });
-                      },
-                      child: const Text(
-                        'Reiniciar',
-                        style: TextStyle(
-                          color: Color(0xFF2BB462),
-                          fontFamily: 'PressStart2P',
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              const Divider(height: 1, color: Colors.grey),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: _buildResultsContent(tempoSegundos),
+                ),
+              ),
+              const Divider(height: 1, color: Colors.grey),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      currentQuestionIndex = 0;
+                      correctAnswers = 0;
+                      _analysisData = null;
+                      _stopwatch.reset();
+                      _stopwatch.start();
+                    });
+                  },
+                  child: const Text(
+                    'Reiniciar',
+                    style: TextStyle(
+                      color: Color(0xFF2BB462),
+                      fontFamily: 'PressStart2P',
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
+        ),
+      ),
     );
   }
 
@@ -391,10 +404,7 @@ class _QuizScreenState extends State<QuizScreenHard> {
     Widget _buildTrendItem(String title, double? value) {
       if (value == null) return const SizedBox.shrink();
       final isPositive = value >= 0;
-      final display =
-          isPositive
-              ? '+${value.toStringAsFixed(2)}'
-              : value.toStringAsFixed(2);
+      final display = isPositive ? '+${value.toStringAsFixed(2)}' : value.toStringAsFixed(2);
       final color = isPositive ? Colors.green : Colors.red;
 
       return Padding(
@@ -478,224 +488,249 @@ class _QuizScreenState extends State<QuizScreenHard> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children:
-              feedbacks
-                  .map<Widget>(
-                    (fb) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Text(
-                        '• ${fb.toString()}',
-                        style: const TextStyle(
-                          fontFamily: 'PressStart2P',
-                          fontSize: 12,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
+          children: feedbacks.map<Widget>((fb) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Text(
+              '• ${fb.toString()}',
+              style: const TextStyle(
+                fontFamily: 'PressStart2P',
+                fontSize: 12,
+                color: Colors.black87,
+              ),
+            ),
+          )).toList(),
         ),
       );
     }
 
     return _isLoading
         ? const Center(
-          child: CircularProgressIndicator(color: Color(0xFF2BB462)),
-        )
+            child: CircularProgressIndicator(color: Color(0xFF2BB462)),
+          )
         : SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildCurrentResult(),
-              if (previousPeriod != null) ...[
-                _buildSectionTitle('HISTÓRICO DESEMPENHO'),
-                _buildStatsCard('Período Anterior', [
-                  _buildStatWithExplanation(
-                    'Pontuação Anterior',
-                    previousPeriod['best_score']?.toString(),
-                    'Sua pontuação anterior',
-                    Colors.green[700]!,
-                  ),
-                  _buildStatWithExplanation(
-                    'Consistência Anterior',
-                    previousPeriod['consistency']?.toStringAsFixed(2),
-                    'Estabilidade anterior dos resultados',
-                    Colors.orange[700]!,
-                  ),
-                  _buildStatWithExplanation(
-                    'Tentativas Anteriores',
-                    previousPeriod['count']?.toString(),
-                    'Número de quizzes anteriores',
-                    Colors.purple[700]!,
-                  ),
-                  _buildStatWithExplanation(
-                    'Velocidade Anterior',
-                    previousPeriod['speed_avg'] != null
-                        ? '${previousPeriod['speed_avg'].toStringAsFixed(2)}s'
-                        : null,
-                    'Tempo médio anterior por questão',
-                    Colors.red[700]!,
-                  ),
-                ]),
-              ],
-              if (trends != null) ...[
-                _buildSectionTitle('TENDÊNCIAS'),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 1.5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Column(
-                      children: [
-                        _buildTrendItem(
-                          'Precisão',
-                          (trends['accuracy'] as num?)?.toDouble(),
-                        ),
-                        _buildTrendItem(
-                          'Consistência',
-                          (trends['consistency'] as num?)?.toDouble(),
-                        ),
-                        _buildTrendItem(
-                          'Velocidade',
-                          (trends['speed'] as num?)?.toDouble(),
-                        ),
-                      ],
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildCurrentResult(),
+                if (previousPeriod != null) ...[
+                  _buildSectionTitle('HISTÓRICO DESEMPENHO'),
+                  _buildStatsCard('Período Anterior', [
+                    _buildStatWithExplanation(
+                      'Pontuação Anterior',
+                      previousPeriod['best_score']?.toString(),
+                      'Sua pontuação anterior',
+                      Colors.green[700]!,
+                    ),
+                    _buildStatWithExplanation(
+                      'Consistência Anterior',
+                      previousPeriod['consistency']?.toStringAsFixed(2),
+                      'Estabilidade anterior dos resultados',
+                      Colors.orange[700]!,
+                    ),
+                    _buildStatWithExplanation(
+                      'Tentativas Anteriores',
+                      previousPeriod['count']?.toString(),
+                      'Número de quizzes anteriores',
+                      Colors.purple[700]!,
+                    ),
+                    _buildStatWithExplanation(
+                      'Velocidade Anterior',
+                      previousPeriod['speed_avg'] != null
+                          ? '${previousPeriod['speed_avg'].toStringAsFixed(2)}s'
+                          : null,
+                      'Tempo médio anterior por questão',
+                      Colors.red[700]!,
+                    ),
+                  ]),
+                ],
+                if (trends != null) ...[
+                  _buildSectionTitle('TENDÊNCIAS'),
+                  Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 1.5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(
+                        children: [
+                          _buildTrendItem(
+                            'Precisão',
+                            (trends['accuracy'] as num?)?.toDouble(),
+                          ),
+                          _buildTrendItem(
+                            'Consistência',
+                            (trends['consistency'] as num?)?.toDouble(),
+                          ),
+                          _buildTrendItem(
+                            'Velocidade',
+                            (trends['speed'] as num?)?.toDouble(),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                ],
+                _buildSectionTitle('RECOMENDAÇÕES'),
+                _buildFeedbackList(feedbackList),
+                const SizedBox(height: 40),
               ],
-              _buildSectionTitle('RECOMENDAÇÕES'),
-              _buildFeedbackList(feedbackList),
-              const SizedBox(height: 40),
-            ],
+            ),
+          );
+  }
+
+  Widget _buildOptionButton(int index, String option, bool isCorrect) {
+    Color backgroundColor = Colors.white;
+    Color borderColor = const Color(0xFF2BB462);
+    Color textColor = Colors.black;
+
+    if (selectedOption != null) {
+      if (index == selectedOption) {
+        backgroundColor = isCorrect ? Colors.green : Colors.red;
+        textColor = Colors.white;
+      } else if (isCorrect && _showCorrectAnswer) {
+        backgroundColor = Colors.green.withOpacity(0.3);
+      }
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
-        );
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: selectedOption == null ? () => checkAnswer(index) : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            child: Center(
+              child: Text(
+                option,
+                style: TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 14,
+                  color: textColor,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     var questionData = questions[currentQuestionIndex];
+    bool isCorrect = selectedOption == questionData['correctIndex'];
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.teal[700],
-        title: Text(
-          'Game Quiz Difícil',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
-        elevation: 5,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.teal[50]!, Colors.white],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    spreadRadius: 2,
-                    blurRadius: 8,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.teal[100],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      questionData['question'],
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.teal[900],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  SizedBox(height: 25),
-                  Column(
-                    children: List.generate(questionData['options'].length, (
-                      index,
-                    ) {
-                      Color buttonColor = Colors.teal[400]!;
-                      if (selectedOption != null) {
-                        if (index == questionData['correctIndex']) {
-                          buttonColor = Colors.green;
-                        } else if (index == selectedOption) {
-                          buttonColor = Colors.red;
-                        }
-                      }
-                      return Container(
-                        width: double.infinity,
-                        margin: EdgeInsets.only(bottom: 12),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonColor,
-                            padding: EdgeInsets.symmetric(
-                              vertical: 18,
-                              horizontal: 16,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 2,
-                          ),
-                          onPressed:
-                              selectedOption == null
-                                  ? () => checkAnswer(index)
-                                  : null,
-                          child: Text(
-                            questionData['options'][index],
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Pergunta ${currentQuestionIndex + 1} de ${questions.length}',
-                    style: TextStyle(
-                      color: Colors.teal[700],
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
+      backgroundColor: const Color(0xFFFDFDF7),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Adicionado o botão de voltar ao menu
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 16),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back, color: Color(0xFF2BB462), size: 32),
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/menu_games');
+                  },
+                ),
               ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Image.asset(
+                'assets/images/logoEcoQuest.png',
+                width: 160,
+                height: 160,
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFF2BB462), width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        questionData['question'],
+                        style: const TextStyle(
+                          fontFamily: 'PressStart2P',
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    ...List.generate(questionData['options'].length, (index) {
+                      return _buildOptionButton(
+                        index,
+                        questionData['options'][index],
+                        index == questionData['correctIndex'],
+                      );
+                    }),
+                    if (_showCorrectAnswer && !isCorrect)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Text(
+                          'Resposta correta: ${questionData['options'][questionData['correctIndex']]}\n${questionData['explanation']}',
+                          style: const TextStyle(
+                            fontFamily: 'PressStart2P',
+                            fontSize: 12,
+                            color: Colors.green,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Pergunta ${currentQuestionIndex + 1} de ${questions.length}',
+                      style: const TextStyle(
+                        fontFamily: 'PressStart2P',
+                        fontSize: 12,
+                        color: Color(0xFF2BB462),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -24,12 +24,12 @@ class _QuizScreenState extends State<QuizScreenEasy> {
         {
           "question": "Qual cor de lixeira é usada para papel?",
           "options": ["Azul", "Vermelha", "Verde"],
-          "correctIndex": 1,
+          "correctIndex": 0,  
         },
         {
           "question": "Qual cor de lixeira é usada para plástico?",
           "options": ["Azul", "Vermelha", "Verde"],
-          "correctIndex": 1,
+          "correctIndex": 1, 
         },
         {
           "question": "O vidro pode ser reciclado?",
@@ -58,7 +58,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
         {
           "question": "Qual é o destino correto para papelão?",
           "options": ["Lixeira azul", "Lixeira vermelha", "Lixeira verde"],
-          "correctIndex": 0,
+          "correctIndex": 0,  
         },
         {
           "question": "Qual destes itens NÃO pode ser reciclado?",
@@ -74,15 +74,6 @@ class _QuizScreenState extends State<QuizScreenEasy> {
           "question": "Podemos jogar óleo de cozinha usado na pia?",
           "options": ["Sim", "Não", "Somente óleo novo"],
           "correctIndex": 1,
-        },
-        {
-          "question": "Reciclar ajuda a:",
-          "options": [
-            "Preservar o meio ambiente",
-            "Aumentar a poluição",
-            "Desperdiçar recursos",
-          ],
-          "correctIndex": 0,
         },
       ],
     );
@@ -131,10 +122,10 @@ class _QuizScreenState extends State<QuizScreenEasy> {
 
         if (data['analysis'] != null && data['analysis']['feedback'] != null) {
           data['analysis']['feedback'] = [
-            "🎯 Feedback personalizado",
-            "🚀 Continue praticando!",
-            "💡 Dica extra: revise as perguntas erradas",
-            "IA: análise customizada",
+            "🎯 Feedback personalizado - Nível Fácil",
+            "🚀 Ótimo começo na jornada da reciclagem!",
+            "💡 Dica: pratique a separação dos resíduos em casa",
+            "IA: análise simplificada para iniciantes",
           ];
         }
 
@@ -181,7 +172,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Resultado',
+                  'Resultado - Nível Fácil',
                   style: const TextStyle(
                     color: Color(0xFF2BB462),
                     fontWeight: FontWeight.bold,
@@ -224,7 +215,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
     );
   }
 
- Widget _buildResultsContent(int tempoSegundos) {
+  Widget _buildResultsContent(int tempoSegundos) {
     Widget _buildStatWithExplanation(
       String title,
       String? value,
@@ -304,7 +295,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
               ),
               const SizedBox(height: 14),
               const Text(
-                'Resumo do Jogo Recém Finalizado',
+                'Resumo do Quiz Recém Finalizado',
                 style: TextStyle(
                   fontFamily: 'PressStart2P',
                   fontSize: 15,
@@ -313,11 +304,10 @@ class _QuizScreenState extends State<QuizScreenEasy> {
                 ),
               ),
               const SizedBox(height: 18),
-
               _buildStatWithExplanation(
                 'Pontuação',
                 currentPeriod?['best_score']?.toString(),
-                'Sua pontuação neste jogo',
+                'Sua pontuação neste quiz',
                 Colors.green.shade700,
               ),
               _buildStatWithExplanation(
@@ -342,9 +332,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
                 'Tempo médio por questão',
                 Colors.red.shade700,
               ),
-
               const SizedBox(height: 20),
-
               Text(
                 '${gameLogic.correctAnswers}/${gameLogic.questions.length} corretas',
                 style: const TextStyle(
@@ -500,7 +488,7 @@ class _QuizScreenState extends State<QuizScreenEasy> {
                     _buildStatWithExplanation(
                       'Tentativas Anteriores',
                       previousPeriod['count']?.toString(),
-                      'Número de jogos anteriores',
+                      'Número de quizzes anteriores',
                       Colors.purple[700]!,
                     ),
                     _buildStatWithExplanation(
@@ -550,90 +538,156 @@ class _QuizScreenState extends State<QuizScreenEasy> {
           );
   }
 
+  Widget _buildOptionButton(int index, String option, bool isCorrect) {
+    Color backgroundColor = Colors.white;
+    Color borderColor = const Color(0xFF2BB462);
+    Color textColor = Colors.black;
+
+    if (gameLogic.selectedOption != null) {
+      if (index == gameLogic.selectedOption) {
+        backgroundColor = isCorrect ? Colors.green : Colors.red;
+        textColor = Colors.white;
+      } else if (isCorrect) {
+        backgroundColor = Colors.green.withOpacity(0.3);
+      }
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: gameLogic.selectedOption == null ? () => checkAnswer(index) : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            child: Center(
+              child: Text(
+                option,
+                style: TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 14,
+                  color: textColor,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var questionData = gameLogic.getCurrentQuestion();
+    bool isCorrect = gameLogic.selectedOption == questionData['correctIndex'];
+
     return Scaffold(
       backgroundColor: const Color(0xFFFDFDF7),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF2BB462)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(
-                'assets/images/logoEcoQuest.png',
-                width: 240,
-                height: 240,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                questionData['question'],
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontFamily: 'PressStart2P',
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Botão de voltar ao menu
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 16),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back, color: Color(0xFF2BB462), size: 32),
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/menu_games');
+                  },
                 ),
               ),
-              const SizedBox(height: 24),
-              ...List.generate(questionData['options'].length, (index) {
-                Color backgroundColor = Colors.white;
-                Color borderColor = Colors.blueGrey;
-                Color textColor = Colors.black;
-
-                if (gameLogic.selectedOption != null) {
-                  if (index == questionData['correctIndex']) {
-                    backgroundColor = Colors.green;
-                    borderColor = Colors.green;
-                    textColor = Colors.white;
-                  } else if (index == gameLogic.selectedOption) {
-                    backgroundColor = Colors.red;
-                    borderColor = Colors.red;
-                    textColor = Colors.white;
-                  }
-                } else {
-                  backgroundColor = Colors.white;
-                  borderColor = Colors.blueGrey;
-                  textColor = Colors.black;
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: backgroundColor,
-                      foregroundColor: textColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: borderColor, width: 2),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Image.asset(
+                'assets/images/logoEcoQuest.png',
+                width: 160,
+                height: 160,
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFF2BB462), width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      elevation: 0,
+                      child: Text(
+                        questionData['question'],
+                        style: const TextStyle(
+                          fontFamily: 'PressStart2P',
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    onPressed: gameLogic.selectedOption == null
-                        ? () => checkAnswer(index)
-                        : null,
-                    child: Text(
-                      questionData['options'][index],
+                    const SizedBox(height: 24),
+                    ...List.generate(questionData['options'].length, (index) {
+                      return _buildOptionButton(
+                        index,
+                        questionData['options'][index],
+                        index == questionData['correctIndex'],
+                      );
+                    }),
+                    if (gameLogic.selectedOption != null && !isCorrect)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Text(
+                          'Resposta correta: ${questionData['options'][questionData['correctIndex']]}',
+                          style: const TextStyle(
+                            fontFamily: 'PressStart2P',
+                            fontSize: 12,
+                            color: Colors.green,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Pergunta ${gameLogic.currentQuestionIndex + 1} de ${gameLogic.questions.length}',
                       style: const TextStyle(
                         fontFamily: 'PressStart2P',
-                        fontSize: 10,
+                        fontSize: 12,
+                        color: Color(0xFF2BB462),
                       ),
                     ),
-                  ),
-                );
-              }),
-              const SizedBox(height: 20),
-            ],
-          ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
