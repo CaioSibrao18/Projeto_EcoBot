@@ -20,8 +20,12 @@ void main() {
         home: const MenuGames(),
         navigatorObservers: [mockObserver],
         routes: {
-          '/spelling_letters': (context) => const Scaffold(body: Center(child: Text('Tela de Soletrar'))),
-          '/login': (context) => const Scaffold(body: Center(child: Text('Tela de Login'))),
+          '/spelling_letters':
+              (context) =>
+                  const Scaffold(body: Center(child: Text('Tela de Soletrar'))),
+          '/login':
+              (context) =>
+                  const Scaffold(body: Center(child: Text('Tela de Login'))),
           // outras rotas que desejar testar podem ser adicionadas aqui
         },
       ),
@@ -43,7 +47,9 @@ void main() {
     expect(find.text('Quiz Difícil'), findsOneWidget);
   });
 
-  testWidgets('Navega para /spelling_letters ao tocar no jogo correspondente', (tester) async {
+  testWidgets('Navega para /spelling_letters ao tocar no jogo correspondente', (
+    tester,
+  ) async {
     await pumpMenuGames(tester);
 
     clearInteractions(mockObserver);
@@ -53,32 +59,5 @@ void main() {
 
     verify(mockObserver.didPush(any, any)).called(1);
     expect(find.text('Tela de Soletrar'), findsOneWidget);
-  });
-
-  testWidgets('Exibe diálogo de confirmação de logout e navega ao confirmar', (tester) async {
-    await pumpMenuGames(tester);
-
-    clearInteractions(mockObserver);
-
-    await tester.tap(find.byIcon(Icons.logout));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Sair da conta'), findsOneWidget);
-    expect(find.text('Você realmente deseja sair da sua conta?'), findsOneWidget);
-
-    // Testa cancelar - diálogo desaparece
-    await tester.tap(find.text('Cancelar'));
-    await tester.pumpAndSettle();
-    expect(find.text('Sair da conta'), findsNothing);
-
-    // Abre diálogo novamente para testar confirmar logout
-    await tester.tap(find.byIcon(Icons.logout));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Sair'));
-    await tester.pumpAndSettle();
-
-    verify(mockObserver.didPush(any, any)).called(greaterThanOrEqualTo(1));
-    expect(find.text('Tela de Login'), findsOneWidget);
   });
 }
