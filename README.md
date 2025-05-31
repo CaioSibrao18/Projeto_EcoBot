@@ -2,7 +2,7 @@
 
 Este é um aplicativo desenvolvido com **Flutter**, **Python (Flask)** e **MySQL**, com integração de **Inteligência Artificial** (RandomForestClassifier), voltado para **auxiliar psicopedagogos a acompanhar o desenvolvimento de crianças com deficiência intelectual** por meio de jogos educativos sobre sustentabilidade.
 
-## 🧠 Funcionalidades
+## Funcionalidades
 
 - Tela de login, recuperação de senha com token por e-mail
 - 6 jogos educativos:
@@ -16,9 +16,9 @@ Este é um aplicativo desenvolvido com **Flutter**, **Python (Flask)** e **MySQL
 
 ---
 
-## ⚙️ Como rodar o projeto na sua máquina
+##  Como rodar o projeto na sua máquina
 
-### 📦 Pré-requisitos
+### Pré-requisitos
 
 - [Python 3.8+](https://www.python.org/downloads/)
 - [Flutter](https://flutter.dev/docs/get-started/install)
@@ -26,18 +26,18 @@ Este é um aplicativo desenvolvido com **Flutter**, **Python (Flask)** e **MySQL
 
 ---
 
-### 📁 Passo a passo
+### Passo a passo
 
-# 🔽 CLONE O REPOSITÓRIO
+# CLONE O REPOSITÓRIO
 git clone https://github.com/seu-usuario/seu-repositorio.git
 cd seu-repositorio
 
-# 🛠️ CONFIGURE O .env DO BACKEND
+# CONFIGURE O .env DO BACKEND
 # (Abra o arquivo backend/.env e troque a senha do banco pela sua senha MySQL)
 # Exemplo:
 # DB_PASSWORD=sua_senha_mysql
 
-# 🧠 INSTALE AS DEPENDÊNCIAS DO BACKEND (IA)
+# INSTALE AS DEPENDÊNCIAS DO BACKEND (IA)
 cd backend
 
 pip install cryptography
@@ -52,17 +52,17 @@ pip install scikit-learn
 pip install joblib
 python -m pip install flask-cors
 
-# 🔁 (Se necessário, reinicie o computador)
+# (Se necessário, reinicie o computador)
 
-# 🚀 INICIE O BACKEND
+# INICIE O BACKEND
 cd backend
 python app/app.py
 
-# 🖼️ EM OUTRO TERMINAL, INICIE O FLUTTER
+# EM OUTRO TERMINAL, INICIE O FLUTTER
 cd flutter
 flutter run
 
-# ✅ ESCOLHA O EMULADOR/PLATAFORMA
-# 🔓 CRIE UMA CONTA NO APP PARA ACESSAR OS JOGOS
+# ESCOLHA O EMULADOR/PLATAFORMA
+# CRIE UMA CONTA NO APP PARA ACESSAR OS JOGOS
 
-# 👏 PRONTO! O PROJETO ESTÁ FUNCIONANDO NORMALMENTE.
+# PRONTO! O PROJETO ESTÁ FUNCIONANDO NORMALMENTE.
