@@ -4,7 +4,6 @@ import 'package:mockito/mockito.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-// AJUSTE ESTES CAMINHOS PARA O SEU PROJETO
 import 'package:ecoquest/pages/games/easytrash_logic.dart';
 import 'package:ecoquest/pages/games/easytrash.dart';
 
